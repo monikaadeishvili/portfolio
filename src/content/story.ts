@@ -20,8 +20,8 @@ export const CHAPTERS: Chapter[] = [
     num: '01',
     frame: 'Hello',
     ruler: 'HELLO',
-    headline: ["Hi, I'm ", { em: 'Monika.' }],
-    body: "Product designer. Six years of turning messy problems into calm products. Keep scrolling — I'll build this page in front of you.",
+    headline: ['Everyone has the same tools now. ', { em: 'Not the same taste.' }],
+    body: 'Taste comes with experience. I have 7+ years of it.',
   },
   {
     id: 'origin',
@@ -44,7 +44,7 @@ export const CHAPTERS: Chapter[] = [
     num: '04',
     frame: 'Proof',
     ruler: 'PROOF',
-    headline: ['Six years, one question: ', { em: 'who is this for?' }],
+    headline: ['Seven years, one question: ', { em: 'who is this for?' }],
     body: 'Sports streaming across TV, phone and desktop at DAZN. Business banking for law firms at NOTA by M&T Bank. Eighteen client products at Forcoda. And classrooms, too — I teach UX, because explaining design makes you better at it.',
   },
   {
@@ -57,12 +57,27 @@ export const CHAPTERS: Chapter[] = [
   },
 ]
 
+/** 01 Hello — client-approved copy */
+export const HELLO = {
+  badge: 'Open to new work',
+  line1: 'Everyone has the same tools now.',
+  line2: 'Not the same taste.',
+  support: ['Taste comes with experience. I have ', '7+ years', ' of it.'] as const,
+  intro: "Hi, I'm Monika, a product designer.",
+  marquee: { lead: 'FROM A ', empty: 'BLANK FIGMA FILE', mid: ' TO ', full: 'A PRODUCT PEOPLE USE', tail: ' — ' },
+  workedWith: ['DAZN', 'NOTA by M&T Bank'],
+  clients: '18 client products',
+  hint: ['This page builds itself.', "Your product won't."] as const,
+  primary: 'See how I work',
+  ghost: 'Say hello',
+}
+
 export const PRINCIPLES = ['Research first, pixels second.', 'Systems over screens.', 'Calm beats clever.']
 
 export const QUOTE = { text: 'People ignore design that ignores people.', by: 'Frank Chimero' }
 
 export const STATS = [
-  { n: 6, suf: '+', label: 'years designing', tone: 'yellow' },
+  { n: 7, suf: '+', label: 'years designing', tone: 'yellow' },
   { n: 18, suf: '', label: 'client products at one agency', tone: 'lime' },
   { n: 9, suf: '', label: 'industries', tone: 'sky' },
 ] as const

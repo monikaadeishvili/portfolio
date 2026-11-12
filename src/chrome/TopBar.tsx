@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react'
 import { MomoMark } from './Icons'
 import { ui } from '../scene/store'
-import { EMAIL } from '../canvas/AboutFrame'
+import { EMAIL } from '../content/story'
 
 const TABS = ['About', 'Work', 'Process', 'Contact']
 const PEOPLE = [

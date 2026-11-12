@@ -53,7 +53,7 @@ export function jumpTo(p: number, duration = 1.6) {
   ui.scrollTo?.(Math.max(0, Math.min(max, p * max)), duration)
 }
 
-export function ChapterRuler({ chapters, variant = 'dock', label = 'Chapters' }: { chapters: RulerChapter[]; variant?: 'dock' | 'slim'; label?: string }) {
+export function ChapterRuler({ chapters, variant = 'dock', label = 'Chapters', subs }: { chapters: RulerChapter[]; variant?: 'dock' | 'slim'; label?: string; /** optional sub-ticks (0..1), e.g. where each region starts */ subs?: number[] }) {
   const rootRef = useRef<HTMLElement>(null)
   useLayoutEffect(() => {
     const root = rootRef.current
@@ -82,6 +82,13 @@ export function ChapterRuler({ chapters, variant = 'dock', label = 'Chapters' }:
       </span>
       <div className="ruler-track">
         <div className="ruler-ticks" aria-hidden="true" />
+        {subs && subs.length > 0 && (
+          <div className="ruler-subs" aria-hidden="true">
+            {subs.map((s) => (
+              <i key={s.toFixed(4)} style={{ left: `${(s * 100).toFixed(3)}%` }} />
+            ))}
+          </div>
+        )}
         <div className="ruler-fill" aria-hidden="true" />
         <ol className="ruler-marks">
           {chapters.map((c, i) => {

@@ -261,95 +261,16 @@
   }
 }
 
-/* ------------------------------------------------------ page switch */
-.page-switch {
-  position: relative;
+/* ------------------------------------------------------ page label */
+.page-switch-label {
   margin-left: auto;
-}
-.page-switch-btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
   height: 24px;
-  padding: 0 6px 0 8px;
-  border-radius: 7px;
+  padding: 0 8px;
   color: var(--ink-3);
   font-size: 11.5px;
   font-weight: 500;
-  cursor: pointer;
-  transition: background-color 140ms ease, color 140ms ease;
-}
-.page-switch-btn .chev.is-open {
-  transform: rotate(-90deg);
-}
-.page-switch-btn .chev {
-  transform: rotate(90deg);
-}
-@media (hover: hover) and (pointer: fine) {
-  .page-switch-btn:hover {
-    background: rgb(22 19 29 / 0.05);
-    color: var(--ink);
-  }
-}
-.page-switch.is-open .page-switch-btn {
-  background: rgb(22 19 29 / 0.06);
-  color: var(--ink);
-}
-.page-switch-menu {
-  position: absolute;
-  z-index: 5;
-  right: -4px;
-  top: calc(100% + 6px);
-  min-width: 196px;
-  padding: 5px;
-  border-radius: 12px;
-  background: #fff;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-lift);
-  transform-origin: 90% 0;
-  animation: menu-in 160ms var(--ease-out);
-}
-.page-switch-menu[hidden] {
-  display: none;
-}
-@keyframes menu-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px) scale(0.97);
-  }
-}
-.page-switch-menu a {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 10px 0 6px;
-  border-radius: 8px;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--ink-2);
-  white-space: nowrap;
-  cursor: pointer;
-}
-.page-switch-menu a[aria-current] {
-  color: var(--ink);
-  font-weight: 600;
-}
-@media (hover: hover) and (pointer: fine) {
-  .page-switch-menu a:hover {
-    background: var(--violet-soft);
-    color: var(--violet);
-  }
-}
-.page-switch-check {
-  width: 14px;
-  text-align: center;
-  color: var(--violet);
-}
-@media (prefers-reduced-motion: reduce) {
-  .page-switch-menu {
-    animation: none;
-  }
 }
 .ruler-slim .ruler-num {
   display: none;

@@ -108,3 +108,11 @@ export function Chevron({ open }: { open: boolean }) {
     </svg>
   )
 }
+
+export function FrameIcon() {
+  return (
+    <svg viewBox="0 0 12 12" aria-hidden="true" className="ico-frame">
+      <path d="M3.5 1v10M8.5 1v10M1 3.5h10M1 8.5h10" />
+    </svg>
+  )
+}

@@ -1,0 +1,1062 @@
+/* ============================================ 01 Hello — same tools → taste */
+.bf-hello {
+  --world: #fff2c7;
+  --world-2: #ffe08a;
+  --accent: var(--violet);
+  --plain-canvas: #ececee;
+  --plain-ink: #3a3a3a;
+  --plain-2: #6b6b70;
+  --plain-line: #e2e2e5;
+}
+.bf-hello .bf-bg {
+  background:
+    radial-gradient(70% 50% at 100% 0%, #ffd75e 0%, transparent 60%),
+    radial-gradient(60% 40% at 0% 100%, #ffe6a0 0%, transparent 70%),
+    #fff4d1;
+}
+
+/* -- the default world: plain board on a grey canvas, under the designed one */
+.h-cv {
+  position: absolute;
+  left: -2600px;
+  top: -2600px;
+  width: 6320px;
+  height: 6500px;
+  background-color: var(--plain-canvas);
+  background-image:
+    linear-gradient(rgb(22 19 29 / 0.05) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgb(22 19 29 / 0.05) 1.5px, transparent 1.5px);
+  background-size: 26px 26px;
+  pointer-events: none;
+}
+.wbg-plain {
+  background: var(--plain-canvas, #ececee);
+  opacity: 0;
+  visibility: hidden;
+}
+.h-plainbg {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px var(--plain-line),
+    0 1px 2px rgb(16 24 40 / 0.05),
+    0 30px 60px -30px rgb(16 24 40 / 0.22);
+  pointer-events: none;
+}
+.bstage:not(.is-static) .bf-hello .bf-bg {
+  clip-path: circle(0px at 100% 0%);
+}
+/* the wipe front: a crisp ink ring leading the colour */
+.h-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  border: 3.5px solid var(--ink);
+  box-shadow:
+    inset 0 0 0 5px #ffc629,
+    inset 0 0 0 7px rgb(22 19 29 / 0.9);
+  pointer-events: none;
+  visibility: hidden;
+  contain: strict;
+}
+
+/* -- frame label: grey "Untitled" until it re-types itself */
+.bf-hello .bf-label {
+  transition: color 320ms ease;
+}
+.bf-hello .bf-label[data-untitled='1'] {
+  color: #8d8d95;
+}
+.h-lbl {
+  display: inline-flex;
+  align-items: center;
+  min-width: 5.2em;
+}
+.h-caret {
+  display: none;
+  width: 2px;
+  height: 1.05em;
+  margin-left: 2px;
+  background: currentColor;
+  animation: caret 0.9s steps(2) infinite;
+}
+.bf-label[data-typing='1'] .h-caret {
+  display: inline-block;
+}
+
+/* the dashed slots read wrong here: the bland twins are the placeholders */
+.bf-hello .h-r0 .slot-ph {
+  display: none;
+}
+
+/* ===================================================== designed layer */
+.h-r0 {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  padding-bottom: 54px;
+}
+.h-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.slot.h-nav {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.slot.h-swslot {
+  flex: none;
+  width: 176px;
+}
+.h-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 312px;
+  gap: 44px;
+  align-items: start;
+}
+.h-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+.h-title {
+  font-size: 80px;
+  line-height: 0.93;
+  text-wrap: balance;
+}
+.h-vis {
+  display: block;
+}
+.h-l1,
+.h-l2 {
+  display: block;
+  transform-origin: 50% 50%;
+}
+.h-l2 {
+  margin-top: 0.04em;
+}
+.h-title .rw-em .rw-in {
+  font-size: 1.14em;
+}
+.h-lead {
+  max-width: 29ch;
+  margin: 0;
+  font-family: var(--f-ui);
+  font-size: 24px;
+  line-height: 1.42;
+  letter-spacing: -0.012em;
+  color: var(--ink-2);
+  text-wrap: pretty;
+  transform-origin: 50% 50%;
+}
+.h-mark {
+  position: relative;
+  display: inline-block;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.h-mark svg {
+  position: absolute;
+  left: -4%;
+  bottom: -0.34em;
+  width: 108%;
+  height: 0.56em;
+  overflow: visible;
+  pointer-events: none;
+}
+.h-mark path {
+  fill: none;
+  stroke: var(--violet);
+  stroke-width: 3.6;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.bstage:not(.is-static) .h-mark path {
+  stroke-dashoffset: 1;
+}
+.h-ctas {
+  gap: 16px;
+  margin-top: 4px;
+}
+.h-art {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-top: 14px;
+}
+.slot.h-deck {
+  width: 100%;
+  max-width: 300px;
+}
+.slot.h-tip {
+  position: absolute;
+  left: -34px;
+  top: -6px;
+  z-index: 2;
+}
+.h-tip .u-tip {
+  font-size: 22px;
+}
+.h-art .h-tip .u-tip {
+  transition: translate 300ms var(--ease-spring), rotate 300ms var(--ease-spring);
+}
+.h-art[data-deck='press'] .h-tip .u-tip {
+  translate: -3px -6px;
+  rotate: -3deg;
+}
+.h-art[data-deck='drag'] .h-tip .u-tip {
+  translate: -8px -12px;
+  rotate: -6deg;
+}
+.h-intro {
+  width: 100%;
+  max-width: 300px;
+  margin: 30px 0 0;
+  font-family: var(--f-ui);
+  font-size: 16px;
+  font-weight: 550;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  white-space: nowrap;
+  transform-origin: 50% 50%;
+}
+/* live canvas: designed texts wait for the wipe (the engine reveals them) */
+.bstage:not(.is-static) :is(.h-l1, .h-l2, .h-lead, .h-intro) {
+  opacity: 0;
+}
+.h-swap {
+  transform-origin: 50% 60%;
+}
+
+/* -- the Taste switch */
+.h-sw-wrap {
+  position: relative;
+  display: block;
+}
+.h-sw {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 58px;
+  padding: 0 14px 0 18px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    0 4px 0 var(--ink);
+  color: var(--ink);
+  transition:
+    transform 140ms var(--ease-out),
+    box-shadow 140ms var(--ease-out);
+}
+.h-sw:active {
+  transform: translateY(3px);
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    0 1px 0 var(--ink);
+}
+.h-sw:focus-visible {
+  outline: 3px solid var(--violet);
+  outline-offset: 4px;
+}
+.h-sw-lbl {
+  font-family: var(--f-display);
+  font-variation-settings: 'wght' 760, 'wdth' 94;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+.h-sw-track {
+  position: relative;
+  flex: none;
+  width: 58px;
+  height: 32px;
+  border-radius: 999px;
+  background: #e6e3ec;
+  box-shadow: inset 0 0 0 2px var(--ink);
+  transition: background-color 240ms ease;
+}
+.h-sw-knob {
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    0 2px 0 var(--ink);
+  transition: transform 340ms var(--ease-spring);
+}
+.h-sw[data-on='1'] .h-sw-track {
+  background: var(--violet);
+}
+.h-sw[data-on='1'] .h-sw-knob {
+  transform: translateX(26px);
+}
+.h-sw-st {
+  position: relative;
+  flex: none;
+  width: 24px;
+  height: 16px;
+  margin-left: auto;
+  overflow: hidden;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 16px;
+}
+.h-sw-st > span {
+  position: absolute;
+  inset: 0;
+  transition:
+    transform 260ms var(--ease-out),
+    opacity 200ms ease;
+}
+.h-sw-off {
+  color: var(--ink-3);
+}
+.h-sw-on {
+  color: var(--violet);
+  transform: translateY(100%);
+  opacity: 0;
+}
+.h-sw[data-on='1'] .h-sw-off {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+.h-sw[data-on='1'] .h-sw-on {
+  transform: none;
+  opacity: 1;
+}
+@media (hover: hover) and (pointer: fine) {
+  .h-sw:hover .h-sw-knob {
+    scale: 1.08;
+  }
+}
+/* idle in the hold: a little wiggle and a dare */
+.h-sw-wrap[data-nag='1'] .h-sw {
+  animation: sw-nag 3.2s var(--ease-out) infinite;
+}
+@keyframes sw-nag {
+  0%,
+  30%,
+  100% {
+    rotate: 0deg;
+  }
+  6% {
+    rotate: -4deg;
+  }
+  12% {
+    rotate: 3.2deg;
+  }
+  18% {
+    rotate: -2deg;
+  }
+  24% {
+    rotate: 0.8deg;
+  }
+}
+.h-try {
+  position: absolute;
+  right: 4px;
+  bottom: calc(100% + 14px);
+  opacity: 0;
+  transform: translateY(6px) scale(0.96);
+  transform-origin: 85% 100%;
+  transition:
+    opacity 200ms ease,
+    transform 220ms var(--ease-out);
+  pointer-events: none;
+  z-index: 3;
+}
+.h-try .u-tip {
+  font-size: 21px;
+}
+.h-try .u-tip::after {
+  left: auto;
+  right: 26px;
+}
+.h-sw-wrap[data-nag='1'] .h-try {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .h-sw-wrap[data-nag='1'] .h-sw {
+    animation: none;
+  }
+  .h-sw-knob,
+  .h-sw-st > span {
+    transition-duration: 1ms;
+  }
+}
+
+/* ========================================== State A: the bland twins */
+.h-def {
+  position: absolute;
+  inset: 0 0 54px;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--f-ui);
+  color: var(--plain-ink);
+  pointer-events: none;
+}
+.h-def [data-tw] {
+  transform-origin: 50% 50%;
+}
+.hd-nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: 58px;
+  margin-right: 190px;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--plain-line);
+}
+.hd-brand {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.hd-links {
+  display: flex;
+  gap: 28px;
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--plain-2);
+}
+.hd-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding-top: 12px;
+  text-align: center;
+}
+.hd-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #f4f4f5;
+  box-shadow: inset 0 0 0 1px var(--plain-line);
+  font-size: 13px;
+  font-weight: 500;
+  color: #55555a;
+}
+.hd-badge i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #a6a6ab;
+}
+.hd-h {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hd-l1,
+.hd-l2 {
+  display: block;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.012em;
+  white-space: nowrap;
+}
+.hd-p {
+  display: block;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--plain-2);
+}
+.hd-ctas {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+.hd-btn,
+.hd-btn2 {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.hd-btn {
+  background: #2f6bff;
+  color: #fff;
+  box-shadow:
+    0 1px 2px rgb(16 24 40 / 0.08),
+    0 6px 14px -4px rgb(47 107 255 / 0.4);
+}
+.hd-btn2 {
+  background: #fff;
+  color: var(--plain-ink);
+  box-shadow:
+    inset 0 0 0 1px #d5d5d9,
+    0 1px 2px rgb(16 24 40 / 0.06);
+}
+.hd-img {
+  display: grid;
+  place-items: center;
+  width: 340px;
+  height: 190px;
+  margin-top: 6px;
+  border-radius: 12px;
+  background: #f0f0f2;
+  box-shadow:
+    inset 0 0 0 1px var(--plain-line),
+    0 8px 20px -12px rgb(16 24 40 / 0.18);
+}
+.hd-img svg {
+  width: 54px;
+  height: 45px;
+  fill: none;
+  stroke: #b9b9bf;
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.hd-cap {
+  display: block;
+  margin-top: -6px;
+  font-size: 14px;
+  color: #8c8c92;
+}
+/* the placeholder's puff of grey shards */
+.h-shards {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hd-shard {
+  position: absolute;
+  width: 26px;
+  height: 18px;
+  margin: -9px 0 0 -13px;
+  border-radius: 4px;
+  background: #e4e4e8;
+  box-shadow: inset 0 0 0 1px #d2d2d7;
+  visibility: hidden;
+}
+.hd-shard.s1 {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+.hd-shard.s2 {
+  width: 34px;
+  height: 12px;
+}
+.hd-shard.s3 {
+  width: 16px;
+  height: 22px;
+}
+
+/* static / reduced motion: the twins only show while Taste is off */
+.bstage.is-static .h-def,
+.bstage.is-static .h-plainbg {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.bstage.is-static .h-plainbg {
+  top: 34px;
+}
+.bstage.is-static .bf-hello .bf-bg,
+.bstage.is-static .bf-hello .bf-world,
+.bstage.is-static .h-r0 > :not(.h-def) {
+  transition: opacity 200ms ease;
+}
+.bstage.is-static .bf-hello:has(.h-r0.is-plain) .bf-bg,
+.bstage.is-static .h-r0.is-plain > :not(.h-def, .h-top),
+.bstage.is-static .h-r0.is-plain .slot.h-nav {
+  opacity: 0;
+}
+.bstage.is-static .bf-hello:has(.h-r0.is-plain) .bf-world {
+  background: var(--plain-canvas);
+}
+.bstage.is-static .bf-hello:has(.h-r0.is-plain) :is(.h-def, .h-plainbg) {
+  opacity: 1;
+}
+
+/* "scroll to add taste" (screen space, over the canvas) */
+.h-addtaste {
+  position: absolute;
+  left: var(--cx);
+  bottom: 126px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 7px 14px 8px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.9);
+  box-shadow:
+    0 0 0 1px #dedee3,
+    0 6px 16px -10px rgb(16 24 40 / 0.3);
+  font-family: var(--f-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: #6e6e76;
+  white-space: nowrap;
+  translate: -50% 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.h-addtaste span {
+  display: inline-block;
+  animation: h-bob 1.6s ease-in-out infinite;
+}
+@keyframes h-bob {
+  50% {
+    transform: translateY(3px);
+  }
+}
+.bstage[data-bp='mob'] .h-addtaste {
+  bottom: 104px;
+}
+
+/* ======================================================= editorial strip */
+.h-r1 {
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+  padding: 8px 0 12px;
+}
+.slot.h-marquee {
+  margin: 0 -56px;
+}
+.h-mq {
+  overflow: hidden;
+  padding: 18px 0 22px;
+  border-block: 3px solid var(--ink);
+  background: #fffaf0;
+}
+.h-mq-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.h-mq-track > span {
+  flex: none;
+  padding-right: 0.3em;
+  font-family: var(--f-display);
+  font-variation-settings: 'wght' 800, 'wdth' 88;
+  font-size: 120px;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  white-space: pre;
+}
+/* the blank file is an empty outline; the product people use is solid ink */
+.mq-o {
+  color: transparent;
+  -webkit-text-stroke: 2.5px var(--ink);
+}
+.mq-empty {
+  -webkit-text-stroke-width: 2px;
+}
+.mq-f {
+  color: var(--ink);
+}
+.h-facts {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 2fr);
+  align-items: center;
+  gap: 28px;
+}
+.h-kicker {
+  font-size: 46px;
+  max-width: 7ch;
+}
+.h-tickets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 26px;
+}
+.h-tk {
+  --tk: var(--yellow);
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  height: 56px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fffaf0;
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    0 4px 0 var(--ink);
+}
+.h-tickets li + li .h-tk {
+  --tk: var(--mint);
+}
+.h-tk-stub {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 12px 0 14px;
+  border-right: 2px dashed var(--ink);
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.h-tk-stub::before,
+.h-tk-stub::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff4d1;
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.h-tk-stub::before {
+  top: -8px;
+}
+.h-tk-stub::after {
+  bottom: -8px;
+}
+.h-tk-name {
+  display: flex;
+  align-items: center;
+  padding: 0 18px 0 16px;
+  background: color-mix(in srgb, var(--tk) 38%, #fff);
+  box-shadow: inset 0 0 0 2px var(--ink);
+  font-family: var(--f-display);
+  font-variation-settings: 'wght' 800, 'wdth' 92;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.h-stickers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  justify-items: center;
+  gap: 22px;
+}
+.h-stickers .slot {
+  width: 100%;
+  max-width: 210px;
+}
+/* the closing beat: a second punchline, with the bubble waiting beside it */
+.slot.h-hint {
+  align-self: flex-start;
+  margin-top: 6px;
+}
+.h-hint-p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 0.32em;
+  margin: 0;
+  font-size: 38px;
+  line-height: 1.1;
+}
+.h-hint-a {
+  font-family: var(--f-display);
+  font-variation-settings: 'wght' 780, 'wdth' 94;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+.h-hint-b {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: 1.14em;
+  letter-spacing: -0.01em;
+  color: var(--violet);
+}
+.h-hint-ar {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-left: 0.3em;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 2px var(--ink),
+    0 3px 0 var(--ink);
+}
+.h-hint-ar .u-ico {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.4;
+  animation: h-bob 1.6s ease-in-out infinite;
+}
+.bf:not([data-near='1']) .h-hint-ar .u-ico,
+.bstage.is-static .h-hint-ar .u-ico {
+  animation-play-state: paused;
+}
+
+/* -- sticker */
+.stk {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  margin: 0;
+}
+.stk svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.stk-shadow {
+  fill: var(--ink);
+}
+.stk-body {
+  fill: var(--stk, var(--mint));
+  stroke: var(--ink);
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+.stk-inner {
+  fill: #fffaf0;
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+.stk-text {
+  font-family: var(--f-display);
+  font-variation-settings: 'wght' 800, 'wdth' 90;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+  fill: var(--ink);
+}
+.stk-spin {
+  transform-origin: 100px 100px;
+  animation: stk-spin 22s linear infinite;
+}
+.bf:not([data-near='1']) .stk-spin {
+  animation-play-state: paused;
+}
+@keyframes stk-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.stk-glyph {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.stk-glyph circle {
+  fill: var(--yellow);
+}
+.stk-big {
+  font-family: var(--f-display);
+  font-variation-settings: 'wght' 850, 'wdth' 85;
+  font-size: 52px;
+  letter-spacing: -0.04em;
+  fill: var(--ink);
+}
+.stk-mint {
+  --stk: var(--mint);
+}
+.stk-yellow {
+  --stk: var(--yellow);
+}
+.stk-pink {
+  --stk: var(--pink);
+}
+.stk-coral {
+  --stk: var(--coral);
+}
+.stk-sky {
+  --stk: var(--sky);
+}
+.stk-lime {
+  --stk: var(--lime);
+}
+.stk-violet {
+  --stk: #a99cff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stk-spin,
+  .h-hint-ar .u-ico,
+  .h-addtaste span {
+    animation: none;
+  }
+}
+
+/* ================================================================ narrow */
+.bstage[data-lay='narrow'] .h-r0 {
+  gap: 22px;
+  padding-bottom: 30px;
+}
+.bstage[data-lay='narrow'] .h-def {
+  bottom: 30px;
+}
+.bstage[data-lay='narrow'] .h-top {
+  gap: 8px;
+}
+.bstage[data-lay='narrow'] .h-nav .u-btn,
+.bstage[data-lay='narrow'] .h-nav .u-nav-dim {
+  display: none;
+}
+.bstage[data-lay='narrow'] .slot.h-swslot {
+  width: 128px;
+}
+.bstage[data-lay='narrow'] .h-sw {
+  gap: 9px;
+  height: 52px;
+  padding: 0 10px 0 13px;
+  border-radius: 14px;
+}
+.bstage[data-lay='narrow'] .h-sw-lbl {
+  font-size: 16px;
+}
+.bstage[data-lay='narrow'] .h-sw-track {
+  width: 50px;
+  height: 28px;
+}
+.bstage[data-lay='narrow'] .h-sw-knob {
+  width: 20px;
+  height: 20px;
+}
+.bstage[data-lay='narrow'] .h-sw[data-on='1'] .h-sw-knob {
+  transform: translateX(22px);
+}
+.bstage[data-lay='narrow'] .h-sw-st {
+  display: none;
+}
+.bstage[data-lay='narrow'] .h-main,
+.bstage[data-lay='narrow'] .h-facts {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+}
+.bstage[data-lay='narrow'] .h-copy {
+  gap: 16px;
+}
+.bstage[data-lay='narrow'] .h-title {
+  font-size: 44px;
+}
+.bstage[data-lay='narrow'] .h-lead {
+  font-size: 18px;
+}
+.bstage[data-lay='narrow'] .h-ctas {
+  gap: 10px;
+}
+.bstage[data-lay='narrow'] .h-ctas .u-btn-xl {
+  --bh: 52px;
+  font-size: 17px;
+  padding: 0 18px;
+}
+.bstage[data-lay='narrow'] .h-art {
+  align-items: flex-start;
+  padding-top: 8px;
+}
+.bstage[data-lay='narrow'] .slot.h-deck {
+  max-width: 220px;
+}
+.bstage[data-lay='narrow'] .slot.h-tip {
+  left: auto;
+  right: 0;
+  top: 18px;
+}
+.bstage[data-lay='narrow'] .h-tip .u-tip {
+  font-size: 19px;
+}
+.bstage[data-lay='narrow'] .h-intro {
+  margin-top: 18px;
+  font-size: 15px;
+}
+.bstage[data-lay='narrow'] .hd-nav {
+  height: 52px;
+  margin-right: 136px;
+}
+.bstage[data-lay='narrow'] .hd-hero {
+  gap: 14px;
+  padding: 8px 6px 0;
+}
+.bstage[data-lay='narrow'] :is(.hd-l1, .hd-l2) {
+  font-size: 25px;
+  white-space: normal;
+}
+.bstage[data-lay='narrow'] .hd-p {
+  font-size: 15px;
+}
+.bstage[data-lay='narrow'] :is(.hd-btn, .hd-btn2) {
+  height: 40px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+.bstage[data-lay='narrow'] .hd-img {
+  width: 230px;
+  height: 140px;
+}
+.bstage[data-lay='narrow'] .slot.h-marquee {
+  margin: 0 -18px;
+}
+.bstage[data-lay='narrow'] .h-mq-track > span {
+  font-size: 60px;
+}
+.bstage[data-lay='narrow'] .mq-o {
+  -webkit-text-stroke-width: 1.6px;
+}
+.bstage[data-lay='narrow'] .h-kicker {
+  font-size: 32px;
+  max-width: none;
+}
+.bstage[data-lay='narrow'] .h-tickets {
+  margin-top: 16px;
+  gap: 10px;
+}
+.bstage[data-lay='narrow'] .h-tk {
+  height: 48px;
+}
+.bstage[data-lay='narrow'] .h-tk-name {
+  font-size: 18px;
+  padding: 0 14px 0 12px;
+}
+.bstage[data-lay='narrow'] .h-stickers {
+  gap: 8px;
+}
+.bstage[data-lay='narrow'] .h-stickers .slot {
+  max-width: 150px;
+}
+.bstage[data-lay='narrow'] .h-r1 {
+  padding-bottom: 104px;
+}
+.bstage[data-lay='narrow'] .h-hint-p {
+  font-size: 28px;
+}
+.bstage[data-lay='narrow'] .h-hint-ar {
+  width: 40px;
+  height: 40px;
+}
+
+/* the facts region stays an empty page below the fold until it builds */
+.bf-hello .rg[data-on='0'] .slot > .slot-ph {
+  opacity: 0;
+}

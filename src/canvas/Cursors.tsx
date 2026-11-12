@@ -54,7 +54,7 @@ const IDLE_LINES: Record<Bot['key'], string[]> = {
   dev: ['ship it', 'wait, it\'s alive?', 'is that a div?'],
 }
 
-export function sayBubble(key: Bot['key'], text: string, t: number, dur = 2.6) {
+function sayBubble(key: Bot['key'], text: string, t: number, dur = 2.6) {
   const b = bots[key]
   if (!b.bubble) return
   b.bubble.textContent = text
