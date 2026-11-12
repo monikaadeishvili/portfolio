@@ -29,7 +29,7 @@ export const PIECES: PieceDef[] = [
 ]
 
 const STATS = [
-  { n: 6, suf: '+', label: 'years designing', c: 'var(--yellow)' },
+  { n: 7, suf: '+', label: 'years designing', c: 'var(--yellow)' },
   { n: 18, suf: '', label: 'client products at one agency', c: 'var(--lime)' },
   { n: 9, suf: '', label: 'industries', c: 'var(--sky)' },
 ]
@@ -150,7 +150,7 @@ export function AboutFrame() {
 
           <Piece def={P.bio}>
             <p className="bio">
-              Six years of turning messy problems into calm products — sports streaming at DAZN, business banking at NOTA by M&amp;T Bank,
+              Seven years of turning messy problems into calm products — sports streaming at DAZN, business banking at NOTA by M&amp;T Bank,
               eighteen client products at Forcoda. I think in components: small, honest pieces that add up to something people can trust.
             </p>
           </Piece>

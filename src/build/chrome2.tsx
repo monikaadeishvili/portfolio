@@ -1,45 +1,92 @@
-/** Page 2 chrome: Layers (current frame tree), Inspector (live travel), Dock */
+/** Page 2 chrome: Layers (current section's regions), Inspector (live travel / bubble mood), Dock */
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { hover, tool, type Breakpoint, type Tool } from '../scene/store'
 import { Chevron, LayerIcon, ToolIcon } from '../chrome/Icons'
 import { PageSwitch } from '../chrome/PageSwitch'
 import { ChapterRuler, type RulerChapter } from '../chrome/ChapterRuler'
 import { CHAPTERS } from '../content/story'
-import { comps, type Comp } from './runtime'
-import { bsinks, chapterCh, inspSel, inspState, placedVer } from './bstore'
-import { holdOf, SEG } from './timeline'
-
-type Icon = keyof typeof LayerIcon
-const iconFor = (c: Comp): Icon => {
-  if (c.name === 'Heading' || c.name === 'Paragraph' || c.name === 'Footer') return 'text'
-  if (c.name === 'PortraitCard') return 'image'
-  if (c.name.startsWith('Card') || c.name === 'Timeline') return 'auto'
-  return 'component'
-}
+import { pieces, regions, texts, type Piece, type TextBlock } from './runtime'
+import { bsinks, chapterCh, helloName, helloTaste, inspSel, inspState, moodCh, placedVer, regionCh, rulerSubs } from './bstore'
+import { holdOf, TRN } from './worlds'
+import { scene } from '../scene/store'
 
 function useChannels() {
   const [ch, setCh] = useState(chapterCh.get())
+  const [reg, setReg] = useState(regionCh.get())
   const [, setV] = useState(0)
   const [hov, setHov] = useState<string | null>(hover.get())
   useEffect(() => {
     const a = chapterCh.sub(setCh)
     const b = placedVer.sub(setV)
     const c = hover.sub(setHov)
+    const d = regionCh.sub(setReg)
     return () => {
       a()
       b()
       c()
+      d()
     }
   }, [])
-  return { ch, hov }
+  return { ch, hov, reg }
 }
 
+/** tiny glyphs: hero (a creature with eyes), bubble-born (a dot leaving a bubble) */
+function KindIcon({ kind }: { kind: 'hero' | 'bubble' | 'text' }) {
+  if (kind === 'text') return <span className="layer-ico i-text">{LayerIcon.text()}</span>
+  if (kind === 'hero')
+    return (
+      <span className="layer-ico l2-k k-hero" title="Hero — walks to its slot">
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <rect x="2" y="3" width="12" height="9" rx="3" />
+          <circle cx="6.2" cy="7.4" r="1.3" />
+          <circle cx="9.8" cy="7.4" r="1.3" />
+          <path d="M5.5 12v2.2M10.5 12v2.2" />
+        </svg>
+      </span>
+    )
+  return (
+    <span className="layer-ico l2-k k-bubble" title="Bubble-born — spat out of the bubble">
+      <svg viewBox="0 0 16 16" aria-hidden="true">
+        <circle cx="6" cy="9" r="4.6" />
+        <circle cx="12.4" cy="4" r="1.8" />
+      </svg>
+    </span>
+  )
+}
+
+type Row = { kind: 'piece'; c: Piece } | { kind: 'text'; t: TextBlock }
+
+/** frame name + taste state of 01 Hello (renames with the Taste switch) */
+function useHello() {
+  const [name, setName] = useState(helloName.get())
+  const [taste, setTaste] = useState(helloTaste.get())
+  useEffect(() => {
+    const a = helloName.sub(setName)
+    const b = helloTaste.sub(setTaste)
+    return () => {
+      a()
+      b()
+    }
+  }, [])
+  return { name, taste }
+}
+const frameName = (ch: number, hello: string) => (ch === 0 ? hello : `${CHAPTERS[ch].num} ${CHAPTERS[ch].frame}`)
+
 export function LayersPanel2() {
-  const { ch, hov } = useChannels()
-  const list = [...comps.values()].filter((c) => c.chapter === ch).sort((a, b) => a.land - b.land || a.order - b.order)
-  const placed = list.filter((c) => c.pose.state === 'placed' && c.pose.op > 0).length
-  const inside = [...comps.values()].filter((c) => c.pose.inside).length
-  const chap = CHAPTERS[ch]
+  const { ch, hov, reg } = useChannels()
+  const hello = useHello()
+  const p = scene.p
+  const regs = [...regions.values()].filter((r) => r.section === ch).sort((a, b) => a.index - b.index)
+  const all = [...pieces.values()].filter((c) => c.section === ch)
+  const placedAll = all.filter((c) => c.pose.state === 'placed').length
+  const listRef = useRef<HTMLDivElement>(null)
+
+  // keep the building region in view
+  useEffect(() => {
+    const el = listRef.current?.querySelector<HTMLElement>(`[data-rg="${reg}"]`)
+    if (el && listRef.current) listRef.current.scrollTo({ top: el.offsetTop - 40, behavior: 'smooth' })
+  }, [reg, ch])
+
   return (
     <aside className="layers chrome layers2" aria-label="Layers">
       <div className="panel-head">
@@ -47,45 +94,66 @@ export function LayersPanel2() {
         <span className="panel-tab">Assets</span>
         <PageSwitch current={2} />
       </div>
-      <div className="l2-list" role="tree" aria-label={`Frame ${chap.num} ${chap.frame}`}>
-        <div className="layer-row d0 l2-row" role="treeitem" aria-level={1} aria-expanded="true" key={`f-${ch}`}>
+      <div className="l2-list" role="tree" aria-label={`Frame ${frameName(ch, hello.name)}`} ref={listRef}>
+        <div className="layer-row d0 l2-row l2-frame" role="treeitem" aria-level={1} aria-expanded="true" key={`f-${ch}`}>
           <Chevron open />
           <span className="layer-ico i-frame">{LayerIcon.frame()}</span>
-          <span className="layer-name">
-            {chap.num} {chap.frame}
+          <span className={`layer-name${ch === 0 && !hello.taste ? ' is-untitled' : ''}`} key={ch === 0 ? hello.name : ch}>
+            {frameName(ch, hello.name)}
           </span>
           <span className="layer-tag">
-            {placed}/{list.length}
+            {placedAll}/{all.length}
           </span>
         </div>
         <div className="l2-rows" key={ch}>
-          {list.map((c, i) => {
-            const st = c.pose.state
-            const isPlaced = st === 'placed' && c.pose.op > 0
+          {regs.map((r) => {
+            const rows: Row[] = [
+              ...[...texts.values()].filter((t) => t.section === ch && t.region === r.index).map((t) => ({ kind: 'text' as const, t })),
+              ...all.filter((c) => c.region === r.index).map((c) => ({ kind: 'piece' as const, c })),
+            ].sort((a, b) => (a.kind === 'piece' ? a.c.p1 : a.t.p0) - (b.kind === 'piece' ? b.c.p1 : b.t.p0))
+            const done = rows.filter((x) => (x.kind === 'piece' ? x.c.pose.state === 'placed' : p >= x.t.p1)).length
             return (
-              <div
-                key={c.id}
-                role="treeitem"
-                aria-level={2}
-                className={`layer-row d1 l2-row${isPlaced ? ' is-placed' : ''}${hov === c.id ? ' is-hover' : ''}`}
-                style={{ '--i': i } as CSSProperties}
-                onPointerEnter={() => hover.set(c.id)}
-                onPointerLeave={() => hover.get() === c.id && hover.set(null)}
-              >
-                <span className="chev-pad" />
-                <span className={`layer-ico i-${iconFor(c)}`}>{LayerIcon[iconFor(c)]()}</span>
-                <span className="layer-name">{c.name}</span>
-                <span className={`l2-state s-${isPlaced ? 'placed' : st}`} aria-label={isPlaced ? 'placed' : st}>
-                  {isPlaced ? (
-                    <svg viewBox="0 0 12 12" aria-hidden="true">
-                      <path d="M2.5 6.3 5 8.6 9.6 3.6" />
-                    </svg>
-                  ) : st === 'inside' ? (
-                    'in bubble'
-                  ) : (
-                    <i aria-hidden="true" />
-                  )}
-                </span>
+              <div key={r.index} className={`l2-group${r.index === reg ? ' is-active' : ''}`} data-rg={r.index}>
+                <div className="layer-row d1 l2-row l2-region" role="treeitem" aria-level={2} aria-expanded="true">
+                  <Chevron open />
+                  <span className="layer-ico i-auto">{LayerIcon.auto()}</span>
+                  <span className="layer-name">{r.label}</span>
+                  <span className="layer-tag">
+                    {done}/{rows.length}
+                  </span>
+                </div>
+                {rows.map((x, i) => {
+                  if (x.kind === 'text') {
+                    const on = p >= x.t.p1
+                    return (
+                      <div key={x.t.id} role="treeitem" aria-level={3} className={`layer-row d2 l2-row${on ? ' is-placed' : ''}`} style={{ '--i': i } as CSSProperties}>
+                        <span className="chev-pad" />
+                        <KindIcon kind="text" />
+                        <span className="layer-name">{x.t.label}</span>
+                        <State on={on} st={p >= x.t.p0 ? 'leaping' : 'waiting'} />
+                      </div>
+                    )
+                  }
+                  const c = x.c
+                  const st = c.pose.state
+                  const on = st === 'placed'
+                  return (
+                    <div
+                      key={c.id}
+                      role="treeitem"
+                      aria-level={3}
+                      className={`layer-row d2 l2-row${on ? ' is-placed' : ''}${hov === c.id ? ' is-hover' : ''}`}
+                      style={{ '--i': i } as CSSProperties}
+                      onPointerEnter={() => hover.set(c.id)}
+                      onPointerLeave={() => hover.get() === c.id && hover.set(null)}
+                    >
+                      <span className="chev-pad" />
+                      <KindIcon kind={c.kind} />
+                      <span className="layer-name">{c.name}</span>
+                      <State on={on} st={st === 'leaping' ? 'leaping' : st === 'inside' ? 'inside' : 'waiting'} />
+                    </div>
+                  )
+                })}
               </div>
             )
           })}
@@ -93,14 +161,28 @@ export function LayersPanel2() {
         <div className="layer-row d1 l2-row l2-bubble" role="treeitem" aria-level={2}>
           <span className="chev-pad" />
           <span className="layer-ico i-organism">{LayerIcon.organism()}</span>
-          <span className="layer-name">Bubble</span>
-          <span className="layer-tag">{ch === 4 && placed === list.length ? 'home' : `${inside} inside`}</span>
+          <span className="layer-name">{ch === 4 ? 'momo (mascot)' : 'Bubble'}</span>
+          <span className="layer-tag">{ch === 4 ? 'home' : `${all.filter((c) => c.kind === 'bubble' && c.pose.state === 'inside').length} inside`}</span>
         </div>
       </div>
       <div className="panel-foot">
         <span className="dot-live" aria-hidden="true" /> 3 people editing
       </div>
     </aside>
+  )
+}
+
+function State({ on, st }: { on: boolean; st: 'leaping' | 'waiting' | 'inside' }) {
+  return (
+    <span className={`l2-state s-${on ? 'placed' : st}`} aria-label={on ? 'placed' : st}>
+      {on ? (
+        <svg viewBox="0 0 12 12" aria-hidden="true">
+          <path d="M2.5 6.3 5 8.6 9.6 3.6" />
+        </svg>
+      ) : (
+        <i aria-hidden="true" />
+      )}
+    </span>
   )
 }
 
@@ -123,24 +205,42 @@ function Field({ label, k, unit }: { label: string; k: keyof typeof bsinks; unit
   )
 }
 
-const STATES = ['roaming', 'leaping', 'placed'] as const
+const STATES = ['waiting', 'flying', 'placed'] as const
+const MOODS = ['charging', 'rolling', 'stretching', 'splitting', 'floating'] as const
+const moodKey = (m: string | null) => (m === 'racing' ? 'splitting' : m === 'popped' ? 'floating' : m)
 
 export function Inspector2() {
   const [id, setId] = useState(inspSel.get())
   const [st, setSt] = useState(inspState.get())
   const [ch, setCh] = useState(chapterCh.get())
+  const [mood, setMood] = useState(moodCh.get())
   useEffect(() => {
     const a = inspSel.sub(setId)
     const b = inspState.sub(setSt)
     const c = chapterCh.sub(setCh)
+    const d = moodCh.sub(setMood)
     return () => {
       a()
       b()
       c()
+      d()
     }
   }, [])
-  const c = id ? comps.get(id) : null
-  const chap = CHAPTERS[c?.chapter ?? ch]
+  const hello = useHello()
+  const isBub = id === 'bubble'
+  const c = id && !isBub ? pieces.get(id) : null
+  const sec = c?.section ?? ch
+  const fname = frameName(sec, hello.name)
+  // 01 Hello's frame reads as an untouched default until taste is applied
+  const frameFill = sec === 0 ? (hello.taste ? '#FFF4D1' : '#FFFFFF') : '#FFFDF8'
+  const fill = c?.tone ?? frameFill
+  const fillRef = useRef<HTMLSpanElement>(null)
+  const hexRef = useRef<HTMLSpanElement>(null)
+  useLayoutEffect(() => {
+    bsinks.fill = isBub ? fillRef.current : null
+    bsinks.hex = isBub ? hexRef.current : null
+  }, [isBub])
+  const mk = moodKey(mood)
   return (
     <aside className="inspector chrome inspector2" aria-label="Design inspector (live values)">
       <div className="panel-head">
@@ -148,15 +248,15 @@ export function Inspector2() {
         <span className="panel-tab">Prototype</span>
       </div>
       <div className="insp-sel">
-        <span className="layer-ico i-component">{LayerIcon.component()}</span>
+        {isBub ? <span className="layer-ico i-organism">{LayerIcon.organism()}</span> : c ? <KindIcon kind={c.kind} /> : <span className="layer-ico i-frame">{LayerIcon.frame()}</span>}
         <span className="insp-name" key={id ?? 'none'}>
-          {c?.name ?? `${chap.num} ${chap.frame}`}
+          {isBub ? 'Bubble' : (c?.name ?? fname)}
         </span>
-        <span className="insp-kind">{c ? 'Component' : 'Frame'}</span>
+        <span className="insp-kind">{isBub ? 'Organism' : c ? (c.kind === 'hero' ? 'Hero' : 'Bubble-born') : 'Frame'}</span>
       </div>
       <section className="insp-sec">
         <h3 className="sec-h">
-          Position <span className="sec-sub">in {chap.num} {chap.frame}</span>
+          Position <span className="sec-sub">{isBub ? 'on canvas' : `in ${fname}`}</span>
         </h3>
         <div className="grid2">
           <Field label="X" k="x" />
@@ -169,24 +269,59 @@ export function Inspector2() {
           <Field label="↻" k="r" />
         </div>
       </section>
-      <section className="insp-sec">
-        <h3 className="sec-h">State</h3>
-        <div className="moods" role="list">
-          {STATES.map((v) => (
-            <span key={v} role="listitem" className={`mood st-${v}${v === st ? ' is-on' : ''}`} aria-current={v === st ? 'true' : undefined}>
-              {v}
-            </span>
-          ))}
-        </div>
-      </section>
+      {isBub ? (
+        <section className="insp-sec">
+          <h3 className="sec-h">Mood</h3>
+          <div className="moods" role="list">
+            {MOODS.map((v) => (
+              <span key={v} role="listitem" className={`mood md-${v}${v === mk ? ' is-on' : ''}`} aria-current={v === mk ? 'true' : undefined}>
+                {v}
+              </span>
+            ))}
+          </div>
+        </section>
+      ) : (
+        <section className="insp-sec">
+          <h3 className="sec-h">State</h3>
+          <div className="moods" role="list">
+            {STATES.map((v) => (
+              <span key={v} role="listitem" className={`mood st-${v}${v === st || (v === 'waiting' && st === 'inside') ? ' is-on' : ''}`}>
+                {v === 'waiting' && st === 'inside' ? 'in bubble' : v}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
       <section className="insp-sec">
         <h3 className="sec-h">Fill</h3>
         <div className="fill-row">
-          <span className="swatch" style={{ background: c?.tone ?? '#FFFDF8' }} />
-          <span className="hex">{(c?.tone ?? '#FFFDF8').replace('#', '').toUpperCase()}</span>
+          <span className="swatch" ref={fillRef} style={{ background: fill }} />
+          <span className="hex" ref={hexRef}>
+            {fill.replace('#', '').toUpperCase()}
+          </span>
           <span className="op">100%</span>
         </div>
       </section>
+      {sec === 0 && !isBub && (
+        <section className="insp-sec insp-type">
+          <h3 className="sec-h">
+            Text <span className="sec-sub">H1</span>
+          </h3>
+          <div className={`type-row${hello.taste ? ' is-taste' : ''}`} key={hello.taste ? 'on' : 'off'}>
+            {hello.taste ? (
+              <>
+                <span className="type-face">Bricolage Grotesque</span>
+                <span className="type-meta">ExtraBold · 80 / Instrument Serif Italic</span>
+              </>
+            ) : (
+              <>
+                <span className="type-face">Inter</span>
+                <span className="type-meta">Regular · 40 · #3A3A3A</span>
+              </>
+            )}
+          </div>
+        </section>
+      )}
     </aside>
   )
 }
@@ -196,15 +331,17 @@ const TOOLS: { id: Tool; label: string; key: string }[] = [
   { id: 'hand', label: 'Hand — drag to scrub', key: 'H' },
 ]
 
-const RULER: RulerChapter[] = CHAPTERS.map((c, i) => ({ label: c.ruler, at: SEG[i], jump: holdOf(i) }))
+const RULER: RulerChapter[] = CHAPTERS.map((c, i) => ({ label: c.ruler, at: i === 0 ? 0 : (TRN[i - 1][0] + TRN[i - 1][1]) / 2, jump: holdOf(i) }))
 
 export function Dock({ bp }: { bp: Breakpoint }) {
   const [active, setActive] = useState<Tool>(tool.get())
+  const [subs, setSubs] = useState(rulerSubs.get())
   useEffect(() => {
     const a = tool.sub(setActive)
+    const b = rulerSubs.sub(setSubs)
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return
-      if ((e.target as HTMLElement).closest('input, textarea, [contenteditable]')) return
+      if (e.target instanceof Element && e.target.closest('input, textarea, [contenteditable]')) return
       const t = TOOLS.find((x) => x.key.toLowerCase() === e.key.toLowerCase())
       if (t) tool.set(t.id)
       if (e.key === 'Escape') tool.set('move')
@@ -212,6 +349,7 @@ export function Dock({ bp }: { bp: Breakpoint }) {
     window.addEventListener('keydown', onKey)
     return () => {
       a()
+      b()
       window.removeEventListener('keydown', onKey)
     }
   }, [])
@@ -240,7 +378,7 @@ export function Dock({ bp }: { bp: Breakpoint }) {
           <span className="tb-div" aria-hidden="true" />
         </>
       )}
-      <ChapterRuler chapters={RULER} variant="dock" label="Story chapters" />
+      <ChapterRuler chapters={RULER} variant="dock" label="Story chapters" subs={subs} />
     </div>
   )
 }

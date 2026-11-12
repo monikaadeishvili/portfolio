@@ -3,7 +3,7 @@ import { TopBar } from '../chrome/TopBar'
 import { breakpointFor } from '../scene/layout'
 import { scene, type Breakpoint } from '../scene/store'
 import { Stage2 } from './Stage2'
-import { viewFor } from './layout2'
+import { viewFor } from './camera'
 import { Dock, Inspector2, LayersPanel2 } from './chrome2'
 
 const reducedQuery = '(prefers-reduced-motion: reduce)'

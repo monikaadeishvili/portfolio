@@ -1,6 +1,4 @@
 /** discrete Page 2 state for React chrome (changes rarely; the loop sets it) */
-import type { LifeState } from '../ui/Alive'
-
 type Fn<T> = (v: T) => void
 function channel<T>(initial: T) {
   let value = initial
@@ -21,12 +19,18 @@ function channel<T>(initial: T) {
   }
 }
 
+export type InspState = 'waiting' | 'flying' | 'placed' | 'inside'
+
 export const chapterCh = channel(0)
-/** bumps whenever any component's placed flag changes */
+/** bumps whenever any piece's placed flag (or a region's progress) changes */
 export const placedVer = channel(0)
-/** component the inspector shows: hovered, else the one travelling */
+/** what the inspector shows: a piece id, 'bubble', or null (the frame) */
 export const inspSel = channel<string | null>(null)
-export const inspState = channel<LifeState>('roaming')
+export const inspState = channel<InspState>('waiting')
+/** bubble mood during transitions (null while it hosts a section) */
+export const moodCh = channel<string | null>(null)
+/** region currently building in the active section */
+export const regionCh = channel(0)
 
 export const bsinks = {
   x: null as HTMLElement | null,
@@ -35,4 +39,13 @@ export const bsinks = {
   r: null as HTMLElement | null,
   w: null as HTMLElement | null,
   h: null as HTMLElement | null,
+  fill: null as HTMLElement | null,
+  hex: null as HTMLElement | null,
 }
+
+/** sub-ticks on the chapter ruler: where each region starts building */
+export const rulerSubs = channel<number[]>([])
+
+/** 01 Hello: the frame's name ("Untitled" until taste is applied) and taste on/off */
+export const helloName = channel('01 Hello')
+export const helloTaste = channel(true)
