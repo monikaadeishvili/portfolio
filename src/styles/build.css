@@ -1,0 +1,908 @@
+/* ======================================================================
+   Page 2 — Assembly
+   ====================================================================== */
+.bstage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  cursor: none;
+}
+.bstage a,
+.bstage button {
+  cursor: none;
+}
+html.is-coarse .bstage,
+html.is-coarse .bstage button {
+  cursor: auto;
+}
+html.is-coarse .bstage a {
+  cursor: pointer;
+}
+.bstage[data-tool='hand'] {
+  cursor: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.bviewport {
+  position: absolute;
+  inset: 0;
+  perspective: 2200px;
+  perspective-origin: var(--cx) var(--cy);
+}
+.bworld {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.bpaper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(var(--FW) * 3.2);
+  height: calc(var(--FH) * 3.4);
+  background-image: radial-gradient(circle at center, var(--dot) 1.3px, transparent 1.7px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(closest-side, #000 58%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 58%, transparent 100%);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- frame */
+.bf {
+  --u: 1;
+  --i: 0;
+  position: absolute;
+  left: calc(var(--i) * (var(--FW) + var(--GAP)));
+  top: 0;
+  width: var(--FW);
+  min-height: var(--FH);
+  transform-style: preserve-3d;
+  color: var(--ink);
+  font-family: var(--f-ui);
+}
+.bf[data-frame='1'] {
+  --i: 1;
+}
+.bf[data-frame='2'] {
+  --i: 2;
+}
+.bf[data-frame='3'] {
+  --i: 3;
+}
+.bf[data-frame='4'] {
+  --i: 4;
+}
+.bf-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  background: var(--sheet);
+  box-shadow: 0 0 0 1px rgb(22 19 29 / 0.16), 0 30px 60px -30px rgb(22 19 29 / 0.32);
+  pointer-events: none;
+}
+.bf-label {
+  position: absolute;
+  left: 4px;
+  bottom: calc(100% + 12px);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--f-ui);
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--violet);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.bf-label .ico-frame {
+  width: 13px;
+  height: 13px;
+}
+.bf-label i {
+  font-style: normal;
+  opacity: 0.5;
+}
+.bf-label b {
+  font-family: var(--f-mono);
+  font-weight: 500;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+/* layer sheets (3-D visualisation of layers) */
+.bf-sheets {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+.bf-sheet {
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  border: 1px solid rgb(91 75 255 / 0.55);
+  background: none;
+  opacity: 0;
+}
+.bf-sheet.s-comp {
+  border-style: dashed;
+}
+.bf-sheet-lbl {
+  position: absolute;
+  left: 14px;
+  top: -28px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid rgb(91 75 255 / 0.45);
+  font-family: var(--f-mono);
+  font-size: 13px;
+  color: var(--violet);
+  white-space: nowrap;
+}
+.s-content .bf-sheet-lbl {
+  left: 150px;
+}
+.s-comp .bf-sheet-lbl {
+  left: 270px;
+}
+.bf-sheet-cols {
+  position: absolute;
+  inset: 0 36px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 18px;
+}
+.bf-sheet-cols i {
+  background: rgb(255 122 209 / 0.06);
+  border-left: 1px solid rgb(255 61 154 / 0.38);
+  border-right: 1px solid rgb(255 61 154 / 0.38);
+}
+.bf-sheet-lines {
+  display: none;
+}
+.bf-sheet-flash {
+  position: absolute;
+  inset: -1px;
+  border-radius: 26px;
+  border: 2.5px solid var(--violet);
+  opacity: 0;
+}
+.bf-sheet.is-hit .bf-sheet-flash {
+  animation: sheet-hit 520ms var(--ease-out);
+}
+@keyframes sheet-hit {
+  0% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------- chapter colour worlds */
+.bf {
+  --world: #fff4cf;
+  --world-2: #ffe7a3;
+  --glow: rgb(255 198 41 / 0.32);
+}
+.bf-origin {
+  --world: #ffeadf;
+  --world-2: #ffd2bf;
+  --glow: rgb(255 92 57 / 0.24);
+}
+.bf-craft {
+  --world: #f0fadb;
+  --world-2: #dcf5a6;
+  --glow: rgb(182 240 58 / 0.32);
+}
+.bf-proof {
+  --world: #e2f4ff;
+  --world-2: #c2e8ff;
+  --glow: rgb(45 184 255 / 0.26);
+}
+.bf-contact {
+  --world: #ffe6f5;
+  --world-2: #e7e3ff;
+  --glow: rgb(255 122 209 / 0.26);
+}
+.bf-bg {
+  background:
+    radial-gradient(120% 90% at 100% 0%, var(--world-2) 0%, transparent 55%),
+    radial-gradient(90% 80% at 0% 100%, color-mix(in srgb, var(--world-2) 60%, transparent) 0%, transparent 60%),
+    var(--world);
+  box-shadow: 0 0 0 2px var(--ink), 0 8px 0 var(--ink), 0 40px 70px -30px rgb(22 19 29 / 0.35);
+}
+.bf-contact .bf-bg {
+  background:
+    radial-gradient(110% 90% at 0% 0%, #ffd0ec 0%, transparent 55%),
+    radial-gradient(110% 90% at 100% 100%, #dcd6ff 0%, transparent 60%),
+    linear-gradient(135deg, #ffe6f5, #ece9ff);
+}
+.bf-glow {
+  position: absolute;
+  inset: -22% -16%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--glow), transparent 100%);
+  pointer-events: none;
+}
+
+.bf-body {
+  position: relative;
+  min-height: var(--FH);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 30px 36px 38px;
+  transform-style: preserve-3d;
+}
+.bf-body :is(div, ul, ol, li, section):not(.alive, .alive *, .slot-ph, .alive-shadow) {
+  transform-style: preserve-3d;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+.a-nav {
+  flex: none;
+}
+.a-head {
+  align-self: stretch;
+}
+.slot.fill,
+.slot.fill > .alive,
+.slot.fill > .alive > .alive-in {
+  height: 100%;
+}
+.alive-pre {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.alive-body {
+  display: contents;
+}
+.slot[data-pre='1'] .alive-pre {
+  display: block;
+}
+.slot[data-pre='1'] .alive-body {
+  visibility: hidden;
+}
+
+/* timeline line */
+.u-timeline-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 18px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.u-timeline-line i {
+  flex: 1;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--ink);
+}
+
+/* ------------------------------------------------- 01 Hello (wide) */
+.f1-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 48px;
+  align-items: center;
+}
+.f1-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+}
+.f1-ctas {
+  margin-top: 6px;
+  gap: 16px;
+}
+.f1-art {
+  position: relative;
+  padding: 18px 8px 0 24px;
+}
+.a-portrait {
+  width: 100%;
+  max-width: 350px;
+  margin-left: auto;
+}
+.slot.a-tip {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+/* the tooltip reacts to the portrait deck: hops off on press, back on release */
+.f1-art .a-tip .u-tip {
+  transition: translate 300ms var(--ease-spring), rotate 300ms var(--ease-spring);
+}
+.f1-art[data-deck='press'] .a-tip .u-tip {
+  translate: -3px -6px;
+  rotate: -3deg;
+}
+.f1-art[data-deck='drag'] .a-tip .u-tip {
+  translate: -8px -12px;
+  rotate: -6deg;
+}
+.f1-art[data-deck-hint='1'] .a-tip .u-tip {
+  translate: 0 -3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .f1-art[data-deck] .a-tip .u-tip,
+  .f1-art[data-deck-hint='1'] .a-tip .u-tip {
+    translate: none;
+    rotate: none;
+  }
+}
+/* the canvas draws its own cursor: show the hand over a live deck, closed while held */
+.bstage:not(.is-static) .u-pdeck .u-deck-top,
+html.is-deck-drag .bstage:not(.is-static),
+html.is-deck-drag .bstage:not(.is-static) * {
+  cursor: none;
+}
+html:not(.is-coarse) .bstage:has(.u-pdeck[data-armed='1'] .u-deck-top:hover, .u-pdeck.is-press) .cur-you .cur-arrow,
+html.is-deck-drag .cur-you .cur-arrow {
+  display: none;
+}
+html:not(.is-coarse) .bstage:has(.u-pdeck[data-armed='1'] .u-deck-top:hover, .u-pdeck.is-press) .cur-you .cur-hand,
+html.is-deck-drag .cur-you .cur-hand {
+  display: block;
+  transition: transform 140ms var(--ease-out);
+}
+.bstage:has(.u-pdeck.is-press) .cur-you .cur-hand,
+html.is-deck-drag .cur-you .cur-hand {
+  transform: scale(0.84) rotate(-8deg);
+}
+
+/* ------------------------------------------------ 02 Origin (wide) */
+.f2-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+  gap: 44px;
+  align-items: stretch;
+}
+.f2-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
+.f2-who {
+  gap: 14px;
+  margin-top: auto;
+}
+.f2-time {
+  display: grid;
+}
+.f2-time > * {
+  grid-area: 1 / 1;
+}
+.a-line {
+  align-self: start;
+  margin-top: 1px;
+}
+.f2-nodes {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+  padding-top: 34px;
+}
+.f2-nodes .slot,
+.f2-nodes .alive,
+.f2-nodes .alive-in,
+.f2-nodes .u-tnode {
+  width: 100%;
+}
+
+/* ------------------------------------------------- 03 Craft (wide) */
+.f3-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 44px;
+  align-items: start;
+}
+.f3-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
+.f3-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.f3-side {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.ds {
+  display: grid;
+}
+.ds > * {
+  grid-area: 1 / 1;
+}
+.slot.a-owner {
+  justify-self: end;
+  align-self: start;
+  margin: 6px 10px 0 0;
+}
+.a-owner .u-avatar {
+  padding: 3px 12px 3px 3px;
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.a-owner .u-avatar-txt b {
+  font-size: 13px;
+}
+.a-owner .u-avatar-txt span {
+  font-size: 10px;
+}
+.ds-parts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  padding: 66px 18px 20px;
+}
+.ds-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ds-btns {
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+/* ------------------------------------------------- 04 Proof (wide) */
+.f4-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 44px;
+  align-items: end;
+}
+.f4-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+.f4-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.f4-cos {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.f4-foot {
+  gap: 14px;
+}
+.slot.a-push {
+  margin-left: auto;
+}
+
+/* ----------------------------------------------- 05 Contact (wide) */
+.f5-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  text-align: center;
+}
+.bf-contact .u-h {
+  text-align: center;
+}
+.bf-contact .u-para {
+  margin-inline: auto;
+}
+.f5-cta {
+  justify-content: center;
+  gap: 32px;
+  margin-top: 8px;
+}
+.f5-cta-main {
+  position: relative;
+}
+.f5-mascot {
+  position: absolute;
+  right: -46px;
+  top: -40px;
+  width: 52px;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+}
+.f5-links {
+  display: flex;
+  gap: 22px;
+}
+.f5-who {
+  justify-content: center;
+  gap: 12px;
+}
+.a-foot {
+  align-self: stretch;
+}
+
+/* --------------------------------------------------------- tall */
+.bstage[data-lay='tall'] .f1-main {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.62fr);
+  align-items: start;
+  gap: 28px;
+}
+.bstage[data-lay='tall'] .u-heading-xl .u-h {
+  font-size: 92px;
+}
+.bstage[data-lay='tall'] .f2-main,
+.bstage[data-lay='tall'] .f3-main,
+.bstage[data-lay='tall'] .f4-top {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 26px;
+}
+.bstage[data-lay='tall'] .f2-nodes {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.bstage[data-lay='tall'] .a-map {
+  max-width: 520px;
+}
+.bstage[data-lay='tall'] .f4-cos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ------------------------------------------------------- narrow */
+.bstage[data-lay='narrow'] .bf-body {
+  gap: 18px;
+  padding: 18px 16px 22px;
+}
+.bstage[data-lay='narrow'] .bf-bg,
+.bstage[data-lay='narrow'] .bf-sheet,
+.bstage[data-lay='narrow'] .bf-sheet-flash {
+  border-radius: 20px;
+}
+.bstage[data-lay='narrow'] .bf-sheet-cols {
+  inset: 0 16px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.bstage[data-lay='narrow'] .bf-sheet-cols i:nth-child(n + 5) {
+  display: none;
+}
+.bstage[data-lay='narrow'] .s-content .bf-sheet-lbl {
+  left: 118px;
+}
+.bstage[data-lay='narrow'] .s-comp .bf-sheet-lbl {
+  left: 206px;
+}
+.bstage[data-lay='narrow'] .bf-sheet-lbl {
+  font-size: 10px;
+  top: -24px;
+  padding: 3px 7px;
+}
+.bstage[data-lay='narrow'] .bf-label {
+  font-size: 12px;
+  bottom: calc(100% + 8px);
+}
+.bstage[data-lay='narrow'] .u-nav {
+  height: 50px;
+  padding: 0 8px 0 12px;
+}
+.bstage[data-lay='narrow'] .u-nav-dim {
+  display: none;
+}
+.bstage[data-lay='narrow'] .u-h {
+  font-size: 40px;
+}
+.bstage[data-lay='narrow'] .u-heading-xl .u-h {
+  font-size: 58px;
+}
+.bstage[data-lay='narrow'] .u-heading-giant .u-h {
+  font-size: 46px;
+}
+.bstage[data-lay='narrow'] .u-para,
+.bstage[data-lay='narrow'] .u-para-lg {
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+.bstage[data-lay='narrow'] .f1-main,
+.bstage[data-lay='narrow'] .f2-main,
+.bstage[data-lay='narrow'] .f3-main,
+.bstage[data-lay='narrow'] .f4-top {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+.bstage[data-lay='narrow'] .f1-copy,
+.bstage[data-lay='narrow'] .f2-copy,
+.bstage[data-lay='narrow'] .f3-copy {
+  gap: 14px;
+}
+.bstage[data-lay='narrow'] .f1-art {
+  padding: 0;
+}
+.bstage[data-lay='narrow'] .a-portrait {
+  max-width: 190px;
+  margin: 0 auto 0 0;
+}
+.bstage[data-lay='narrow'] .f2-nodes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding-top: 26px;
+}
+.bstage[data-lay='narrow'] .u-tnode-dot {
+  display: none;
+}
+.bstage[data-lay='narrow'] .f2-nodes .u-tnode {
+  width: 100%;
+}
+.bstage[data-lay='narrow'] .ds-parts {
+  grid-template-columns: minmax(0, 1fr);
+  padding: 60px 12px 14px;
+}
+.bstage[data-lay='narrow'] .u-check {
+  height: 44px;
+}
+.bstage[data-lay='narrow'] .u-check-txt {
+  font-size: 15px;
+}
+.bstage[data-lay='narrow'] .f4-stats {
+  gap: 8px;
+}
+.bstage[data-lay='narrow'] .u-stat {
+  min-height: 92px;
+  padding: 11px 10px;
+  border-radius: 14px;
+}
+.bstage[data-lay='narrow'] .u-stat-n {
+  font-size: 34px;
+}
+.bstage[data-lay='narrow'] .u-stat-l {
+  font-size: 11px;
+}
+.bstage[data-lay='narrow'] .f4-cos {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+.bstage[data-lay='narrow'] .u-company {
+  padding: 10px 12px;
+}
+.bstage[data-lay='narrow'] .u-btn-xl {
+  --bh: 56px;
+  font-size: 19px;
+  padding: 0 24px;
+}
+.bstage[data-lay='narrow'] .f5-cta {
+  flex-direction: column;
+  gap: 16px;
+}
+.bstage[data-lay='narrow'] .f5-links {
+  gap: 16px;
+}
+.bstage[data-lay='narrow'] .u-link {
+  font-size: 16px;
+}
+.bstage[data-lay='narrow'] .f5-mascot {
+  right: -40px;
+  top: -30px;
+  width: 44px;
+}
+.bstage[data-lay='narrow'] .u-footer {
+  font-size: 10.5px;
+}
+
+/* --------------------------------------------------------- bubble */
+.bub-anchor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100px;
+  height: 100px;
+  transform-origin: 50% 50%;
+  visibility: hidden;
+  pointer-events: none;
+}
+.bub-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+.bub-eyes {
+  --u: 1;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  width: 200px;
+  height: 200px;
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* chrome tweaks for Page 2 */
+.layers2 .l2-list {
+  position: relative;
+  margin: 6px 0;
+  max-height: calc(100vh - 230px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+.layers2 .l2-row {
+  position: relative;
+  left: auto;
+  right: auto;
+  margin: 0 6px;
+}
+.l2-rows .l2-row {
+  animation: l2-in 320ms var(--ease-out) both;
+  animation-delay: calc(var(--i) * 22ms);
+}
+@keyframes l2-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.l2-row .layer-name {
+  flex: 1;
+  min-width: 0;
+}
+.l2-state {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+  font-family: var(--f-mono);
+  font-size: 9.5px;
+  color: var(--violet);
+}
+.l2-state i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px dashed rgb(91 75 255 / 0.6);
+}
+.l2-state.s-leaping i,
+.l2-state.s-roaming i {
+  animation: l2-pulse 1s ease-in-out infinite;
+}
+.l2-state.s-leaping i {
+  border-style: solid;
+  background: var(--violet-soft);
+}
+@keyframes l2-pulse {
+  50% {
+    transform: scale(1.35);
+  }
+}
+.l2-state.s-placed {
+  width: 16px;
+  border-radius: 50%;
+  background: var(--violet);
+  animation: l2-check 380ms var(--ease-spring);
+}
+.l2-state svg {
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+@keyframes l2-check {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+.l2-row.is-placed .layer-name {
+  color: var(--ink);
+}
+.l2-bubble {
+  color: var(--violet);
+  font-weight: 600;
+  margin-top: 4px;
+}
+.sec-sub {
+  font-weight: 500;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+.mood.st-placed.is-on {
+  background: var(--violet);
+}
+.mood.st-leaping.is-on {
+  background: var(--coral);
+}
+@media (prefers-reduced-motion: reduce) {
+  .l2-rows .l2-row,
+  .l2-state {
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------- reduced motion: static frames */
+.bstage.is-static {
+  position: relative;
+  overflow: visible;
+  padding: 96px 16px 80px;
+  cursor: auto;
+}
+.bstage.is-static a,
+.bstage.is-static button {
+  cursor: pointer;
+}
+.bstage.is-static .bviewport,
+.bstage.is-static .bworld {
+  position: relative;
+  inset: auto;
+  width: auto;
+  height: auto;
+  perspective: none;
+  transform: none !important;
+}
+.bstage.is-static .bpaper {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.bstage.is-static .bworld {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 88px;
+}
+.bstage.is-static .bf {
+  position: relative;
+  left: auto;
+  width: min(var(--FW), 100%);
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+.bstage.is-static .bf.in {
+  opacity: 1;
+}
+.bstage.is-static .bf-sheets,
+.bstage.is-static .bub-anchor {
+  display: none;
+}
+.bstage.is-static .alive-shadow {
+  display: none;
+}
+
+/* phones: keep the canvas calm — one collaborator, no chat bubbles */
+.bstage[data-bp='mob'] .cur-pm,
+.bstage[data-bp='mob'] .cur-dev,
+.bstage[data-bp='mob'] .cur-bubble {
+  display: none;
+}

@@ -1,0 +1,650 @@
+/* ============================================================ creature */
+.cr {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  transform-style: preserve-3d;
+}
+.stage[data-bp='mob'] .cr:not(.cr-spawned) {
+  left: var(--mx);
+  top: var(--my);
+}
+.stage[data-bp='mob'] .cr-desk-only {
+  display: none;
+}
+.cr-foot {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.cr-foot-in {
+  position: absolute;
+  inset: 0;
+  transform: scaleY(0.86);
+  transform-origin: 50% 100%;
+  outline: 1.5px dashed rgb(91 75 255 / 0.75);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
+.cr-foot-in .shape,
+.foot-ui {
+  opacity: 0.85;
+}
+.foot-ui {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 2px rgb(22 19 29 / 0.5);
+}
+.foot-swatches .foot-ui,
+.foot-autolayout .foot-ui,
+.foot-pen .foot-ui {
+  border-radius: 14px;
+}
+.foot-slider .foot-ui {
+  height: 40%;
+  margin-top: 30%;
+}
+.cr-shadow {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -7%;
+  height: 18%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(22 19 29 / 0.6), rgb(22 19 29 / 0));
+  opacity: 0.2;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+}
+.cr-lift {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+.cr-drag {
+  position: absolute;
+  inset: 0;
+}
+.cr-body,
+.cr-jelly {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+}
+.shape {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform: rotate(var(--rot, 0deg));
+}
+.cr.is-hover .cr-sel,
+.cr.is-dragging .cr-sel {
+  opacity: 1;
+}
+.cr-sel {
+  inset: -7px;
+}
+.cr-spawned {
+  transition:
+    opacity 360ms var(--ease-out),
+    transform 460ms var(--ease-spring);
+}
+.cr-spawned.is-away {
+  opacity: 0;
+  transform: scale(0.6);
+  pointer-events: none;
+}
+
+/* ================================================================ eyes */
+.eyes {
+  position: absolute;
+  display: flex;
+  gap: var(--eye-gap);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.eye {
+  position: relative;
+  width: calc(var(--eye) * 0.78);
+  height: var(--eye);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 max(1.4px, calc(var(--eye) * 0.11)) var(--ink);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transform-origin: 50% 55%;
+}
+.pupil {
+  position: relative;
+  width: 56%;
+  height: 46%;
+  border-radius: 50%;
+  background: var(--ink);
+}
+.pupil::after {
+  content: '';
+  position: absolute;
+  left: 18%;
+  top: 14%;
+  width: 34%;
+  height: 34%;
+  border-radius: 50%;
+  background: #fff;
+}
+
+/* ======================================================= UI creatures */
+.ui-toggle {
+  --bw: max(2px, calc(var(--u) * 2.6px));
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--c);
+  box-shadow: inset 0 0 0 var(--bw) var(--ink), inset 0 calc(var(--u) * 6px) 0 rgb(255 255 255 / 0.25);
+  animation: toggle-track 7.4s steps(1) infinite;
+}
+.ui-toggle-knob {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--u) * 5px);
+  width: calc(var(--h) - var(--u) * 10px);
+  height: calc(var(--h) - var(--u) * 10px);
+  margin-top: calc((var(--h) - var(--u) * 10px) / -2);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 var(--bw) var(--ink), 0 calc(var(--u) * 3px) 0 rgb(22 19 29 / 0.18);
+  transform: translateX(calc(var(--w) - var(--h)));
+  animation: toggle-knob 7.4s infinite;
+}
+@keyframes toggle-knob {
+  0%,
+  44% {
+    transform: translateX(calc(var(--w) - var(--h))) scaleX(1);
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  50%,
+  94% {
+    transform: translateX(0) scaleX(1);
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  100% {
+    transform: translateX(calc(var(--w) - var(--h)));
+  }
+}
+@keyframes toggle-track {
+  0%,
+  46% {
+    background-color: var(--c);
+  }
+  47%,
+  96% {
+    background-color: #e3dccd;
+  }
+}
+
+.ui-button {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--ink);
+}
+.ui-button-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--u) * 10px);
+  padding-right: calc(var(--u) * 6px);
+  border-radius: 999px;
+  background: var(--c);
+  box-shadow: inset 0 0 0 max(2px, calc(var(--u) * 2.6px)) var(--ink), inset 0 calc(var(--u) * 5px) 0 rgb(255 255 255 / 0.22);
+  color: #fff;
+  font-family: var(--f-display);
+  font-variation-settings: 'wght' 700, 'wdth' 96;
+  font-size: max(12px, calc(var(--u) * 17px));
+  letter-spacing: -0.01em;
+  transform: translateY(calc(var(--u) * -5px));
+  animation: btn-press 4.8s infinite;
+}
+.ui-button-eyes {
+  position: relative;
+  width: calc(var(--u) * 26px);
+  height: calc(var(--u) * 16px);
+}
+@keyframes btn-press {
+  0%,
+  78% {
+    transform: translateY(calc(var(--u) * -5px));
+    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  81% {
+    transform: translateY(0) scale(0.97, 0.94);
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  88%,
+  100% {
+    transform: translateY(calc(var(--u) * -5px));
+  }
+}
+
+.ui-slider {
+  position: absolute;
+  inset: 0;
+}
+.ui-slider-track,
+.ui-slider-fill {
+  position: absolute;
+  left: calc(var(--u) * 14px);
+  right: calc(var(--u) * 14px);
+  top: 50%;
+  height: calc(var(--u) * 8px);
+  margin-top: calc(var(--u) * -4px);
+  border-radius: 999px;
+}
+.ui-slider-track {
+  background: #fff;
+  box-shadow: inset 0 0 0 max(1.5px, calc(var(--u) * 2px)) var(--ink);
+}
+.ui-slider-fill {
+  background: var(--c);
+  box-shadow: inset 0 0 0 max(1.5px, calc(var(--u) * 2px)) var(--ink);
+  transform-origin: 0 50%;
+  animation: slider-fill 3.8s cubic-bezier(0.77, 0, 0.175, 1) infinite alternate;
+}
+.ui-slider-knob {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: calc(var(--u) * 32px);
+  height: calc(var(--u) * 32px);
+  margin-top: calc(var(--u) * -16px);
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 0 max(2px, calc(var(--u) * 2.6px)) var(--ink), inset 0 calc(var(--u) * 4px) 0 rgb(255 255 255 / 0.3);
+  animation: slider-knob 3.8s cubic-bezier(0.77, 0, 0.175, 1) infinite alternate;
+}
+.ui-slider-val {
+  position: absolute;
+  left: calc(var(--u) * 4px);
+  top: calc(var(--u) * -14px);
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  opacity: 0;
+}
+@keyframes slider-knob {
+  from {
+    transform: translateX(calc(var(--u) * 6px));
+  }
+  to {
+    transform: translateX(calc(var(--w) - var(--u) * 40px));
+  }
+}
+@keyframes slider-fill {
+  from {
+    transform: scaleX(0.08);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.ui-swatches {
+  position: absolute;
+  inset: 0;
+}
+.sw {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 76%;
+  border-radius: calc(var(--u) * 14px);
+  box-shadow: inset 0 0 0 max(2px, calc(var(--u) * 2.6px)) var(--ink), inset 0 calc(var(--u) * 5px) 0 rgb(255 255 255 / 0.28);
+  transform-origin: 30% 100%;
+}
+.sw-1 {
+  background: var(--pink);
+}
+.sw-2 {
+  background: var(--yellow);
+  animation: fan-2 5.6s var(--ease-in-out) infinite;
+}
+.sw-3 {
+  background: var(--sky);
+  animation: fan-3 5.6s var(--ease-in-out) infinite;
+}
+@keyframes fan-2 {
+  0%,
+  100% {
+    transform: rotate(-8deg) translate(-4%, -4%);
+  }
+  45%,
+  60% {
+    transform: rotate(-22deg) translate(-12%, -6%);
+  }
+}
+@keyframes fan-3 {
+  0%,
+  100% {
+    transform: rotate(-16deg) translate(-8%, -8%);
+  }
+  45%,
+  60% {
+    transform: rotate(-42deg) translate(-20%, -8%);
+  }
+}
+
+.ui-avatar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 10px);
+  padding: 0 calc(var(--u) * 16px) 0 calc(var(--u) * 5px);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 max(2px, calc(var(--u) * 2.4px)) var(--ink), 0 calc(var(--u) * 4px) 0 rgb(22 19 29 / 0.12);
+}
+.ui-avatar-face {
+  position: relative;
+  flex: none;
+  width: calc(var(--h) - var(--u) * 10px);
+  height: calc(var(--h) - var(--u) * 10px);
+  border-radius: 50%;
+  background: var(--coral);
+  box-shadow: inset 0 0 0 max(2px, calc(var(--u) * 2.4px)) var(--ink);
+}
+.ui-avatar-txt {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.ui-avatar-txt b {
+  font-family: var(--f-display);
+  font-variation-settings: 'wght' 700, 'wdth' 96;
+  font-size: max(11px, calc(var(--u) * 15px));
+}
+.ui-avatar-txt i {
+  font-style: normal;
+  font-family: var(--f-mono);
+  font-size: max(9px, calc(var(--u) * 11px));
+  color: var(--ink-3);
+}
+
+.ui-auto {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 8px);
+  padding: 0 calc(var(--u) * 8px) 0 calc(var(--u) * 10px);
+  border-radius: calc(var(--u) * 12px);
+  background: var(--violet-soft);
+  box-shadow: inset 0 0 0 max(1.5px, calc(var(--u) * 2px)) var(--violet);
+  color: var(--violet);
+  white-space: nowrap;
+}
+.ui-auto-ico {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 2px);
+  animation: auto-gap 2.8s var(--ease-in-out) infinite;
+}
+.ui-auto-ico i {
+  display: block;
+  width: calc(var(--u) * 14px);
+  height: calc(var(--u) * 3px);
+  border-radius: 2px;
+  background: currentColor;
+}
+@keyframes auto-gap {
+  0%,
+  100% {
+    transform: scaleY(0.82);
+  }
+  50% {
+    transform: scaleY(1.15);
+  }
+}
+.ui-auto-txt {
+  font-family: var(--f-ui);
+  font-weight: 600;
+  font-size: max(10px, calc(var(--u) * 13px));
+}
+.ui-auto-eyes {
+  position: relative;
+  margin-left: auto;
+  width: calc(var(--u) * 22px);
+  height: calc(var(--u) * 22px);
+  border-radius: 50%;
+  background: var(--violet);
+}
+
+.ui-pen {
+  position: absolute;
+  inset: 0;
+}
+.ui-pen svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.pen-path {
+  fill: none;
+  stroke: var(--violet);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  animation: pen-draw 5.2s var(--ease-in-out) infinite;
+}
+.pen-handle {
+  fill: none;
+  stroke: var(--violet);
+  stroke-width: 1;
+  opacity: 0.45;
+}
+.pen-anchor {
+  fill: #fff;
+  stroke: var(--violet);
+  stroke-width: 1.6;
+}
+.pen-anchor.is-end {
+  fill: var(--violet);
+}
+.pen-dot {
+  fill: var(--violet);
+}
+.ui-pen-nib {
+  position: absolute;
+  left: 91.6%;
+  top: 20.5%;
+  width: calc(var(--u) * 26px);
+  height: calc(var(--u) * 26px);
+  margin: calc(var(--u) * -13px) 0 0 calc(var(--u) * -13px);
+  border-radius: 50%;
+  background: var(--sky);
+  box-shadow: inset 0 0 0 max(2px, calc(var(--u) * 2.4px)) var(--ink);
+}
+@keyframes pen-draw {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  45%,
+  80% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-toggle,
+  .ui-toggle-knob,
+  .ui-button-face,
+  .ui-slider-fill,
+  .ui-slider-knob,
+  .sw-2,
+  .sw-3,
+  .ui-auto-ico,
+  .pen-path,
+  .sleeper-body,
+  .zzz i,
+  .status-dot::after,
+  .ico-org {
+    animation: none;
+  }
+  .pen-path {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ============================================ real-component creatures */
+.cr {
+  --s: var(--u);
+}
+.cr-lib {
+  --u: 1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%) scale(var(--s)) rotate(var(--rot, 0deg));
+  transform-origin: 50% 50%;
+}
+.cr-lib > .eyes {
+  z-index: 2;
+}
+.cr-legs {
+  top: calc(100% - 1px);
+}
+.stage[data-walk='1'] .cr-legs i {
+  animation: leg-a 0.24s ease-in-out infinite alternate;
+}
+.stage[data-walk='1'] .cr-legs i:last-child {
+  animation-name: leg-b;
+}
+.cr-input .u-input-f {
+  box-shadow: inset 0 0 0 2px var(--ink), 0 0 0 4px rgb(182 240 58 / 0.7);
+}
+.cr-input .u-input-l {
+  color: var(--ink-2);
+}
+.cr-squircle .u-check-fill,
+.cr-check .u-check-fill {
+  background: var(--mint);
+}
+.cr-check .u-check {
+  width: 150px;
+}
+.cr-tip .u-tip {
+  background: var(--pink);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 2px var(--ink), 0 3px 0 var(--ink);
+}
+.cr-tip .u-tip::after {
+  background: var(--pink);
+  box-shadow: 2px 2px 0 0 var(--ink);
+  bottom: -6px;
+}
+.mini-card {
+  position: relative;
+  width: 128px;
+  height: 104px;
+  padding: 14px 14px 12px;
+  border-radius: 18px;
+  background: var(--yellow);
+  box-shadow: inset 0 0 0 2.5px var(--ink), inset 0 6px 0 rgb(255 255 255 / 0.32), 0 4px 0 var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mini-card-dots {
+  width: 38px;
+  height: 10px;
+  background:
+    radial-gradient(circle at 5px 5px, var(--coral) 3.6px, var(--ink) 4px, transparent 5px),
+    radial-gradient(circle at 19px 5px, #fff 3.6px, var(--ink) 4px, transparent 5px),
+    radial-gradient(circle at 33px 5px, var(--lime) 3.6px, var(--ink) 4px, transparent 5px);
+}
+.mini-card-line {
+  height: 9px;
+  border-radius: 5px;
+  background: rgb(22 19 29 / 0.82);
+}
+.mini-card-line.s {
+  width: 62%;
+  background: rgb(22 19 29 / 0.3);
+}
+.mini-card-heart {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 2px var(--ink);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+/* footprints follow the new silhouettes */
+.foot-card .foot-ui {
+  border-radius: calc(var(--u) * 18px);
+}
+.foot-input .foot-ui {
+  height: 66%;
+  margin-top: 34%;
+  border-radius: calc(var(--u) * 12px);
+}
+.foot-tooltip .foot-ui,
+.foot-check .foot-ui {
+  border-radius: calc(var(--u) * 14px);
+}
+
+/* sleeping components in the ghost frames */
+.sleeper-ui {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.5 / 1;
+  border-radius: calc(var(--u) * 16px);
+  background: var(--c);
+  box-shadow: inset 0 0 0 2.5px var(--ink), inset 0 5px 0 rgb(255 255 255 / 0.3), 0 4px 0 var(--ink);
+}
+.sleeper-ui::before {
+  content: '';
+  position: absolute;
+  left: 16%;
+  right: 30%;
+  bottom: 20%;
+  height: 12%;
+  border-radius: 99px;
+  background: rgb(22 19 29 / 0.8);
+}
+
+/* peek chip above the About portrait */
+.peek-chip {
+  position: absolute;
+  right: 8%;
+  top: calc(var(--u) * -50px);
+  --s: var(--u);
+}
+.peek-chip .cr-lib {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: scale(var(--s)) rotate(-5deg);
+  transform-origin: 100% 100%;
+}
