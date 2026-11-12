@@ -2,7 +2,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { hover, tool, type Breakpoint, type Tool } from '../scene/store'
 import { Chevron, LayerIcon, ToolIcon } from '../chrome/Icons'
-import { PageSwitch } from '../chrome/PageSwitch'
 import { ChapterRuler, type RulerChapter } from '../chrome/ChapterRuler'
 import { CHAPTERS } from '../content/story'
 import { pieces, regions, texts, type Piece, type TextBlock } from './runtime'
@@ -92,7 +91,7 @@ export function LayersPanel2() {
       <div className="panel-head">
         <span className="panel-tab is-active">Layers</span>
         <span className="panel-tab">Assets</span>
-        <PageSwitch current={2} />
+        <span className="page-switch-label">Page 1</span>
       </div>
       <div className="l2-list" role="tree" aria-label={`Frame ${frameName(ch, hello.name)}`} ref={listRef}>
         <div className="layer-row d0 l2-row l2-frame" role="treeitem" aria-level={1} aria-expanded="true" key={`f-${ch}`}>

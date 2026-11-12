@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo, useRef, type ReactNode } from 'react'
 import { CHAPTERS } from '../../content/story'
-import { FrameIcon } from '../../canvas/Stage'
+import { FrameIcon } from '../../chrome/Icons'
 import { SectionCtx, type BuildCtx } from '../parts'
 import { registerFx, smooth } from '../runtime'
 import { phOf } from '../worlds'
