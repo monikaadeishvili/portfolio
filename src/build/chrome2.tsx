@@ -97,7 +97,7 @@ export function LayersPanel2() {
         <div className="layer-row d0 l2-row l2-frame" role="treeitem" aria-level={1} aria-expanded="true" key={`f-${ch}`}>
           <Chevron open />
           <span className="layer-ico i-frame">{LayerIcon.frame()}</span>
-          <span className={`layer-name${ch === 0 && !hello.taste ? ' is-untitled' : ''}`} key={ch === 0 ? hello.name : ch}>
+          <span className={`layer-name${ch === 0 && !hello.taste ? ' is-untitled' : ''}`}>
             {frameName(ch, hello.name)}
           </span>
           <span className="layer-tag">
@@ -231,7 +231,7 @@ export function Inspector2() {
   const sec = c?.section ?? ch
   const fname = frameName(sec, hello.name)
   // 01 Hello's frame reads as an untouched default until taste is applied
-  const frameFill = sec === 0 ? (hello.taste ? '#FFF4D1' : '#FFFFFF') : '#FFFDF8'
+  const frameFill = sec === 0 ? (hello.taste ? '#F6F6F3' : '#FFFFFF') : '#FFFDF8'
   const fill = c?.tone ?? frameFill
   const fillRef = useRef<HTMLSpanElement>(null)
   const hexRef = useRef<HTMLSpanElement>(null)
@@ -248,7 +248,7 @@ export function Inspector2() {
       </div>
       <div className="insp-sel">
         {isBub ? <span className="layer-ico i-organism">{LayerIcon.organism()}</span> : c ? <KindIcon kind={c.kind} /> : <span className="layer-ico i-frame">{LayerIcon.frame()}</span>}
-        <span className="insp-name" key={id ?? 'none'}>
+        <span className="insp-name">
           {isBub ? 'Bubble' : (c?.name ?? fname)}
         </span>
         <span className="insp-kind">{isBub ? 'Organism' : c ? (c.kind === 'hero' ? 'Hero' : 'Bubble-born') : 'Frame'}</span>
@@ -309,8 +309,8 @@ export function Inspector2() {
           <div className={`type-row${hello.taste ? ' is-taste' : ''}`} key={hello.taste ? 'on' : 'off'}>
             {hello.taste ? (
               <>
-                <span className="type-face">Bricolage Grotesque</span>
-                <span className="type-meta">ExtraBold · 80 / Instrument Serif Italic</span>
+                <span className="type-face">Anton</span>
+                <span className="type-meta">Regular · 94 / 90% · Uppercase</span>
               </>
             ) : (
               <>

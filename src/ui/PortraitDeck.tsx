@@ -22,8 +22,17 @@
 import { useEffect, useLayoutEffect, useRef, type CSSProperties } from 'react'
 import { gsap } from '../scene/gsap'
 
-const DECK_TONES = ['coral', 'pink', 'yellow', 'lime', 'sky', 'violet'] as const
+const DECK_TONES = ['var(--coral)', 'var(--pink)', 'var(--yellow)', 'var(--lime)', 'var(--sky)', 'var(--violet)']
+/** 01 Hello: the electric accents of the designed state, fanned behind the dark card */
+const HELLO_TONES = ['#D7FB3E', '#F6A8D8', '#FF4B1F', '#ECE6D6', '#0E0E0C', '#C6EC2C']
 const N: number = DECK_TONES.length
+const SRC = '/monika.jpg'
+// preload + decode the portrait so the waiting card never paints blank
+if (typeof window !== 'undefined') {
+  const pre = new Image()
+  pre.src = SRC
+  pre.decode?.().catch(() => {})
+}
 /** per-frame (60fps) chase factor of card i toward card i-1 */
 const CHASE = [0.35, 0.3, 0.25, 0.2, 0.16, 0.12]
 const DRAG_PX = 4
@@ -62,22 +71,32 @@ const smoothstep = (a: number, b: number, v: number) => {
 /** frame-rate independent lerp factor */
 const ease = (k: number, f: number) => 1 - Math.pow(1 - k, f)
 
-function makeFan(): Fan[] {
+/** 01 Hello: a composed stack — lime peeks right, pink peeks lower-left, the rest hide behind */
+const HELLO_FAN: Fan[] = [
+  { dx: 12, dy: 6, r: 3.6 },
+  { dx: -7, dy: 12, r: -2.7 },
+  { dx: 3, dy: 5, r: 1.2 },
+  { dx: -2, dy: 4, r: -0.8 },
+  { dx: 2, dy: 3, r: 0.6 },
+  { dx: 0, dy: 2, r: 0.2 },
+]
+function makeFan(k = 1): Fan[] {
+  if (k < 0) return HELLO_FAN.map((f) => ({ dx: f.dx + (Math.random() - 0.5) * 1.2, dy: f.dy + (Math.random() - 0.5) * 1.2, r: f.r + (Math.random() - 0.5) * 0.5 }))
   const out: Fan[] = []
   for (let i = 1; i <= N; i++) {
     const j = () => Math.random() - 0.5
     // mostly clockwise, every third one leans back: stripes along bottom + right
     const lean = i % 3 === 2 ? -0.7 : 1
     out.push({
-      dx: i * 2.6 + j() * 1.4,
-      dy: i * 3.9 + j() * 1.2,
+      dx: (i * 2.6 + j() * 1.4) * k,
+      dy: (i * 3.9 + j() * 1.2) * k,
       r: clamp((0.9 + i * 0.28 + Math.random() * 0.6) * lean, -3, 3),
     })
   }
   return out
 }
 
-function mountDeck(root: HTMLElement, can: () => boolean): () => void {
+function mountDeck(root: HTMLElement, can: () => boolean, TONES: string[], variant: string): () => void {
   const top = root.querySelector<HTMLElement>('.u-deck-top')!
   const stack = Array.from(root.querySelectorAll<HTMLElement>('.u-deck-stack .u-deck-card')).sort((a, b) => Number(a.dataset.i) - Number(b.dataset.i))
   const wipe = root.querySelector<HTMLElement>('.u-deck-wipe')
@@ -85,7 +104,9 @@ function mountDeck(root: HTMLElement, can: () => boolean): () => void {
   const html = document.documentElement
   const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
 
-  let fan = makeFan()
+  // the hello card is a calmer stack: two or three edges peek out
+  const fanK = variant === 'hello' ? -1 : 1
+  let fan = makeFan(fanK)
   const applyFan = () =>
     stack.forEach((el, i) => {
       el.style.setProperty('--dx', `${fan[i].dx.toFixed(2)}px`)
@@ -153,14 +174,14 @@ function mountDeck(root: HTMLElement, can: () => boolean): () => void {
     removeLayer()
     const host = root.closest<HTMLElement>('[data-deck-layer]') ?? document.body
     layer = document.createElement('div')
-    layer.className = 'u-deck-layer'
+    layer.className = `u-deck-layer v-${variant}`
     layer.setAttribute('aria-hidden', 'true')
     layer.style.visibility = 'hidden'
     // bottom → top so the photo paints last
     for (let i = N; i >= 1; i--) {
       const el = document.createElement('span')
       el.className = 'u-deck-card'
-      el.style.setProperty('--tone', `var(--${DECK_TONES[i - 1]})`)
+      el.style.setProperty('--tone', TONES[i - 1])
       bodies[i].el = el
       layer.appendChild(el)
     }
@@ -168,6 +189,8 @@ function mountDeck(root: HTMLElement, can: () => boolean): () => void {
     clone.classList.remove('is-press')
     clone.style.transform = ''
     clone.querySelector('figcaption')?.removeAttribute('id')
+    clone.querySelectorAll('a, button').forEach((a) => a.setAttribute('tabindex', '-1'))
+    clone.querySelector('.u-pd-defs')?.remove()
     bodies[0].el = clone
     layer.appendChild(clone)
     host.appendChild(layer)
@@ -319,6 +342,8 @@ function mountDeck(root: HTMLElement, can: () => boolean): () => void {
   const onDown = (e: PointerEvent) => {
     idle = performance.now()
     if (e.button !== 0 || !e.isPrimary || phase !== 'idle') return
+    // links and buttons on the card stay links and buttons
+    if ((e.target as Element | null)?.closest?.('a, button')) return
     const ok = can()
     setArmed(ok)
     if (!ok) return
@@ -431,7 +456,7 @@ function mountDeck(root: HTMLElement, can: () => boolean): () => void {
     const r = root.getBoundingClientRect()
     hx = r.left + r.width / 2
     hy = r.top + r.height / 2
-    fan = makeFan()
+    fan = makeFan(fanK)
     const T = bodies[0]
     killTweens()
     if (reduced) {
@@ -512,7 +537,7 @@ function mountDeck(root: HTMLElement, can: () => boolean): () => void {
   /* ------------------------------------------------------ flourish */
   const flourish = () => {
     if (!wipe || mq.matches) return
-    wipe.style.setProperty('--tone', `var(--${DECK_TONES[wipeIdx % N]})`)
+    wipe.style.setProperty('--tone', TONES[wipeIdx % N])
     wipeIdx++
     wipeAnim?.cancel()
     wipeAnim = wipe.animate(
@@ -576,6 +601,12 @@ function mountDeck(root: HTMLElement, can: () => boolean): () => void {
 }
 
 interface DeckProps {
+  /** look: the default chunky momo deck, or 01 Hello's dark agency card */
+  variant?: 'default' | 'hello'
+  /** hello variant: two-line intro in the card footer */
+  caption?: [string, string]
+  /** hello variant: the pill button in the card footer */
+  cta?: { label: string; href: string }
   name?: string
   note?: string
   src?: string
@@ -584,7 +615,7 @@ interface DeckProps {
   canDrag?: () => boolean
 }
 
-export function PortraitDeck({ name = 'Monika', note, src = '/monika.jpg', alt = 'Portrait of Monika Adeishvili', canDrag }: DeckProps) {
+export function PortraitDeck({ name = 'Monika', note, src = SRC, alt = 'Portrait of Monika Adeishvili', canDrag, variant = 'default', caption, cta }: DeckProps) {
   const rootRef = useRef<HTMLDivElement>(null)
   const canRef = useRef(canDrag)
   useLayoutEffect(() => {
@@ -594,17 +625,54 @@ export function PortraitDeck({ name = 'Monika', note, src = '/monika.jpg', alt =
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
-    return mountDeck(root, () => (canRef.current ? canRef.current() : true))
-  }, [])
+    return mountDeck(root, () => (canRef.current ? canRef.current() : true), variant === 'hello' ? HELLO_TONES : DECK_TONES, variant)
+  }, [variant])
+  const tones = variant === 'hello' ? HELLO_TONES : DECK_TONES
 
   return (
-    <div className="u-pdeck" ref={rootRef} data-armed="0">
+    <div className={`u-pdeck v-${variant}`} ref={rootRef} data-armed="0">
       <div className="u-deck-stack" aria-hidden="true">
-        {DECK_TONES.map((t, k) => {
+        {tones.map((_, k) => {
           const i = N - k
-          return <span key={t} className="u-deck-card" data-i={i} style={{ '--tone': `var(--${DECK_TONES[i - 1]})`, '--i': i } as CSSProperties} />
+          return <span key={k} className="u-deck-card" data-i={i} style={{ '--tone': tones[i - 1], '--i': i } as CSSProperties} />
         })}
       </div>
+      {variant === 'hello' ? (
+        <figure className="u-portrait u-deck-top">
+          <div className="u-portrait-card">
+            <svg className="u-pd-defs" width="0" height="0" aria-hidden="true" focusable="false">
+              <filter id="u-pd-grade" colorInterpolationFilters="sRGB">
+                <feComponentTransfer>
+                  <feFuncR type="linear" slope="0.96" intercept="0.02" />
+                  <feFuncG type="linear" slope="0.94" intercept="0.025" />
+                  <feFuncB type="linear" slope="0.82" intercept="0.14" />
+                </feComponentTransfer>
+              </filter>
+            </svg>
+            <div className="u-pd-photo">
+              <img src={src} alt={alt} width={1200} height={1200} decoding="sync" loading="eager" draggable={false} />
+              <span className="u-pd-mono" aria-hidden="true">
+                M
+              </span>
+              <span className="u-deck-wipe" aria-hidden="true" />
+            </div>
+            <figcaption className="u-pd-foot">
+              {caption && (
+                <span className="u-pd-cap">
+                  {caption[0]}
+                  <br />
+                  {caption[1]}
+                </span>
+              )}
+              {cta && (
+                <a className="u-pd-cta" href={cta.href}>
+                  {cta.label}
+                </a>
+              )}
+            </figcaption>
+          </div>
+        </figure>
+      ) : (
       <figure className="u-portrait u-deck-top">
         <div className="u-portrait-card">
           <img src={src} alt={alt} width={1200} height={1200} decoding="async" draggable={false} />
@@ -615,6 +683,7 @@ export function PortraitDeck({ name = 'Monika', note, src = '/monika.jpg', alt =
           {note && <em>{note}</em>}
         </figcaption>
       </figure>
+      )}
     </div>
   )
 }

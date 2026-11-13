@@ -19,7 +19,7 @@ export interface World {
 }
 
 export const WORLDS: World[] = [
-  { id: 'hello', pal: ['#5B4BFF', '#FFC629', '#FF5C39'], shadow: 0.22 },
+  { id: 'hello', pal: ['#0A4BFF', '#0B0B0C', '#F1F1EE'], shadow: 0.16 },
   { id: 'origin', pal: ['#4652E8', '#FF5C39', '#FFE6A8'], shadow: 0.42 },
   { id: 'craft', pal: ['#8FD614', '#16131D', '#FFFFFF'], shadow: 0.26 },
   { id: 'proof', pal: ['#2DB8FF', '#16131D', '#E6F6FF'], shadow: 0.24 },

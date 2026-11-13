@@ -1,4 +1,5 @@
 import { useId } from 'react'
+import './sticker.css'
 
 /** scalloped sticker outline (computed once) */
 function scallop(R: number, bumps: number, depth: number) {

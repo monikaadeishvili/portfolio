@@ -12,7 +12,7 @@ import { updateRuler } from '../chrome/ChapterRuler'
 import { camAt, chargeOf, project, regionProgress, type CamPose, type Geo, type Proj } from './camera'
 import { bubbleAt, makeState, type BubState } from './bubble/choreo'
 import { Bubble, MAX_BALLS, MAX_CORES, type BubbleFrame } from './bubble/organism2'
-import { clamp01, evalPose, fxs, outBack, pieces, rnd, smooth, texts, type FxEnv, type Piece, type TextBlock } from './runtime'
+import { clamp01, evalPose, fxs, outBack, pieces, rnd, settleOf, smooth, texts, type FxEnv, type Piece, type TextBlock } from './runtime'
 import { hex, SEC, sectionAt, secU, type RGB } from './worlds'
 import { bsinks, chapterCh, inspSel, inspState, moodCh, placedVer, regionCh, type InspState } from './bstore'
 
@@ -257,8 +257,8 @@ export function startLoop(ctx: LoopCtx) {
 
       // gulp: the bubble squashes as it spits a piece out
       if (c.lastSt !== P.state) {
-        if (c.kind === 'bubble' && c.lastSt === 'inside' && P.state === 'leaping') wobV -= 2.4
-        if (P.state === 'placed' && c.lastSt === 'leaping') c.wv += c.kind === 'hero' ? 9 : 5
+        if (c.kind === 'bubble' && c.travel !== 'slide' && c.lastSt === 'inside' && P.state === 'leaping') wobV -= 2.4
+        if (P.state === 'placed' && c.lastSt === 'leaping') c.wv += (c.kind === 'hero' ? 9 : 5) * settleOf(c)
         c.lastSt = P.state
         c.slot.dataset.st = P.state
         c.last = ''
@@ -355,7 +355,7 @@ export function startLoop(ctx: LoopCtx) {
       }
       // coloured trail behind a spat piece
       if (c.trail.length) {
-        const on = c.kind === 'bubble' && moving && k > 0.04 && k < 0.94
+        const on = c.kind === 'bubble' && c.travel !== 'slide' && moving && k > 0.04 && k < 0.94
         if (on) {
           let key = ''
           for (let j = 0; j < c.trail.length; j++) {

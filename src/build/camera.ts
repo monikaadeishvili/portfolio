@@ -140,25 +140,33 @@ export function hostAt(g: Geo, i: number, cam: CamPose, out: { x: number; y: num
     out.x = b.x + g.FW - 52
     out.y = clamp(cam.y - visH * 0.33, b.y + 90, b.y + b.h - 120)
     out.z = 150
-    // 01 Hello: off the Taste switch (top-right), beside the portrait deck
+    // 01 Hello: low on the right, beside the CTA and clear of the portrait card
     const r0 = i === 0 ? g.regs[0]?.[0] : undefined
     if (r0) {
       const r0b = b.y + r0.y + r0.h
       const k = 1 - smooth(r0b - 160, r0b + 200, cam.y)
-      out.y = lerp(out.y, r0b - 120, k)
+      out.y = lerp(out.y, r0b - 52, k)
+      out.x = lerp(out.x, b.x + g.FW - 26, k)
     }
   } else {
     // beside the artboard, but never under the inspector
     const maxX = cam.x + (g.view.w / 2 - g.R * cam.s * 1.5 - 26) / cam.s
     out.x = Math.min(b.x + g.FW + 150, maxX)
     out.y = clamp(cam.y - visH * 0.26, b.y + 150, b.y + b.h - 160)
-    // 01 Hello: while the camera is on the top region, wait low on the right,
-    // clear of the Taste switch docked in the nav's top-right corner
+    // 01 Hello: on the hero, wait in its top-right gutter; below it, in the
+    // still-empty bottom-right corner of the board
     const r0 = i === 0 ? g.regs[0]?.[0] : undefined
     if (r0) {
       const r0b = b.y + r0.y + r0.h
       const k = 1 - smooth(r0b - 140, r0b + 240, cam.y)
-      out.y = lerp(out.y, b.y + r0.y + r0.h * 0.95, k)
+      // on the hero the board fills the canvas: wait in its clear top-right
+      // gutter, under the role caption and clear of headline, portrait and pill
+      out.x = lerp(out.x, b.x + g.FW - 140, k)
+      out.y = lerp(out.y, b.y + r0.y + 336, k)
+      // below the hero the board fills the free canvas (no room beside it):
+      // wait inside its still-empty bottom-right corner, where the close lands
+      out.x = lerp(b.x + g.FW - 112, out.x, k)
+      out.y = lerp(b.y + b.h - 150, out.y, k)
     }
     out.z = 110
   }
@@ -195,6 +203,24 @@ export function project(g: Geo, c: CamPose, X: number, Y: number, Z: number, out
   return out
 }
 
+/** viewport px → world point on the z = 0 plane (inverse of `project`) */
+export function unproject(g: Geo, c: CamPose, sx: number, sy: number, out: { x: number; y: number }, persp = 2200) {
+  const cx = g.view.x + g.view.w / 2
+  const cy = g.view.y + g.view.h / 2
+  const a = sx - cx
+  const b = sy - cy
+  const rx = (c.rx * Math.PI) / 180
+  const rz = (c.rz * Math.PI) / 180
+  const y1 = (b * persp) / (persp * Math.cos(rx) + b * Math.sin(rx))
+  const f = persp / Math.max(200, persp - y1 * Math.sin(rx))
+  const x1 = a / f
+  const x = x1 * Math.cos(rz) + y1 * Math.sin(rz)
+  const y = -x1 * Math.sin(rz) + y1 * Math.cos(rz)
+  out.x = c.x + x / c.s
+  out.y = c.y + y / c.s
+  return out
+}
+
 /* ------------------------------------------------------------- measure */
 
 export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpoint): Geo {
@@ -218,6 +244,12 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   const sDesc = narrow ? (view.w * 0.86) / FW : Math.min(1.1, (view.w * 0.66) / FW)
   const tilt = narrow ? { rx: 30, rz: -4 } : { rx: 40, rz: -6 }
   const sHold = (h: number) => (narrow ? Math.min((view.w * 0.94) / FW, (view.h * 0.94) / h) : Math.min(1.25, (view.w * 0.8) / FW, (view.h * 0.9) / h))
+  // 01 Hello reads at a glance: its flat holds fill the free canvas between the
+  // panels (16px margins), height permitting
+  const vw0 = document.documentElement.clientWidth
+  const vh0 = window.innerHeight
+  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - 62 - 72 - 24 }
+  const fit0 = (h: number) => Math.min(1.25, free.w / FW, free.h / h)
 
   pieces.forEach((c) => {
     const o = offsetIn(c.slot, world)
@@ -250,12 +282,16 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
     // the very first view sits closer: the page and its heroes fill the canvas
     const sT = i === 0 && !narrow ? sTilt * 1.12 : sTilt
     const tiltPose = (s: number, rz: number): CamPose => ({ x: cxw, y: ty, s, rx: tilt.rx, rz })
+    const big = i === 0 && !narrow
+    // 01 Hello: the frame from just above the artboard's top edge to a peek of the region below
+    const fH = r0.y + r0.h + 34
+    const flat: CamPose = big ? { x: cxw, y: b.y - 16 + fH / 2, s: fit0(fH), rx: 0, rz: 0 } : { x: cxw, y: b.y + r0.y + r0.h / 2, s: Math.min(sHold(r0.h), sDesc * 1.25), rx: 0, rz: 0 }
     const K: Key[] = [
       { u: 0, c: tiltPose(sT * 0.94, tilt.rz + 4) },
       { u: PH.arrive, c: tiltPose(sT, tilt.rz) },
       { u: PH.topEnd, c: tiltPose(sT * 1.04, tilt.rz - 3) },
-      { u: PH.flat, c: { x: cxw, y: b.y + r0.y + r0.h / 2, s: Math.min(sHold(r0.h), sDesc * 1.25), rx: 0, rz: 0 } },
-      { u: PH.descStart, c: { x: cxw, y: b.y + r0.y + r0.h / 2, s: Math.min(sHold(r0.h), sDesc * 1.25), rx: 0, rz: 0 } },
+      { u: PH.flat, c: flat },
+      { u: PH.descStart, c: { ...flat } },
     ]
     const W: [number, number][] = [[secP(i, PH.arrive * (i === 0 ? 0.4 : 1)), secP(i, PH.topEnd)]]
     const n = rs.length - 1
@@ -268,7 +304,8 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
       const yc = b.y + reg.y + reg.h / 2
       // frame the region together with the heroes waiting for it
       const ps = parkSpan(i, r)
-      const visD = view.h / sDesc
+      const sD = big ? fit0(reg.h + 120) : sDesc
+      const visD = view.h / sD
       let yBuild = yc
       if (ps) {
         const lo = Math.min(reg.y, ps[0])
@@ -277,8 +314,8 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
         // keep the region's top in view
         yBuild = Math.min(yBuild, b.y + reg.y + visD * 0.5 - 40)
       }
-      K.push({ u: a + w * 0.3, c: { x: cxw, y: yBuild, s: sDesc, rx: narrow ? 6 : 10, rz: 0 } })
-      K.push({ u: a + w * 0.92, c: { x: cxw, y: yBuild, s: sDesc, rx: 2, rz: 0 } })
+      K.push({ u: a + w * 0.3, c: { x: cxw, y: yBuild, s: sD, rx: narrow ? 6 : 10, rz: 0 } })
+      K.push({ u: a + w * 0.92, c: { x: cxw, y: yBuild, s: sD, rx: 2, rz: 0 } })
       W.push([secP(i, a + w * 0.16), secP(i, a + w * 1.02)])
       a += w
     }
@@ -286,7 +323,7 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
     // hold: the last region, with the artboard's bottom edge resting low in
     // the frame (contact leaves room for the crowd along the bottom edge)
     const extra = i === 4 ? (narrow ? 90 : 170) : 0
-    const holdS = sHold(lastR.h + extra)
+    const holdS = big ? fit0(lastR.h + 90) : sHold(lastR.h + extra)
     const visH = view.h / holdS
     const bottomAnchor = b.y + b.h + extra - visH * 0.5 + (narrow ? 20 : 40)
     const holdY = Math.min(bottomAnchor, b.y + lastR.y + visH * 0.5 - 30)
@@ -414,7 +451,9 @@ function schedule(g: Geo) {
         c.rest = c.travel === 'rain' ? (rnd(c.id, 9) - 0.5) * 6 : 0
         const cx = c.sx + c.w / 2
         const cy = c.sy + c.h / 2
-        if (c.travel === 'rain') {
+        if (c.travel === 'slide') {
+          c.wait = { x: Math.min(260, g.FW * 0.24), y: 0, z: 0 }
+        } else if (c.travel === 'rain') {
           c.wait = { x: (rnd(c.id, 7) - 0.5) * 360, y: -760 * g.peak - c.h, z: 380 * g.peak }
         } else {
           camAt(g, c.p0, cam0)

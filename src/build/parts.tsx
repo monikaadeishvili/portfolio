@@ -71,7 +71,7 @@ export function Piece({ id, name, kind, tone = '#5B4BFF', travel, order, at, dur
   const ref = useRef<HTMLDivElement>(null)
   // narrow layouts keep only a few heroes: the rest come out of the bubble
   const k: Kind = kind === 'hero' && ctx.narrow && !parkN ? 'bubble' : kind
-  const tr: Travel = k === 'bubble' ? (travel === 'rain' ? 'rain' : 'spit') : (travel ?? 'leap')
+  const tr: Travel = k === 'bubble' ? (travel === 'rain' || travel === 'slide' ? travel : 'spit') : (travel ?? 'leap')
   const hero = k === 'hero'
 
   useLayoutEffect(() => {
