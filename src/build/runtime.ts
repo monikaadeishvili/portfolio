@@ -19,7 +19,7 @@ export interface V3 {
  *  its own legs. bubble: neat UI spat out of the bubble (or rained by the
  *  balloon pop) in a fast arc. */
 export type Kind = 'hero' | 'bubble'
-export type Travel = 'crawl' | 'leap' | 'slap' | 'stamp' | 'spit' | 'rain'
+export type Travel = 'crawl' | 'leap' | 'slap' | 'stamp' | 'spit' | 'rain' | 'slide'
 
 export interface PieceMeta {
   id: string
@@ -248,6 +248,10 @@ function reset(p: Pose) {
   return p
 }
 
+/** 01 Hello's placed objects settle with a short, refined overshoot
+ *  (≤ ~6%) instead of the rubbery cartoon squash of the other sections */
+export const settleOf = (c: { section: number }) => (c.section === 0 ? 0.32 : 1)
+
 function landSquash(p: Pose, t: number, amt: number) {
   if (t < 0.86) return
   const s = Math.sin(Math.PI * ((t - 0.86) / 0.14))
@@ -282,6 +286,17 @@ export function evalPose(c: Piece, p: number, peak: number) {
       P.z = W.z
       return P
     }
+    if (c.travel === 'slide') {
+      // a long horizontal strip: glides in along its own axis, no arc
+      const e = outCubic(k)
+      P.x = lerp(W.x, 0, e)
+      P.y = lerp(W.y, 0, e)
+      P.z = 0
+      P.op = smooth(0, 0.45, k)
+      P.b = 0
+      P.state = 'leaping'
+      return P
+    }
     if (c.travel === 'rain') {
       // confetti: tumbles down from the pop, sways, lands with a pat
       const e = outCubic(k)
@@ -306,15 +321,16 @@ export function evalPose(c: Piece, p: number, peak: number) {
     P.x = lerp(W.x, 0, e)
     P.y = lerp(W.y, 0, e)
     P.z = lerp(W.z, 0, k) + 4 * arc * k * (1 - k)
-    const sc = lerp(0.3, 1, clamp01(outBack(clamp01(k * 1.15), 2)))
+    const sf = settleOf(c)
+    const sc = lerp(0.3, 1, clamp01(outBack(clamp01(k * 1.15), sf < 1 ? 0.9 : 2)))
     const air = Math.sin(Math.PI * k)
-    P.sx = sc * (1 + 0.1 * air)
-    P.sy = sc * (1 - 0.06 * air)
+    P.sx = sc * (1 + 0.1 * air * sf)
+    P.sy = sc * (1 - 0.06 * air * sf)
     P.rot = air * 10 * (c.order % 2 ? 1 : -1) + c.rest * k
     P.op = smooth(0, 0.07, k)
     P.ball = 1 - smooth(0, 0.3, k)
     P.b = (1 - smooth(0.4, 0.95, k)) * 0.5
-    landSquash(P, k, 0.9)
+    landSquash(P, k, 0.9 * sf)
     P.state = 'leaping'
     return P
   }
@@ -405,7 +421,7 @@ export function evalPose(c: Piece, p: number, peak: number) {
   P.sy = 1 + 0.12 * air
   P.rot = air * 8 * (c.order % 2 ? 1 : -1) + c.rest * e
   P.b = 1 - smooth(0.5, 0.94, t)
-  landSquash(P, t, 1.4)
+  landSquash(P, t, 1.4 * settleOf(c))
   P.state = 'leaping'
   return P
 }

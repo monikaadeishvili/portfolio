@@ -8,7 +8,7 @@
   z-index: 0;
   overflow: hidden;
   cursor: none;
-  background: #fff2c7;
+  background: #f1f1ee;
 }
 .bstage a,
 .bstage button {
@@ -20,6 +20,10 @@ html.is-coarse .bstage button {
 }
 html.is-coarse .bstage a {
   cursor: pointer;
+}
+/* the drawn cursor's hover affordance (canvas.css scopes it to .stage only) */
+.bstage:has(a:hover, button:hover) .cur-you .cur-arrow {
+  transform: scale(1.14) rotate(-6deg);
 }
 .bstage[data-tool='hand'] {
   user-select: none;
@@ -38,8 +42,10 @@ html.is-coarse .bstage a {
 }
 .wbg-hello {
   background:
-    radial-gradient(60% 60% at 50% 40%, #fff6d6 0%, transparent 70%),
-    #f6e7b4;
+    radial-gradient(60% 55% at 50% 38%, #f8f8f6 0%, transparent 72%),
+    radial-gradient(42% 38% at 86% 84%, rgb(157 184 255 / 0.2) 0%, transparent 70%),
+    radial-gradient(34% 30% at 10% 12%, rgb(157 184 255 / 0.1) 0%, transparent 70%),
+    #f1f1ee;
 }
 .wbg-origin {
   background:
@@ -138,7 +144,7 @@ html.is-coarse .bstage a {
   background-size: 26px 26px;
 }
 .wdot-hello {
-  background-image: radial-gradient(circle at center, rgb(22 19 29 / 0.16) 1.3px, transparent 1.7px);
+  background-image: radial-gradient(circle at center, rgb(11 11 12 / 0.12) 1.1px, transparent 1.5px);
 }
 .wdot-origin {
   background-image: radial-gradient(circle at center, rgb(255 244 220 / 0.3) 1.1px, transparent 1.6px), radial-gradient(circle at center, rgb(255 213 138 / 0.9) 1.8px, transparent 2.4px);
@@ -313,6 +319,25 @@ html.is-coarse .bstage a {
 .rw {
   display: inline-block;
   vertical-align: top;
+}
+/* Animated leaves keep a 3-D transform after their animation ends. The engine
+   clears the inline transform when a word / piece settles; without a fallback
+   the element dropped its compositor layer at that moment, its pixels had to
+   be re-rasterised into the parent layer, and for a frame it vanished (the
+   flicker while things land and while taste is toggled). */
+.bstage:not(.is-static) :is(.rw-in, .h-swap, .h-cell) {
+  transform: translate3d(0, 0, 0);
+}
+/* The panels, top bar, dock and cursors float over a 3-D scene that changes
+   every frame. Left to the browser, they were composited only "because they
+   overlap" that scene, so their layers were torn down and rebuilt again and
+   again during the build; each rebuild re-rasterised the panel from scratch
+   and it blinked. Pin each one to its own permanent layer. */
+.bstage,
+.bstage .chrome,
+.bstage .cursors,
+.bstage .cur-bubble {
+  will-change: transform;
 }
 .rv-title {
   font-family: var(--f-display);
@@ -889,7 +914,7 @@ html.is-deck-drag .cur-you .cur-hand {
   pointer-events: none;
 }
 .bstage.is-static .bf-hello .bf-world {
-  background: #f6e7b4;
+  background: #f1f1ee;
 }
 .bstage.is-static .bf-origin .bf-world {
   background: #0a0d26;

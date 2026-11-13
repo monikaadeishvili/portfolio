@@ -1,0 +1,89 @@
+/* scalloped sticker (used by 05 Contact) */
+.stk {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  margin: 0;
+}
+.stk svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.stk-shadow {
+  fill: var(--ink);
+}
+.stk-body {
+  fill: var(--stk, var(--mint));
+  stroke: var(--ink);
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+}
+.stk-inner {
+  fill: #fffaf0;
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+.stk-text {
+  font-family: var(--f-display);
+  font-variation-settings: 'wght' 800, 'wdth' 90;
+  font-size: 17px;
+  letter-spacing: 0.02em;
+  fill: var(--ink);
+}
+.stk-spin {
+  transform-origin: 100px 100px;
+  animation: stk-spin 22s linear infinite;
+}
+.bf:not([data-near='1']) .stk-spin {
+  animation-play-state: paused;
+}
+@keyframes stk-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.stk-glyph {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.stk-glyph circle {
+  fill: var(--yellow);
+}
+.stk-big {
+  font-family: var(--f-display);
+  font-variation-settings: 'wght' 850, 'wdth' 85;
+  font-size: 52px;
+  letter-spacing: -0.04em;
+  fill: var(--ink);
+}
+.stk-mint {
+  --stk: var(--mint);
+}
+.stk-yellow {
+  --stk: var(--yellow);
+}
+.stk-pink {
+  --stk: var(--pink);
+}
+.stk-coral {
+  --stk: var(--coral);
+}
+.stk-sky {
+  --stk: var(--sky);
+}
+.stk-lime {
+  --stk: var(--lime);
+}
+.stk-violet {
+  --stk: #a99cff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stk-spin {
+    animation: none;
+  }
+}
