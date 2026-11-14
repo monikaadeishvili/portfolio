@@ -5,7 +5,7 @@
  */
 
 export type LayerKind = 'frame' | 'text' | 'component' | 'organism' | 'piece' | 'note'
-export type Tool = 'move' | 'frame' | 'shape' | 'pen' | 'text' | 'hand' | 'comment'
+export type Tool = 'move' | 'frame' | 'shape' | 'pen' | 'text' | 'hand' | 'comment' | 'picker'
 export type Breakpoint = 'desk' | 'tab' | 'mob'
 
 export interface LayerInfo {
@@ -85,7 +85,8 @@ export const tool = channel<Tool>('move')
 
 export const ui = {
   zoom: null as HTMLElement | null,
-  scrollTo: null as null | ((y: number, duration: number) => void),
+  /** scroll the page to y over `duration` s (0 = jump); `steady` = constant speed (the Play button) */
+  scrollTo: null as null | ((y: number, duration: number, steady?: boolean) => void),
 }
 
 /** cached rects for the current frame (filled in the loop's read phase) */

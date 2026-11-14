@@ -47,6 +47,8 @@ export const bots: Record<Bot['key'], Bot> = {
 }
 
 const you = { el: null as HTMLElement | null, x: -100, y: -100, vx: 0, vy: 0, shown: false }
+/** the visitor's drawn cursor (smoothed position, and whether it is showing) — the pen trail starts here */
+export const youAt = (): [number, number, boolean] => [you.x, you.y, you.shown]
 
 const IDLE_LINES: Record<Bot['key'], string[]> = {
   monika: ['nudge 2px left', 'hmm, more air?', 'ooh'],
@@ -327,6 +329,25 @@ export function Cursors() {
         <svg className="cur-hand" viewBox="0 0 24 24">
           <path d="M8 11V5.5a1.5 1.5 0 0 1 3 0V10m0-.5V4a1.5 1.5 0 0 1 3 0v6m0-4.5a1.5 1.5 0 0 1 3 0V12m0-3a1.5 1.5 0 0 1 3 0v5c0 4-2.5 7-6.5 7-3 0-4.6-1.3-6-3.4L4.4 13.9a1.6 1.6 0 0 1 2.5-2L8 13" />
         </svg>
+        <svg className="cur-pen" viewBox="0 0 24 24">
+          <g transform="translate(3 21) rotate(45) scale(1.3)">
+            <path d="M0 0-4.5-7.5Q-4.5-10-2-10.5H2Q4.5-10 4.5-7.5Z" />
+            <path className="cur-pen-cap" d="M-2.6-10.5V-13H2.6V-10.5" />
+            <path className="cur-pen-slit" d="M0 0V-5.4" />
+            <circle className="cur-pen-hole" cx="0" cy="-6.4" r="1.05" />
+          </g>
+        </svg>
+        <svg className="cur-picker" viewBox="0 0 24 24">
+          <g transform="translate(3 21) rotate(45) scale(1.3)">
+            <path d="M-1.3-1.9V-9.6H1.3V-1.9L0 0.2Z" />
+            <rect x="-3" y="-10.4" width="6" height="1.6" rx="0.8" />
+            <rect x="-2.3" y="-15.2" width="4.6" height="5.2" rx="1.6" />
+          </g>
+        </svg>
+        <span className="cur-pick" aria-hidden="true">
+          <i className="cur-pick-sw" />
+          <b className="cur-pick-hex">#000000</b>
+        </span>
         <svg className="cur-comment" viewBox="0 0 24 24">
           <path d="M4 20V8a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2a5 5 0 0 1-5 5H9l-5 5Z" />
         </svg>

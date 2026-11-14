@@ -4,6 +4,8 @@ import { gsap, ScrollTrigger } from '../scene/gsap'
 import { Eyes } from '../scene/Eyes'
 import { hover, pointer, scene, tool, ui, type Breakpoint } from '../scene/store'
 import { Cursors, cursorConfig, type BotKey, type Region as CurRegion, type Story } from '../canvas/Cursors'
+import { PenTrail } from '../canvas/PenTrail'
+import { ColorPicker } from '../canvas/ColorPicker'
 import { jumpTo } from '../chrome/ChapterRuler'
 import { MomoGlyph } from '../ui/components'
 import { Sections } from './sections'
@@ -24,7 +26,7 @@ const LINES: { sec: number; key: BotKey; u0: number; u1: number; line: string }[
   { sec: 0, key: 'pm', u0: 0.22, u1: 0.38, line: 'oh. OH.' },
   { sec: 0, key: 'monika', u0: 0.47, u1: 0.535, line: 'hey, that’s me!' },
   { sec: 0, key: 'dev', u0: 0.535, u1: 0.6, line: 'hover her. trust me 👀' },
-  { sec: 0, key: 'pm', u0: 0.89, u1: 1.01, line: 'blue suits this page' },
+  { sec: 0, key: 'pm', u0: 0.89, u1: 1.01, line: 'golden hour, nice' },
   { sec: 1, key: 'dev', u0: 0.08, u1: 0.26, line: 'lights off' },
   { sec: 1, key: 'monika', u0: 0.5, u1: 0.7, line: 'my whole route' },
   { sec: 1, key: 'pm', u0: 0.74, u1: 0.95, line: '3,900 km ✈︎' },
@@ -162,8 +164,10 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
       }
       build()
     }
-    ui.scrollTo = (y, duration) => {
-      if (lenis) lenis.scrollTo(y, duration > 0 ? { duration, easing: (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2) } : { immediate: true })
+    ui.scrollTo = (y, duration, steady) => {
+      // steady: constant speed with a short ease in and out (the dock's Play)
+      const ease = steady ? (k: number) => (k < 0.04 ? (k * k) / 0.08 : k > 0.96 ? 1 - ((1 - k) * (1 - k)) / 0.08 : k) : (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2)
+      if (lenis) lenis.scrollTo(y, duration > 0 ? { duration, easing: ease } : { immediate: true })
       else window.scrollTo({ top: y, behavior: duration > 0 ? 'smooth' : 'auto' })
     }
 
@@ -445,6 +449,8 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
             scroll to add taste <span>↓</span>
           </p>
         )}
+        {!reduced && <PenTrail />}
+        {!reduced && <ColorPicker />}
         {!reduced && <Cursors />}
       </main>
       {!reduced && <div className="scroll-spacer" ref={spacerRef} aria-hidden="true" style={{ '--len': `${SCROLL_VH}vh` } as CSSProperties} />}

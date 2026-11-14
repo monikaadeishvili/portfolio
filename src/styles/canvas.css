@@ -567,16 +567,99 @@ html.is-static .layer-sheet {
 .cur-you[data-tool='comment'] .cur-arrow,
 .cur-you[data-tool='frame'] .cur-arrow,
 .cur-you[data-tool='pen'] .cur-arrow,
+.cur-you[data-tool='picker'] .cur-arrow,
 .cur-you[data-tool='text'] .cur-arrow {
   display: none;
 }
 .cur-you[data-tool='shape'] .cur-cross,
 .cur-you[data-tool='frame'] .cur-cross,
-.cur-you[data-tool='pen'] .cur-cross,
 .cur-you[data-tool='text'] .cur-cross,
 .cur-you[data-tool='hand'] .cur-hand,
+.cur-you[data-tool='pen'] .cur-pen,
+.cur-you[data-tool='picker'] .cur-picker,
 .cur-you[data-tool='comment'] .cur-comment {
   display: block;
+}
+/* the pen: a solid ink nib with a white keyline; its tip is the hot spot */
+.cur-you svg.cur-pen {
+  left: -3px;
+  top: -21px;
+  width: 24px;
+  height: 24px;
+  overflow: visible;
+  fill: var(--ink);
+  stroke: #fff;
+  stroke-width: 1.1;
+  filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.28));
+}
+.cur-you svg.cur-pen .cur-pen-cap {
+  fill: var(--ink);
+}
+.cur-you svg.cur-pen :is(.cur-pen-slit, .cur-pen-hole) {
+  stroke: #fff;
+  stroke-width: 0.9;
+}
+.cur-you svg.cur-pen .cur-pen-hole {
+  fill: #fff;
+}
+/* the colour picker: an ink pipette, and a chip with the live swatch + hex
+   (written by ./ColorPicker.tsx) in place of the name tag */
+.cur-you svg.cur-picker {
+  left: -3px;
+  top: -21px;
+  width: 24px;
+  height: 24px;
+  overflow: visible;
+  fill: var(--ink);
+  stroke: #fff;
+  stroke-width: 1.1;
+  filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.28));
+}
+.cur-pick {
+  position: absolute;
+  left: 14px;
+  top: 16px;
+  display: none;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 9px 4px 5px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(22 19 29 / 0.08),
+    0 4px 12px -4px rgb(22 19 29 / 0.3);
+  white-space: nowrap;
+}
+.cur-pick-sw {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgb(22 19 29 / 0.14);
+}
+.cur-pick-hex {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+.cur-you[data-tool='picker'] .cur-pick {
+  display: inline-flex;
+}
+.cur-you[data-tool='picker'] .cur-tag {
+  display: none;
+}
+.cur-pick.is-copied .cur-pick-hex {
+  color: #1fa45a;
+}
+/* the pen's trail + click rings (./PenTrail.tsx) */
+.pen-trail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
 }
 .stage:has(a:hover, button:hover, .cr-drag:hover) .cur-you .cur-arrow {
   transform: scale(1.14) rotate(-6deg);

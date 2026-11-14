@@ -38,13 +38,27 @@ export const ToolIcon: Record<Tool, () => ReactNode> = {
   ),
   pen: () => (
     <S>
-      <path d="M10 3 15 11l-5 6-5-6 5-8Z" />
-      <circle cx="10" cy="11" r="1.4" />
+      {/* a fountain-pen nib, tip at the lower left */}
+      <g transform="translate(6 16) rotate(45)">
+        <path d="M0 0-4.5-7.5Q-4.5-10-2-10.5H2Q4.5-10 4.5-7.5Z" />
+        <path d="M-2.5-10.5V-12.8H2.5V-10.5M0 0V-5.4" />
+        <circle cx="0" cy="-6.6" r="1" />
+      </g>
     </S>
   ),
   text: () => (
     <S>
       <path d="M4.5 5V3.8h11V5M10 3.8V16.5M7.5 16.5h5" />
+    </S>
+  ),
+  picker: () => (
+    <S>
+      {/* an eyedropper, tip at the lower left */}
+      <g transform="translate(4.5 15.5) rotate(45)">
+        <path d="M-1.1-1.8V-9.5H1.1V-1.8L0 0Z" />
+        <path d="M-2.6-9.5H2.6" />
+        <rect x="-2" y="-14.2" width="4" height="4.7" rx="1.4" />
+      </g>
     </S>
   ),
   hand: () => (

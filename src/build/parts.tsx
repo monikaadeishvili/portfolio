@@ -25,7 +25,7 @@ export const useSection = () => useContext(SectionCtx)
 
 /* --------------------------------------------------------------- Region */
 
-export function Region({ index, label, className = '', children, as: Tag = 'div', style, weight = 1, hold }: { index: number; label: string; className?: string; children: ReactNode; as?: ElementType; style?: CSSProperties; weight?: number; /** focus inside jumps to this hold: "u,min,max" (section-local) */ hold?: string }) {
+export function Region({ index, label, className = '', children, as: Tag = 'div', style, weight = 1, hold, pan }: { index: number; label: string; className?: string; children: ReactNode; as?: ElementType; style?: CSSProperties; weight?: number; /** focus inside jumps to this hold: "u,min,max" (section-local) */ hold?: string; /** the camera holds flat on this region while its content pans sideways */ pan?: boolean }) {
   const ctx = useSection()
   const ref = useRef<HTMLElement>(null)
   useLayoutEffect(() => {
@@ -34,7 +34,7 @@ export function Region({ index, label, className = '', children, as: Tag = 'div'
   }, [ctx.live, ctx.section, index, label])
   return (
     <RegionCtx.Provider value={index}>
-      <Tag ref={ref} className={`rg ${className}`} data-region={index} data-weight={weight} data-hold={hold} style={style}>
+      <Tag ref={ref} className={`rg ${className}`} data-region={index} data-weight={weight} data-hold={hold} data-pan={pan ? '' : undefined} style={style}>
         {children}
       </Tag>
     </RegionCtx.Provider>

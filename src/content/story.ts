@@ -37,7 +37,7 @@ export const CHAPTERS: Chapter[] = [
     frame: 'Craft',
     ruler: 'HOW I THINK',
     headline: ['I think in ', { em: 'components.' }],
-    body: 'Small, honest pieces. A button that knows its job. A card that respects your time. Put together with care, they become something people can trust.',
+    body: 'Every product I design is built from the same small parts. Scroll sideways and watch one kit become five things.',
   },
   {
     id: 'proof',
@@ -65,7 +65,8 @@ export const HELLO = {
   support: ['Taste comes with experience. I have ', '7+ years', ' of it.'] as const,
   intro: "Hi, I'm Monika, a product designer.",
   marquee: { lead: 'FROM A ', empty: 'BLANK FIGMA FILE', mid: ' TO ', full: 'A PRODUCT PEOPLE USE', tail: ' — ' },
-  workedWith: ['DAZN', 'NOTA by M&T Bank'],
+  /** companies and named client products from the resume (the Worked with marquee) */
+  workedWith: ['DAZN', 'Nota by M&T Bank', 'Contrast', 'Forcoda', 'Studious', 'Hello Audio', 'Roomistry', 'Startup Mentor AI', '4twiggers', 'Realoffer', 'Moneymarket', 'Xpresso', 'Refresh Miami', 'Graft', 'Bizzy', 'Burq', 'Dinespace'],
   clients: '18 client products',
   hint: ['This page builds itself.', "Your product won't."] as const,
   primary: 'See how I work',
@@ -73,6 +74,22 @@ export const HELLO = {
 }
 
 export const PRINCIPLES = ['Research first, pixels second.', 'Systems over screens.', 'Calm beats clever.']
+
+/** 03 How I think — the five stops of the sideways pan (one kit, five shapes) */
+export const PROCESS = [
+  { back: 'Research', verb: 'Ask.', sub: 'Research first.', body: 'Interviews, competitor audits, journey maps. I find out who it is for before I draw anything.', makes: ['Personas', 'Journey maps', 'Audits'], tray: 'Notes' },
+  { back: 'Flows', verb: 'Map.', sub: 'Flows before screens.', body: 'User flows and wireframes come next. Every screen gets a reason to exist.', makes: ['User flows', 'IA', 'Wireframes'], tray: 'Flow' },
+  { back: 'Systems', verb: 'Systemise.', sub: 'One kit, every screen.', body: 'Type, colour, spacing and components, defined once. The product stays consistent on web, mobile and TV.', makes: ['Tokens', 'Components', 'Patterns'], tray: 'Tokens' },
+  { back: 'Handoff', verb: 'Hand off.', sub: 'Nothing left to guess.', body: 'Clickable Figma prototypes, documented patterns, every state covered. Developers build it without guessing.', makes: ['Prototype', 'Specs', 'Docs'], tray: 'Spec' },
+  { back: 'Launch', verb: 'Launch.', sub: 'A product people use.', body: 'Tested with real users, then refined. From a blank Figma file to a product people use.', makes: ['Usability tests', 'Iteration'], tray: 'Live' },
+] as const
+
+/** 03 How I think — the three rules (the close) */
+export const RULES = [
+  { big: 'Research first, pixels second.', line: 'I ask who it is for before I open Figma.' },
+  { big: 'Systems over screens.', line: 'One decision, made once, used everywhere.' },
+  { big: 'Calm beats clever.', line: 'If it needs explaining, it is not finished.' },
+] as const
 
 export const QUOTE = { text: 'People ignore design that ignores people.', by: 'Frank Chimero' }
 

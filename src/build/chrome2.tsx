@@ -1,6 +1,6 @@
 /** Page 2 chrome: Layers (current section's regions), Inspector (live travel / bubble mood), Dock */
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
-import { hover, tool, type Breakpoint, type Tool } from '../scene/store'
+import { hover, tool, ui, type Breakpoint, type Tool } from '../scene/store'
 import { Chevron, LayerIcon, ToolIcon } from '../chrome/Icons'
 import { ChapterRuler, type RulerChapter } from '../chrome/ChapterRuler'
 import { CHAPTERS } from '../content/story'
@@ -231,7 +231,7 @@ export function Inspector2() {
   const sec = c?.section ?? ch
   const fname = frameName(sec, hello.name)
   // 01 Hello's frame reads as an untouched default until taste is applied
-  const frameFill = sec === 0 ? (hello.taste ? '#F6F6F3' : '#FFFFFF') : '#FFFDF8'
+  const frameFill = sec === 0 ? (hello.taste ? '#F3ECE1' : '#FFFFFF') : '#FFFDF8'
   const fill = c?.tone ?? frameFill
   const fillRef = useRef<HTMLSpanElement>(null)
   const hexRef = useRef<HTMLSpanElement>(null)
@@ -309,8 +309,8 @@ export function Inspector2() {
           <div className={`type-row${hello.taste ? ' is-taste' : ''}`} key={hello.taste ? 'on' : 'off'}>
             {hello.taste ? (
               <>
-                <span className="type-face">Anton</span>
-                <span className="type-meta">Regular · 94 / 90% · Uppercase</span>
+                <span className="type-face">Big Shoulders</span>
+                <span className="type-meta">Black · 94 / 90% · Uppercase</span>
               </>
             ) : (
               <>
@@ -328,9 +328,110 @@ export function Inspector2() {
 const TOOLS: { id: Tool; label: string; key: string }[] = [
   { id: 'move', label: 'Move', key: 'V' },
   { id: 'hand', label: 'Hand — drag to scrub', key: 'H' },
+  { id: 'pen', label: 'Pen — draw a path', key: 'P' },
+  { id: 'picker', label: 'Color picker — click to copy', key: 'I' },
 ]
 
 const RULER: RulerChapter[] = CHAPTERS.map((c, i) => ({ label: c.ruler, at: i === 0 ? 0 : (TRN[i - 1][0] + TRN[i - 1][1]) / 2, jump: holdOf(i) }))
+
+/** seconds the Play button takes for the whole story (scaled by what is left) */
+const PLAY_SECONDS = 75
+
+/** the story's Play button: plays the scroll at a steady pace; ring + % follow the scroll */
+function PlayButton() {
+  const [playing, setPlaying] = useState(false)
+  const ringRef = useRef<SVGCircleElement>(null)
+  const pctRef = useRef<HTMLSpanElement>(null)
+  const playingRef = useRef(false)
+  useEffect(() => {
+    playingRef.current = playing
+  }, [playing])
+
+  // the ring and the percentage follow the page's scroll progress
+  useEffect(() => {
+    let raf = 0
+    let last = -1
+    const paint = () => {
+      raf = 0
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      const p = Math.min(1, Math.max(0, window.scrollY / Math.max(1, max)))
+      const pct = Math.round(p * 100)
+      ringRef.current?.style.setProperty('stroke-dashoffset', (1 - p).toFixed(4))
+      if (pct !== last && pctRef.current) {
+        last = pct
+        pctRef.current.textContent = String(pct)
+      }
+      if (playingRef.current && p > 0.997) setPlaying(false)
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(paint)
+    }
+    paint()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
+
+  // stop as soon as the visitor scrolls (or scrubs) themselves
+  useEffect(() => {
+    if (!playing) return
+    const stop = () => {
+      ui.scrollTo?.(window.scrollY, 0)
+      setPlaying(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(e.key)) stop()
+    }
+    const onDown = (e: PointerEvent) => {
+      if (!(e.target instanceof Element && e.target.closest('.play'))) stop()
+    }
+    window.addEventListener('wheel', stop, { passive: true })
+    window.addEventListener('touchstart', stop, { passive: true })
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('pointerdown', onDown)
+    return () => {
+      window.removeEventListener('wheel', stop)
+      window.removeEventListener('touchstart', stop)
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('pointerdown', onDown)
+    }
+  }, [playing])
+
+  const play = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight
+    if (playing) {
+      ui.scrollTo?.(window.scrollY, 0)
+      setPlaying(false)
+      return
+    }
+    // at the end: back to the start
+    if (window.scrollY / Math.max(1, max) > 0.99) {
+      ui.scrollTo?.(0, 2.4)
+      return
+    }
+    const remaining = 1 - window.scrollY / Math.max(1, max)
+    ui.scrollTo?.(max, Math.max(3, PLAY_SECONDS * remaining), true)
+    setPlaying(true)
+  }
+
+  return (
+    <button type="button" className={`play${playing ? ' is-playing' : ''}`} onClick={play} aria-label={playing ? 'Pause the story' : 'Play the story'}>
+      <svg viewBox="0 0 28 28" className="play-ring" aria-hidden="true">
+        <circle cx="14" cy="14" r="11" className="ring-bg" />
+        <circle cx="14" cy="14" r="11" className="ring-fg" ref={ringRef} pathLength={1} />
+        {playing ? <path d="M11 9.5v9M17 9.5v9" className="play-glyph" /> : <path d="M11.5 9.2v9.6l7.6-4.8Z" className="play-glyph fill" />}
+      </svg>
+      <span className="play-label">
+        <span className="play-word">{playing ? 'Pause' : 'Play'}</span> <span className="play-pct" ref={pctRef}>0</span>
+        <span className="play-pct-u">%</span>
+      </span>
+    </button>
+  )
+}
 
 export function Dock({ bp }: { bp: Breakpoint }) {
   const [active, setActive] = useState<Tool>(tool.get())
@@ -353,10 +454,15 @@ export function Dock({ bp }: { bp: Breakpoint }) {
     }
   }, [])
   useEffect(() => () => tool.set('move'), [])
+  const compact = bp === 'mob'
   return (
-    <div className={`dock chrome${bp === 'mob' ? ' is-compact' : ''}`}>
-      {bp !== 'mob' && (
-        <>
+    <div className={`dock chrome tb-unit${compact ? ' is-compact' : ''}`}>
+      <div className="tb-ruler">
+        <ChapterRuler chapters={RULER} variant="dock" label="Story chapters" subs={subs} />
+        {compact && <PlayButton />}
+      </div>
+      {!compact && (
+        <div className="tb-row">
           <div className="dock-tools" role="toolbar" aria-label="Tools">
             {TOOLS.map((t) => (
               <button
@@ -375,9 +481,9 @@ export function Dock({ bp }: { bp: Breakpoint }) {
             ))}
           </div>
           <span className="tb-div" aria-hidden="true" />
-        </>
+          <PlayButton />
+        </div>
       )}
-      <ChapterRuler chapters={RULER} variant="dock" label="Story chapters" subs={subs} />
     </div>
   )
 }

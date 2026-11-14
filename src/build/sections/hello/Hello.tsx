@@ -13,27 +13,32 @@
  */
 import { useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { Arrow } from '../../../ui/components'
-import { EMAIL, HELLO } from '../../../content/story'
+import { EMAIL, HELLO, LINKS } from '../../../content/story'
 import { Piece, Region, Reveal, useSection } from '../../parts'
 import { outCubic, range, registerFx, registerText, smooth } from '../../runtime'
 import { Artboard, type SectionProps } from '../Artboard'
 import { TasteSwitch } from './TasteSwitch'
 import { mountTaste, taste } from './taste'
 import { mountPortrait } from './portraitFx'
+import { mountHeadWake } from './headWake'
+import { mountRibbons, mountWw } from './wwMarquee'
 import './hello.css'
 
 /** designed fills (Layers / Inspector read these as the pieces' fills) */
 const HC = {
-  ink: '#0B0B0C',
-  board: '#F6F6F3',
-  canvas: '#F1F1EE',
-  blue: '#0A4BFF',
-  glow: '#9DB8FF',
+  ink: '#1E1712',
+  board: '#F3ECE1',
+  canvas: '#EBE2D4',
+  blue: '#BF400B',
+  glow: '#FFB07A',
   green: '#1FA45A',
   white: '#FFFFFF',
 }
 
 const TITLE = `${HELLO.line1} ${HELLO.line2}`
+const LINKEDIN = LINKS.find((l) => l.label === 'LinkedIn')!.href
+const RESUME = '/Monika-Adeishvili-Resume-2026.pdf'
+const INSTAGRAM = 'https://www.instagram.com/monikaadeishvili/'
 const LIST = ['Research', 'Flows', 'Design systems', 'Handoff', 'Launch']
 const STATEMENT = 'From a blank Figma file to a product people use.'
 /** the headline, set as architecture (explicit rows: no orphans at any size) */
@@ -50,16 +55,65 @@ function useLayerText(ref: RefObject<HTMLElement | null>, id: string, label: str
   }, [ctx.live, ref, id, label])
 }
 
-/** masked words (each one masked so it can rise through its own line) */
+/** masked words (each one masked so it can rise through its own line), one span per letter for the hover wake */
 function Words({ words }: { words: string[] }) {
   return (
     <>
       {words.map((w, i) => (
         <span key={i} className="rw" aria-hidden="true">
-          <span className="rw-in">{w}</span>
+          <span className="rw-in">
+            {Array.from(w).map((c, j) => (
+              <span key={j} className="h-ch">
+                {c}
+              </span>
+            ))}
+          </span>
         </span>
       ))}
     </>
+  )
+}
+
+/** small line icons between the ribbon items */
+type RibKind = 'nib' | 'spark' | 'search' | 'flow' | 'grid' | 'code' | 'launch'
+const RIB_ICONS: RibKind[] = ['search', 'flow', 'grid', 'code', 'launch']
+function RibIcon({ kind }: { kind: RibKind }) {
+  const d: Record<RibKind, React.ReactNode> = {
+    nib: (
+      <g transform="translate(5 19) rotate(45)">
+        <path d="M0 0-4.5-7.5Q-4.5-10-2-10.5H2Q4.5-10 4.5-7.5Z" />
+        <path d="M-2.5-10.5V-12.8H2.5V-10.5M0 0V-5.4" />
+      </g>
+    ),
+    spark: <path d="M12 3c.6 4.6 3.4 7.4 8 8-4.6.6-7.4 3.4-8 8-.6-4.6-3.4-7.4-8-8 4.6-.6 7.4-3.4 8-8Z" />,
+    search: (
+      <>
+        <circle cx="10.5" cy="10.5" r="6" />
+        <path d="M15 15l5 5" />
+      </>
+    ),
+    flow: (
+      <>
+        <circle cx="5.5" cy="6" r="2.2" />
+        <circle cx="18.5" cy="18" r="2.2" />
+        <path d="M7.7 6H11a3 3 0 0 1 3 3v6a3 3 0 0 0 3 3h-.7" />
+      </>
+    ),
+    grid: (
+      <>
+        <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
+        <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
+        <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
+        <circle cx="16.75" cy="16.75" r="3.4" />
+      </>
+    ),
+    code: <path d="M9 7 4 12l5 5M15 7l5 5-5 5" />,
+    launch: <path d="M7 17 17 7M9.5 7H17v7.5" />,
+  }
+  return (
+    <svg className="h-rib-ico" viewBox="0 0 24 24" aria-hidden="true">
+      {d[kind]}
+    </svg>
   )
 }
 
@@ -110,43 +164,31 @@ function Contours() {
   )
 }
 
-function Nav({ onNav, narrow }: { onNav: SectionProps['onNav']; narrow: boolean }) {
-  const go = (to: 'work' | 'about' | 'contact') => (e: React.MouseEvent) => {
-    e.preventDefault()
-    onNav(to)
-  }
+function Nav({ onNav }: { onNav: SectionProps['onNav'] }) {
   return (
     <nav className="h-navbar" aria-label="Site">
-      <a className="h-brand" href="#ch-hello" onClick={go('about')}>
-        Monika Adeishvili
+      <a className="h-brand" href="#ch-hello" onClick={(e) => (e.preventDefault(), onNav('about'))}>
+        Monika<span className="h-brand-last"> Adeishvili</span>
       </a>
-      {!narrow && (
-        <ul className="h-links">
-          <li>
-            <a href="#ch-proof" onClick={go('work')}>
-              Work
-            </a>
-          </li>
-          <li>
-            <a href="#ch-origin" onClick={go('about')}>
-              About
-            </a>
-          </li>
-          <li>
-            <a href="#ch-contact" onClick={go('contact')}>
-              Contact
-            </a>
-          </li>
-        </ul>
-      )}
-      <a className="h-navcta" href={`mailto:${EMAIL}`}>
-        <span aria-hidden="true">[</span> {HELLO.ghost} <span className="h-navcta-ar" aria-hidden="true">→</span> <span aria-hidden="true">]</span>
-      </a>
+      <span className="h-navlinks">
+        <a className="h-navcta" href={LINKEDIN} target="_blank" rel="noopener noreferrer">
+          LinkedIn <span className="h-navcta-ar" aria-hidden="true">↗</span>
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+        <a className="h-navcta" href={RESUME} target="_blank" rel="noopener">
+          Resume <span className="h-navcta-ar" aria-hidden="true">↗</span>
+          <span className="sr-only"> (PDF, opens in a new tab)</span>
+        </a>
+        <a className="h-navcta" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
+          Instagram <span className="h-navcta-ar" aria-hidden="true">↗</span>
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+      </span>
     </nav>
   )
 }
 
-function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boolean; live: boolean; onNav: SectionProps['onNav']; onJump: SectionProps['onJump']; plain: boolean; onToggle: () => void }) {
+function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live: boolean; onNav: SectionProps['onNav']; plain: boolean; onToggle: () => void }) {
   const h1Ref = useRef<HTMLHeadingElement>(null)
   useLayerText(h1Ref, 'h-title', 'Heading / H1')
   const [s0, s1, s2] = HELLO.support
@@ -163,9 +205,6 @@ function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boole
               <span>Contact</span>
             </span>
           )}
-          <span className="hd-navbtn" data-tw="ghost">
-            {HELLO.ghost}
-          </span>
         </div>
         <div className="hd-hero">
           <span className="hd-badge" data-tw="badge">
@@ -190,7 +229,7 @@ function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boole
               {HELLO.intro}
             </span>
             <span className="hd-btn" data-tw="btn">
-              {HELLO.primary}
+              {HELLO.ghost}
             </span>
           </div>
         </div>
@@ -213,7 +252,7 @@ function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boole
       {/* nav */}
       <Piece id="h-nav" name="Nav" kind="bubble" tone={HC.board} order={0} at={0.4} className="h-nav">
         <div className="h-swap">
-          <Nav onNav={onNav} narrow={narrow} />
+          <Nav onNav={onNav} />
         </div>
       </Piece>
 
@@ -249,7 +288,7 @@ function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boole
       {/* the portrait (WebGL canvas mounted by ./portraitFx; the img is the fallback + alt) */}
       <figure className="h-port" data-port="">
         <div className="h-port-gl" aria-hidden="true" />
-        <img className="h-port-img" src="/monika-cut.webp" alt="Monika Adeishvili" width={1301} height={1600} decoding="async" fetchPriority="high" />
+        <img className="h-port-img" src="/monika-new.webp" alt="Monika Adeishvili" width={1052} height={1800} decoding="async" fetchPriority="high" />
       </figure>
 
       {/* headline line 2: electric blue, lower right, in front of her */}
@@ -302,27 +341,25 @@ function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boole
       {/* the floating pill */}
       <Piece id="h-pill" name="Nav / Pill" kind="hero" tone={HC.blue} travel="leap" order={2} at={0.9} dur={0.22} park="40,-236" parkN="176,-96" className="h-pillslot" eyes={{ x: 82, y: -8, s: 16 }}>
         <div className="h-swap">
-          <div className="h-pill">
-            {!narrow && (
-              <span className="h-pill-links">
-                <a href="#ch-proof" onClick={(e) => (e.preventDefault(), onNav('work'))}>
-                  Work
-                </a>
-                <a href="#ch-origin" onClick={(e) => (e.preventDefault(), onNav('about'))}>
-                  About
-                </a>
-                <a href="#ch-contact" onClick={(e) => (e.preventDefault(), onNav('contact'))}>
-                  Contact
-                </a>
-              </span>
-            )}
-            <button type="button" className="h-cta" onClick={() => onJump(1)}>
-              {HELLO.primary}
+          <nav className="h-pill" aria-label="Sections">
+            <span className="h-pill-links">
+              <a href="#ch-proof" onClick={(e) => (e.preventDefault(), onNav('work'))}>
+                Work
+              </a>
+              <a href="#ch-origin" onClick={(e) => (e.preventDefault(), onNav('about'))}>
+                About
+              </a>
+              <a href="#ch-contact" onClick={(e) => (e.preventDefault(), onNav('contact'))}>
+                Contact
+              </a>
+            </span>
+            <a className="h-cta" href={`mailto:${EMAIL}`}>
+              {HELLO.ghost}
               <span className="h-cta-ar" aria-hidden="true">
-                <Arrow dir="down" />
+                <Arrow dir="right" />
               </span>
-            </button>
-          </div>
+            </a>
+          </nav>
         </div>
       </Piece>
     </Region>
@@ -370,7 +407,13 @@ export function Hello({ lay, live, onNav, onJump }: SectionProps) {
     if (!live || !board) return
     const a = mountTaste(board)
     const b = mountPortrait(board)
+    const c = mountHeadWake(board)
+    const d = mountWw(board)
+    const r = mountRibbons(board)
     return () => {
+      r()
+      d()
+      c()
       b()
       a()
     }
@@ -383,10 +426,9 @@ export function Hello({ lay, live, onNav, onJump }: SectionProps) {
     const lines = Array.from(r1.querySelectorAll<HTMLElement>('.hf-line'))
     const ghosts = Array.from(r1.querySelectorAll<HTMLElement>('.h-fghost'))
     const base = r1.querySelector<HTMLElement>('.h-base')!
-    const list = Array.from(r1.querySelectorAll<HTMLElement>('.h-list li'))
     const strips = Array.from(r1.querySelectorAll<HTMLElement>('.h-odo-strip'))
     const odoPiece = strips.map((s) => s.closest<HTMLElement>('[data-cid]')?.dataset.cid ?? '')
-    const cache = { l: '', b: '', g: ghosts.map(() => ''), li: list.map(() => ''), o: strips.map(() => '') }
+    const cache = { l: '', b: '', g: ghosts.map(() => ''), o: strips.map(() => '') }
     return registerFx({
       id: 'hello-facts',
       section: 0,
@@ -408,20 +450,6 @@ export function Hello({ lay, live, onNav, onJump }: SectionProps) {
           cache.g[i] = k
           g.style.opacity = k
           g.style.transform = `translate3d(${((1 - v) * -24).toFixed(1)}px, 0, 0)`
-        })
-        // the slash list staggers in with its band
-        const pc = e.piece('h-list')
-        list.forEach((li, i) => {
-          let v = 1
-          if (pc && !e.reduced) {
-            const D = Math.max(1e-4, pc.p1 - pc.p0)
-            v = outCubic(range(pc.p1 - 0.2 * D + i * 0.18 * D, pc.p1 + 0.5 * D + i * 0.18 * D, e.p))
-          }
-          const k = v.toFixed(3)
-          if (k === cache.li[i]) return
-          cache.li[i] = k
-          li.style.opacity = v >= 1 ? '' : k
-          li.style.transform = v >= 1 ? '' : `translate3d(${((1 - v) * -14).toFixed(1)}px, 0, 0)`
         })
         // the near-black close rises under its line
         const bq = outCubic(range(0.62, 0.86, q))
@@ -471,7 +499,7 @@ export function Hello({ lay, live, onNav, onJump }: SectionProps) {
       }
     >
       <div ref={boardRef} className="h-ring" aria-hidden="true" />
-      <Stage narrow={narrow} live={live} onNav={onNav} onJump={onJump} plain={plain} onToggle={onToggle} />
+      <Stage narrow={narrow} live={live} onNav={onNav} plain={plain} onToggle={onToggle} />
 
       <Region index={1} label="Facts" className="h-r1">
         <div ref={r1Ref} className="h-r1-in">
@@ -480,18 +508,46 @@ export function Hello({ lay, live, onNav, onJump }: SectionProps) {
             <div className="h-band-def" aria-hidden="true">
               <span>{STATEMENT}</span>
             </div>
+            {/* two crossing tapes drifting opposite ways (./wwMarquee.ts mountRibbons) */}
             <div className="h-blue">
-              <Piece id="h-list" name="List / Process" kind="bubble" tone={HC.blue} order={0} className="h-listslot">
-                <ul className="h-list" aria-label="How I work">
-                  {LIST.map((t) => (
-                    <li key={t}>
-                      <span aria-hidden="true">/ </span>
-                      {t}
-                    </li>
-                  ))}
-                </ul>
+              <p className="sr-only">{STATEMENT}</p>
+              <ul className="sr-only" aria-label="How I work">
+                {LIST.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+              <Piece id="h-stmt" name="Ribbon / Statement" kind="bubble" tone={HC.ink} order={0} at={0.1} className="h-ribslot h-ribslot-a">
+                <div className="h-rib h-rib-a" data-speed="40" aria-hidden="true">
+                  <div className="h-rib-rail">
+                    {[0, 1].map((copy) => (
+                      <div key={copy} className="h-rib-set">
+                        {[0, 1].map((k) => (
+                          <span key={k} className="h-rib-item">
+                            <span className="h-rib-t">{STATEMENT}</span>
+                            <RibIcon kind={k ? 'spark' : 'nib'} />
+                          </span>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </Piece>
-              <Reveal id="h-stmt" segs={[STATEMENT]} className="h-stmt" label="Statement" />
+              <Piece id="h-list" name="Ribbon / Process" kind="bubble" tone={HC.blue} order={1} at={0.22} className="h-ribslot h-ribslot-b">
+                <div className="h-rib h-rib-b" data-speed="-52" aria-hidden="true">
+                  <div className="h-rib-rail">
+                    {[0, 1].map((copy) => (
+                      <div key={copy} className="h-rib-set">
+                        {LIST.map((t, k) => (
+                          <span key={t} className="h-rib-item">
+                            <span className="h-rib-t">{t}</span>
+                            <RibIcon kind={RIB_ICONS[k]} />
+                          </span>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Piece>
             </div>
           </div>
 
@@ -540,14 +596,32 @@ export function Hello({ lay, live, onNav, onJump }: SectionProps) {
           </div>
 
           <Piece id="h-ww" name="Worked with" kind="bubble" tone={HC.ink} order={4} at={0.68} className="h-wwslot">
-            <p className="h-ww">
-              <span className="h-ww-l">Worked with</span>
-              {HELLO.workedWith.map((n) => (
-                <span key={n} className="h-ww-n">
-                  {n}
-                </span>
-              ))}
-            </p>
+            <div className="h-ww">
+              <span className="h-ww-l" id="h-ww-l">
+                Worked with
+              </span>
+              {/* a slow marquee (./wwMarquee.ts): the list twice for a seamless loop, the second copy hidden from AT */}
+              <div className="h-ww-mq">
+                <div className="h-ww-rail">
+                  {[0, 1].map((copy) => (
+                    <ul key={copy} className="h-ww-set" aria-labelledby={copy ? undefined : 'h-ww-l'} aria-hidden={copy ? true : undefined}>
+                      {HELLO.workedWith.map((n) => (
+                        <li key={n} className="h-ww-n">
+                          <span className="sr-only">{n}</span>
+                          <span className="h-ww-vis" aria-hidden="true">
+                            {Array.from(n).map((c, j) => (
+                              <span key={j} className="h-ch">
+                                {c === ' ' ? '\u00a0' : c}
+                              </span>
+                            ))}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ))}
+                </div>
+              </div>
+            </div>
           </Piece>
 
           <div className="h-close">

@@ -240,7 +240,9 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   })
   regs.forEach((l) => l.sort((a, b) => a.index - b.index))
 
-  const sTilt = narrow ? (view.w * 0.8) / FW : (view.w * 0.66) / FW
+  // tilted views: width-fit, but capped by height so on wide, short windows the
+  // heroes parked above the artboard stay clear of the top bar
+  const sTilt = narrow ? (view.w * 0.8) / FW : Math.min(view.w * 0.66, view.h * 1.0) / FW
   const sDesc = narrow ? (view.w * 0.86) / FW : Math.min(1.1, (view.w * 0.66) / FW)
   const tilt = narrow ? { rx: 30, rz: -4 } : { rx: 40, rz: -6 }
   const sHold = (h: number) => (narrow ? Math.min((view.w * 0.94) / FW, (view.h * 0.94) / h) : Math.min(1.25, (view.w * 0.8) / FW, (view.h * 0.9) / h))
@@ -248,7 +250,7 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   // panels (16px margins), height permitting
   const vw0 = document.documentElement.clientWidth
   const vh0 = window.innerHeight
-  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - 62 - 72 - 24 }
+  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - 62 - (bp === 'mob' ? 72 : 121) - 24 } // top bar · dock (two rows on desktop/tablet) · margins
   const fit0 = (h: number) => Math.min(1.25, free.w / FW, free.h / h)
 
   pieces.forEach((c) => {
@@ -281,7 +283,9 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
     const ty = b.y + r0.y + r0.h * (narrow ? 0.5 : 0.52)
     // the very first view sits closer: the page and its heroes fill the canvas
     const sT = i === 0 && !narrow ? sTilt * 1.12 : sTilt
-    const tiltPose = (s: number, rz: number): CamPose => ({ x: cxw, y: ty, s, rx: tilt.rx, rz })
+    // aim a little above the region's centre: the board sits lower in the frame,
+    // leaving headroom for the heroes parked above it
+    const tiltPose = (s: number, rz: number): CamPose => ({ x: cxw, y: ty - (narrow ? 0 : 44), s, rx: tilt.rx, rz })
     const big = i === 0 && !narrow
     // 01 Hello: the frame from just above the artboard's top edge to a peek of the region below
     const fH = r0.y + r0.h + 34
@@ -314,8 +318,16 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
         // keep the region's top in view
         yBuild = Math.min(yBuild, b.y + reg.y + visD * 0.5 - 40)
       }
-      K.push({ u: a + w * 0.3, c: { x: cxw, y: yBuild, s: sD, rx: narrow ? 6 : 10, rz: 0 } })
-      K.push({ u: a + w * 0.92, c: { x: cxw, y: yBuild, s: sD, rx: 2, rz: 0 } })
+      if (reg.el?.dataset.pan != null) {
+        // a pan region: the camera glides in, then holds flat and fitted while
+        // the region's content travels sideways (the section's fx drives it)
+        const sP = narrow ? Math.min((view.w * 0.96) / FW, (view.h * 0.94) / reg.h) : Math.min(1.25, free.w / FW, free.h / reg.h)
+        K.push({ u: a + w * 0.08, c: { x: cxw, y: yc, s: sP, rx: 0, rz: 0 } })
+        K.push({ u: a + w * 0.96, c: { x: cxw, y: yc, s: sP, rx: 0, rz: 0 } })
+      } else {
+        K.push({ u: a + w * 0.3, c: { x: cxw, y: yBuild, s: sD, rx: narrow ? 6 : 10, rz: 0 } })
+        K.push({ u: a + w * 0.92, c: { x: cxw, y: yBuild, s: sD, rx: 2, rz: 0 } })
+      }
       W.push([secP(i, a + w * 0.16), secP(i, a + w * 1.02)])
       a += w
     }
