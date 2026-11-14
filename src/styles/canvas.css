@@ -572,11 +572,42 @@ html.is-static .layer-sheet {
 }
 .cur-you[data-tool='shape'] .cur-cross,
 .cur-you[data-tool='frame'] .cur-cross,
-.cur-you[data-tool='pen'] .cur-cross,
 .cur-you[data-tool='text'] .cur-cross,
 .cur-you[data-tool='hand'] .cur-hand,
+.cur-you[data-tool='pen'] .cur-pen,
 .cur-you[data-tool='comment'] .cur-comment {
   display: block;
+}
+/* the pen: a solid ink nib with a white keyline; its tip is the hot spot */
+.cur-you svg.cur-pen {
+  left: -3px;
+  top: -21px;
+  width: 24px;
+  height: 24px;
+  overflow: visible;
+  fill: var(--ink);
+  stroke: #fff;
+  stroke-width: 1.1;
+  filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.28));
+}
+.cur-you svg.cur-pen .cur-pen-cap {
+  fill: var(--ink);
+}
+.cur-you svg.cur-pen :is(.cur-pen-slit, .cur-pen-hole) {
+  stroke: #fff;
+  stroke-width: 0.9;
+}
+.cur-you svg.cur-pen .cur-pen-hole {
+  fill: #fff;
+}
+/* the pen's trail + click rings (./PenTrail.tsx) */
+.pen-trail {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
 }
 .stage:has(a:hover, button:hover, .cr-drag:hover) .cur-you .cur-arrow {
   transform: scale(1.14) rotate(-6deg);

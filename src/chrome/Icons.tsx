@@ -38,8 +38,12 @@ export const ToolIcon: Record<Tool, () => ReactNode> = {
   ),
   pen: () => (
     <S>
-      <path d="M10 3 15 11l-5 6-5-6 5-8Z" />
-      <circle cx="10" cy="11" r="1.4" />
+      {/* a fountain-pen nib, tip at the lower left */}
+      <g transform="translate(6 16) rotate(45)">
+        <path d="M0 0-4.5-7.5Q-4.5-10-2-10.5H2Q4.5-10 4.5-7.5Z" />
+        <path d="M-2.5-10.5V-12.8H2.5V-10.5M0 0V-5.4" />
+        <circle cx="0" cy="-6.6" r="1" />
+      </g>
     </S>
   ),
   text: () => (
