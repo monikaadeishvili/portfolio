@@ -5,7 +5,7 @@
 import type { Breakpoint } from '../scene/store'
 import { offsetIn } from '../scene/layout'
 import { fxs, inOut, lerp, outBack, pieces, regions, rnd, smooth, texts, clamp, clamp01, type Piece, type Region } from './runtime'
-import { phOf, SEC, secP, TRN } from './worlds'
+import { LAST, NS, NT, phOf, SEC, secP, TR_SHAPE_OF, TRN } from './worlds'
 
 export type Lay = 'wide' | 'narrow'
 export interface Rect {
@@ -97,7 +97,7 @@ export const TR_SHAPE = [
 ]
 /** charge-up camera push + shake amplitude per transition, 0..1 */
 export function chargeOf(i: number, u: number) {
-  const m0 = TR_SHAPE[i].m0
+  const m0 = TR_SHAPE[TR_SHAPE_OF(i)].m0
   return smooth(0.04, m0, u) * (1 - smooth(m0, m0 + 0.06, u))
 }
 
@@ -105,13 +105,13 @@ const tmpA: CamPose = { ...ZERO }
 const tmpB: CamPose = { ...ZERO }
 
 export function camAt(g: Geo, p: number, out: CamPose) {
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < NT; i++) {
     const [t0, t1] = TRN[i]
     if (p > t0 && p < t1) {
       const u = (p - t0) / (t1 - t0)
       keysAt(g.keys[i], 1, tmpA)
       keysAt(g.keys[i + 1], 0, tmpB)
-      const S = TR_SHAPE[i]
+      const S = TR_SHAPE[TR_SHAPE_OF(i)]
       const v = clamp01((u - S.m0 - S.lag) / (1 - S.m0 - S.lag))
       const e = v < 1 ? clamp(outBack(inOut(v) * 0.6 + v * 0.4, S.over), -0.2, 1.3) : 1
       out.x = lerp(tmpA.x, tmpB.x, e)
@@ -127,7 +127,7 @@ export function camAt(g: Geo, p: number, out: CamPose) {
     }
   }
   let i = 0
-  for (let k = 0; k < 5; k++) if (p >= SEC[k][0] - 1e-9) i = k
+  for (let k = 0; k < NS; k++) if (p >= SEC[k][0] - 1e-9) i = k
   const u = (p - SEC[i][0]) / (SEC[i][1] - SEC[i][0])
   return keysAt(g.keys[i], u, out)
 }
@@ -274,7 +274,7 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   }
   const keys: Key[][] = []
   const wins: [number, number][][] = []
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < NS; i++) {
     const PH = phOf(i)
     const b = boards[i]
     const rs = regs[i].length ? regs[i] : [{ y: 0, h: b.h } as Region]
@@ -334,7 +334,7 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
     const lastR = rs[rs.length - 1]
     // hold: the last region, with the artboard's bottom edge resting low in
     // the frame (contact leaves room for the crowd along the bottom edge)
-    const extra = i === 4 ? (narrow ? 90 : 170) : 0
+    const extra = i === LAST ? (narrow ? 90 : 170) : 0
     const holdS = big ? fit0(lastR.h + 90) : sHold(lastR.h + extra)
     const visH = view.h / holdS
     const bottomAnchor = b.y + b.h + extra - visH * 0.5 + (narrow ? 20 : 40)
@@ -346,7 +346,7 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   }
 
   const mascotEl = world.querySelector<HTMLElement>('.f5-mascot-spot')
-  let mascot = { x: boards[4].x + FW / 2, y: boards[4].y + boards[4].h - 200 }
+  let mascot = { x: boards[LAST].x + FW / 2, y: boards[LAST].y + boards[LAST].h - 200 }
   if (mascotEl) {
     const o = offsetIn(mascotEl, world)
     mascot = { x: o.x + o.w / 2, y: o.y + o.h / 2 }
@@ -386,7 +386,7 @@ const cam0: CamPose = { ...ZERO }
 const host0 = { x: 0, y: 0, z: 0 }
 
 function schedule(g: Geo) {
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < NS; i++) {
     const b = g.boards[i]
     g.wins[i].forEach(([A, B], r) => {
       const L = B - A

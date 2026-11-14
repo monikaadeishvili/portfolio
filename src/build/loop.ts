@@ -13,7 +13,7 @@ import { camAt, chargeOf, project, regionProgress, type CamPose, type Geo, type 
 import { bubbleAt, makeState, type BubState } from './bubble/choreo'
 import { Bubble, MAX_BALLS, MAX_CORES, type BubbleFrame } from './bubble/organism2'
 import { clamp01, evalPose, fxs, outBack, pieces, rnd, settleOf, smooth, texts, type FxEnv, type Piece, type TextBlock } from './runtime'
-import { hex, SEC, sectionAt, secU, type RGB } from './worlds'
+import { hex, LAST, NS, SEC, sectionAt, secU, type RGB } from './worlds'
 import { bsinks, chapterCh, inspSel, inspState, moodCh, placedVer, regionCh, type InspState } from './bstore'
 
 export interface LoopCtx {
@@ -201,7 +201,7 @@ export function startLoop(ctx: LoopCtx) {
     }
 
     /* -------------------------------------------- WRITE: worlds */
-    for (let k = 0; k < 5; k++) {
+    for (let k = 0; k < NS; k++) {
       const w = S.world[k]
       const ws = w < 0.005 ? '0' : w > 0.995 ? '1' : w.toFixed(3)
       if (ws !== worldOp[k]) {
@@ -567,7 +567,7 @@ export function startLoop(ctx: LoopCtx) {
     /* ------------------------------------------ mascot + confetti */
     if (ctx.mascot) {
       const m = S.mascot
-      const landed = sec === 4 && secU(4, p) >= 0.9
+      const landed = sec === LAST && secU(LAST, p) >= 0.9
       const bob = landed || scene.reduced ? 0 : Math.sin(t * 2.2) * 8
       const bill = landed ? '' : ` rotateZ(${(-rz).toFixed(2)}deg) rotateX(${(-rx).toFixed(2)}deg)`
       const mk = m.vis ? `translate3d(${(m.x - 40).toFixed(1)}px, ${(m.y - 40).toFixed(1)}px, ${(m.z + bob).toFixed(1)}px)${bill} scale(${m.s.toFixed(3)})` : 'off'

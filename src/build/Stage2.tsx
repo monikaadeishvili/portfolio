@@ -15,7 +15,7 @@ import { pieces, texts } from './runtime'
 import { live, nudge, startLoop } from './loop'
 import { chapterCh, rulerSubs } from './bstore'
 import { Fun, FUN_VH } from './sections/fun/Fun'
-import { holdOf, SCROLL_VH, sectionAt, secP, secU, transitionAt } from './worlds'
+import { holdOf, LAST, topOf, SCROLL_VH, WORLDS, sectionAt, secP, secU, transitionAt } from './worlds'
 import { installOverlapCheck } from './dev/overlap'
 import { taste } from './sections/hello/taste'
 
@@ -111,8 +111,8 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
   const lenisRef = useRef<Lenis | null>(null)
   const { view, lay, fw } = viewFor(bp)
 
-  const onJump = useCallback((i: number) => jumpTo(holdOf(i), 1.8), [])
-  const onNav = useCallback((to: 'work' | 'about' | 'contact') => jumpTo(holdOf(to === 'work' ? 3 : to === 'about' ? 1 : 4), 1.8), [])
+  const onJump = useCallback((i: number) => jumpTo(topOf(i), 1.8), [])
+  const onNav = useCallback((to: 'work' | 'about' | 'contact') => jumpTo(to === 'contact' ? holdOf(LAST) : topOf(to === 'work' ? 2 : 1), 1.8), [])
 
   useEffect(() => {
     const root = rootRef.current!
@@ -392,15 +392,14 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
     '--cy': `${view.y + view.h / 2}px`,
   } as CSSProperties
 
-  const worlds = ['hello', 'origin', 'craft', 'proof', 'contact']
+  const worlds = WORLDS.map((w) => w.id)
   return (
     <>
-      <main ref={rootRef} className={`bstage${reduced ? ' is-static' : ''}`} data-bp={bp} data-lay={lay} data-world="0" style={style} data-deck-layer="" aria-label="Canvas — five sections and an after-hours trip">
+      <main ref={rootRef} className={`bstage${reduced ? ' is-static' : ''}`} data-bp={bp} data-lay={lay} data-world="0" style={style} data-deck-layer="" aria-label="Canvas — four sections and an after-hours trip">
         {!reduced && (
           <div className="bworld-bg" aria-hidden="true">
             {worlds.map((w, i) => (
               <div key={w} className={`wbg wbg-${w}`} style={{ opacity: i === 0 ? 1 : 0 }}>
-                {w === 'origin' && <i className="wbg-stars" />}
               </div>
             ))}
             {/* 01 Hello before taste: the neutral default canvas, far field */}

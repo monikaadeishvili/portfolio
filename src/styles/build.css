@@ -108,8 +108,8 @@ html.is-coarse .bstage a {
   will-change: opacity, transform;
 }
 .bstage[data-world='0'] .bspeed,
-.bstage[data-world='2'] .bspeed,
-.bstage[data-world='3'] .bspeed {
+.bstage[data-world='1'] .bspeed,
+.bstage[data-world='2'] .bspeed {
   background-image: repeating-linear-gradient(0deg, transparent 0 34px, rgb(22 19 29 / 0.25) 34px 36px, transparent 36px 90px);
 }
 
@@ -192,9 +192,6 @@ html.is-coarse .bstage a {
 }
 .bf[data-frame='3'] {
   --i: 3;
-}
-.bf[data-frame='4'] {
-  --i: 4;
 }
 .bf-world {
   display: none;
@@ -810,11 +807,6 @@ html.is-deck-drag .cur-you .cur-hand {
 .bstage:has(.u-pdeck.is-press) .cur-you .cur-hand,
 html.is-deck-drag .cur-you .cur-hand {
   transform: scale(0.84) rotate(-8deg);
-}
-/* the visitor's cursor keeps a light halo on dark worlds */
-.bstage[data-world='1'] .cur-you .cur-arrow path {
-  fill: #fff4dc;
-  stroke: var(--ink);
 }
 
 /* narrow artboards */

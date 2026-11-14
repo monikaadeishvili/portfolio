@@ -161,7 +161,7 @@ export function NavBar({ compact = false, onNav }: { compact?: boolean; onNav?: 
             </a>
           </li>
           <li>
-            <a href="#ch-origin" onClick={go('about')}>
+            <a href="#ch-craft" onClick={go('about')}>
               About
             </a>
           </li>

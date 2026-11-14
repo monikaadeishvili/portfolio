@@ -6,7 +6,7 @@
 export type Seg = string | { em: string }
 
 export interface Chapter {
-  id: 'hello' | 'origin' | 'craft' | 'proof' | 'contact'
+  id: 'hello' | 'craft' | 'proof' | 'contact'
   num: string
   frame: string
   ruler: string
@@ -24,16 +24,8 @@ export const CHAPTERS: Chapter[] = [
     body: 'Taste comes with experience. I have 7+ years of it.',
   },
   {
-    id: 'origin',
-    num: '02',
-    frame: 'Origin',
-    ruler: 'TBILISI → ALICANTE',
-    headline: ['It started in Tbilisi, with ', { em: 'one landing page.' }],
-    body: 'A food-tech startup, 2020. Then a delivery platform, an agency, a bank, a sports-streaming giant. Today I design from Alicante — the curiosity is the same, the canvas got bigger.',
-  },
-  {
     id: 'craft',
-    num: '03',
+    num: '02',
     frame: 'Craft',
     ruler: 'HOW I THINK',
     headline: ['I think in ', { em: 'components.' }],
@@ -41,7 +33,7 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: 'proof',
-    num: '04',
+    num: '03',
     frame: 'Proof',
     ruler: 'PROOF',
     headline: ['Seven years, one question: ', { em: 'who is this for?' }],
@@ -49,7 +41,7 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: 'contact',
-    num: '05',
+    num: '04',
     frame: 'Contact',
     ruler: 'SAY HELLO',
     headline: ["Let's build something people ", { em: "won't ignore." }],

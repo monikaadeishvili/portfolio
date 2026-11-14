@@ -7,7 +7,7 @@
  */
 import { camAt, hostAt, type CamPose, type Geo } from '../camera'
 import { clamp01, inOut, inOutQuad, lerp, outBack, outCubic, outExpo, pieces, range, smooth, springOut } from '../runtime'
-import { hex, mixRGB, phOf, SEC, secP, SPLIT_PAL, TRN, WORLDS, type RGB } from '../worlds'
+import { hex, LAST, mixRGB, NS, NT, phOf, SEC, secP, SPLIT_PAL, TR_STYLE, TRN, WORLDS, type RGB } from '../worlds'
 
 export type EyeMood = 'normal' | 'wide' | 'squint' | 'dizzy'
 export type Mood = 'curious' | 'spitting' | 'charging' | 'rolling' | 'stretching' | 'splitting' | 'racing' | 'floating' | 'popped' | 'home'
@@ -84,7 +84,7 @@ export function makeState(): BubState {
     impact: 0,
     balls: [],
     mood: 'curious',
-    world: [1, 0, 0, 0, 0],
+    world: WORLDS.map((_, i) => (i === 0 ? 1 : 0)),
     pop: -1,
     popAt: { x: 0, y: 0, z: 0 },
     mascot: { vis: 0, x: 0, y: 0, z: 0, s: 1 },
@@ -130,7 +130,7 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
   S.tr = -1
   S.tu = 0
   S.impact = 0
-  for (let k = 0; k < 5; k++) S.world[k] = 0
+  for (let k = 0; k < NS; k++) S.world[k] = 0
   const R = g.R
   const c0 = S.cores[0]
   c0.st = 0
@@ -138,11 +138,11 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
 
   // which transition (if any)
   let tr = -1
-  for (let i = 0; i < 4; i++) if (p > TRN[i][0] && p < TRN[i][1]) tr = i
+  for (let i = 0; i < NT; i++) if (p > TRN[i][0] && p < TRN[i][1]) tr = i
 
   if (tr < 0) {
     let i = 0
-    for (let k = 0; k < 5; k++) if (p >= SEC[k][0] - 1e-9) i = k
+    for (let k = 0; k < NS; k++) if (p >= SEC[k][0] - 1e-9) i = k
     camAt(g, p, cam)
     hostAt(g, i, cam, hA)
     S.world[i] = 1
@@ -167,11 +167,11 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
         S.shake = ch * ch * 2.6 * g.peak
       }
     }
-    if (i === 4) {
+    if (i === LAST) {
       // after the pop only the little mascot is left; it walks to the CTA
       S.vis = 0
       S.mood = 'home'
-      const u = (p - SEC[4][0]) / (SEC[4][1] - SEC[4][0])
+      const u = (p - SEC[LAST][0]) / (SEC[LAST][1] - SEC[LAST][0])
       const go = smooth(0.8, 0.9, u)
       const m = S.mascot
       m.vis = 1
@@ -180,7 +180,7 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
       m.z = lerp(hA.z, 0, go) + Math.sin(Math.PI * go) * 160
       m.s = 1
       // confetti still settling just after the pop
-      const pu = range(TRN[3][1] - TR3_POP_TAIL, secP(4, 0.05), p)
+      const pu = range(TRN[NT - 1][1] - TR3_POP_TAIL, secP(LAST, 0.05), p)
       if (pu < 1) {
         S.pop = 0.72 + 0.28 * pu
         popPoint(g, S)
@@ -209,11 +209,12 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
   S.shadow = lerp(WORLDS[tr].shadow, WORLDS[tr + 1].shadow, smooth(0.3, 0.8, u))
   c0.R = R
   c0.z = hA.z
+  const st = TR_STYLE[tr] ?? tr
 
-  if (tr === 0) {
+  if (st === 0) {
     /* ------------------------------------------- 01 → 02 nightfall roll */
     const inh = range(0, 0.16, u)
-    const list = passengers(0)
+    const list = passengers(tr)
     list.forEach((q, k) => {
       const e = inOut(clamp01(inh * 1.25 - k * 0.08))
       if (e >= 1) return
@@ -244,10 +245,10 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
     c0.eyes = u < 0.16 ? (carry > 0 ? 'squint' : 'normal') : u < 0.3 ? 'wide' : u < 0.42 ? 'squint' : u < 0.82 ? 'wide' : 'dizzy'
     S.mood = u < 0.42 ? 'charging' : 'rolling'
     const w = smooth(0.42, 0.92, u)
-    S.world[0] = 1 - w
-    S.world[1] = w
-  } else if (tr === 1) {
-    /* ----------------------------------------------- 02 → 03 slingshot */
+    S.world[tr] = 1 - w
+    S.world[tr + 1] = w
+  } else if (st === 1) {
+    /* --------------------------------- slingshot (no transition uses it now) */
     const pull = inOut(range(0, 0.4, u))
     const snap = range(0.4, 0.58, u)
     const back = range(0.58, 1, u)
@@ -279,10 +280,10 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
     c0.eyes = u < 0.4 ? 'squint' : u < 0.8 ? 'wide' : 'normal'
     S.mood = 'stretching'
     const w = smooth(0.42, 0.62, u)
-    S.world[1] = 1 - w
-    S.world[2] = w
-  } else if (tr === 2) {
-    /* -------------------------------------------- 03 → 04 split & race */
+    S.world[tr] = 1 - w
+    S.world[tr + 1] = w
+  } else if (st === 2) {
+    /* -------------------------------------------- 02 → 03 split & race */
     S.shake = bump(0, 0.3, u) * 9 * g.peak
     const sp = smooth(0.18, 0.32, u)
     const merge = smooth(0.86, 0.97, u)
@@ -319,10 +320,10 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
     S.pal = mixPal(from, to, merge)
     S.mood = u < 0.32 ? 'splitting' : u < 0.88 ? 'racing' : 'splitting'
     const w = smooth(0.35, 0.86, u)
-    S.world[2] = 1 - w
-    S.world[3] = w
+    S.world[tr] = 1 - w
+    S.world[tr + 1] = w
   } else {
-    /* ------------------------------------------------- 04 → 05 balloon */
+    /* ------------------------------------------------- 03 → 04 balloon */
     popPoint(g, S)
     const P = S.popAt
     const inf = smooth(0, 0.22, u)
@@ -352,25 +353,25 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
       const mu = range(0.89, 1, u)
       m.vis = 1
       camAt(g, t1, cam)
-      hostAt(g, 4, cam, hB)
+      hostAt(g, LAST, cam, hB)
       m.x = lerp(P.x, hB.x, outCubic(mu))
       m.y = lerp(P.y, hB.y + 40, outCubic(mu))
       m.z = lerp(P.z, hB.z, mu)
       m.s = clamp01(outBack(clamp01(mu * 3), 2.4))
     }
     const w = smooth(0.3, 0.8, u)
-    S.world[3] = 1 - w
-    S.world[4] = w
+    S.world[tr] = 1 - w
+    S.world[tr + 1] = w
   }
   c0.col = S.pal[0]
   return S
 }
 
-/** confetti keeps falling a moment into section 05 */
+/** confetti keeps falling a moment into the last section */
 const TR3_POP_TAIL = 0.0
 
 function popPoint(g: Geo, S: BubState) {
-  const b = g.boards[4]
+  const b = g.boards[LAST]
   S.popAt.x = b.x + g.FW * (g.narrow ? 0.5 : 0.6)
   S.popAt.y = b.y + (g.narrow ? 40 : 60)
   S.popAt.z = 300 * g.peak

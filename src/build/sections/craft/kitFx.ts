@@ -1,5 +1,5 @@
 /**
- * 03 How I think — the scroll driver. Region 1's build progress becomes a
+ * 02 How I think — the scroll driver. Region 1's build progress becomes a
  * station coordinate s (0..4, soft detents at each stop) that slides the
  * panel track and the giant outline words (parallax), reveals each panel as
  * it nears centre, moves the rail, and feeds the 3-D kit (lazy-loaded,
@@ -145,7 +145,7 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
 
   const off = registerFx({
     id: 'craft-kit',
-    section: 2,
+    section: 1,
     measure: () => measure(),
     update: (e) => {
       if (!e.near) {

@@ -346,7 +346,7 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
               <a href="#ch-proof" onClick={(e) => (e.preventDefault(), onNav('work'))}>
                 Work
               </a>
-              <a href="#ch-origin" onClick={(e) => (e.preventDefault(), onNav('about'))}>
+              <a href="#ch-craft" onClick={(e) => (e.preventDefault(), onNav('about'))}>
                 About
               </a>
               <a href="#ch-contact" onClick={(e) => (e.preventDefault(), onNav('contact'))}>
@@ -629,7 +629,7 @@ export function Hello({ lay, live, onNav, onJump }: SectionProps) {
             <Piece id="h-hint" name="Closing line" kind="bubble" tone={HC.blue} order={6} at={1} className="h-hint-slot">
               <p className="h-hint-p">
                 <span className="h-hint-a">{HELLO.hint[0]}</span> <span className="h-hint-b">{HELLO.hint[1]}</span>
-                <button type="button" className="h-hint-ar" aria-label="Next: Origin" onClick={() => onJump(1)}>
+                <button type="button" className="h-hint-ar" aria-label="Next: How I think" onClick={() => onJump(1)}>
                   <Arrow dir="down" />
                 </button>
               </p>

@@ -62,7 +62,7 @@ export function Contact({ lay, live }: SectionProps) {
     let lastCrowd = ''
     return registerFx({
       id: 'contact-chat',
-      section: 4,
+      section: 3,
       update: (e) => {
         if (!e.near) return
         // each bubble types its words after it lands
@@ -112,7 +112,7 @@ export function Contact({ lay, live }: SectionProps) {
   }, [live])
 
   return (
-    <Artboard idx={4} live={live} lay={lay}>
+    <Artboard idx={3} live={live} lay={lay}>
       <div ref={rootRef} className="k-root">
         <Region index={0} label="Conversation" className="k-r0" weight={1.4}>
           <div className="chat" role="log" aria-label="Conversation">
@@ -176,8 +176,8 @@ export function Contact({ lay, live }: SectionProps) {
           <Piece id="k-badge" name="Badge" kind="bubble" travel="rain" tone={T.mint} order={0}>
             <Badge tone="pink">Open to new work</Badge>
           </Piece>
-          <Reveal id="k-title" as="h2" hid="h-contact" segs={CHAPTERS[4].headline} className="rv-title k-title" />
-          <Reveal id="k-para" mode="type" segs={[CHAPTERS[4].body]} className="rv-para k-para" order={1} />
+          <Reveal id="k-title" as="h2" hid="h-contact" segs={CHAPTERS[3].headline} className="rv-title k-title" />
+          <Reveal id="k-para" mode="type" segs={[CHAPTERS[3].body]} className="rv-para k-para" order={1} />
           <div className="k-cta-row">
             <Piece id="k-cta" name="Button / CTA" kind="hero" travel="leap" tone={T.violet} order={9} at={0.97} park="420,b+120" parkN="60,b+40" className="k-cta" eyes={{ x: 6, y: 50, s: 24 }}>
               <Button size="xl" href={`mailto:${EMAIL}`} icon="right" className="k-cta-btn">

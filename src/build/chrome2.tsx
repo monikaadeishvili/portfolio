@@ -6,7 +6,7 @@ import { ChapterRuler, type RulerChapter } from '../chrome/ChapterRuler'
 import { CHAPTERS } from '../content/story'
 import { pieces, regions, texts, type Piece, type TextBlock } from './runtime'
 import { bsinks, chapterCh, helloName, helloTaste, inspSel, inspState, moodCh, placedVer, regionCh, rulerSubs } from './bstore'
-import { holdOf, TRN } from './worlds'
+import { LAST, topOf, TRN } from './worlds'
 import { scene } from '../scene/store'
 
 function useChannels() {
@@ -160,8 +160,8 @@ export function LayersPanel2() {
         <div className="layer-row d1 l2-row l2-bubble" role="treeitem" aria-level={2}>
           <span className="chev-pad" />
           <span className="layer-ico i-organism">{LayerIcon.organism()}</span>
-          <span className="layer-name">{ch === 4 ? 'momo (mascot)' : 'Bubble'}</span>
-          <span className="layer-tag">{ch === 4 ? 'home' : `${all.filter((c) => c.kind === 'bubble' && c.pose.state === 'inside').length} inside`}</span>
+          <span className="layer-name">{ch === LAST ? 'momo (mascot)' : 'Bubble'}</span>
+          <span className="layer-tag">{ch === LAST ? 'home' : `${all.filter((c) => c.kind === 'bubble' && c.pose.state === 'inside').length} inside`}</span>
         </div>
       </div>
       <div className="panel-foot">
@@ -332,7 +332,7 @@ const TOOLS: { id: Tool; label: string; key: string }[] = [
   { id: 'picker', label: 'Color picker — click to copy', key: 'I' },
 ]
 
-const RULER: RulerChapter[] = CHAPTERS.map((c, i) => ({ label: c.ruler, at: i === 0 ? 0 : (TRN[i - 1][0] + TRN[i - 1][1]) / 2, jump: holdOf(i) }))
+const RULER: RulerChapter[] = CHAPTERS.map((c, i) => ({ label: c.ruler, at: i === 0 ? 0 : (TRN[i - 1][0] + TRN[i - 1][1]) / 2, jump: topOf(i) }))
 
 /** seconds the Play button takes for the whole story (scaled by what is left) */
 const PLAY_SECONDS = 75
