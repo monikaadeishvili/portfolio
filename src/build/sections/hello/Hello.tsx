@@ -27,8 +27,8 @@ const HC = {
   ink: '#1E1712',
   board: '#F3ECE1',
   canvas: '#EBE2D4',
-  blue: '#AD4723',
-  glow: '#F4C096',
+  blue: '#BF400B',
+  glow: '#FFB07A',
   green: '#1FA45A',
   white: '#FFFFFF',
 }

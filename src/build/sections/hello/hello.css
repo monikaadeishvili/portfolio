@@ -5,13 +5,13 @@
   --h-ink-2: #5a4c40;
   --h-board: #f3ece1;
   --h-canvas: #ebe2d4;
-  /* Golden hour: terracotta from the sunset light (≥ 4.5:1 on the board) */
-  --h-blue: #ad4723;
-  /* the brighter terracotta, for display type only (≥ 3:1 at large sizes) */
-  --h-hot: #c4562e;
-  /* apricot, for espresso grounds (≥ 4.5:1 there) */
-  --h-blue-dk: #f0a26e;
-  --h-glow: #f4c096;
+  /* Golden hour ground, orange type: burnt orange for small text and fills (≥ 4.5:1 on the board) */
+  --h-blue: #bf400b;
+  /* vivid orange, for display type and the switch (≥ 3:1 at large sizes) */
+  --h-hot: #e8590c;
+  /* bright orange, for espresso grounds (≥ 4.5:1 there) */
+  --h-blue-dk: #ff8a3d;
+  --h-glow: #ffb07a;
   --h-line: rgb(30 23 18 / 0.1);
   --h-line-2: rgb(30 23 18 / 0.16);
   --h-green: #1fa45a;
@@ -129,8 +129,8 @@
   /* no blurred glow: the ring is resized every frame and a blur along a
      2000px circle was re-rasterised each time */
   box-shadow:
-    0 0 0 3px rgb(244 192 150 / 0.35),
-    0 0 0 7px rgb(173 71 35 / 0.07);
+    0 0 0 3px rgb(255 176 122 / 0.35),
+    0 0 0 7px rgb(232 89 12 / 0.07);
   pointer-events: none;
   visibility: hidden;
   contain: strict;
@@ -556,8 +556,8 @@
   background: var(--h-hot);
   box-shadow:
     inset 0 -1px 0 rgb(0 0 0 / 0.18),
-    0 0 0 1px rgb(244 192 150 / 0.4),
-    0 0 14px rgb(173 71 35 / 0.55);
+    0 0 0 1px rgb(255 176 122 / 0.4),
+    0 0 14px rgb(232 89 12 / 0.55);
 }
 @media (hover: hover) and (pointer: fine) {
   .h-sw:hover .h-sw-knob {
@@ -747,7 +747,7 @@
   background: var(--h-board);
   box-shadow:
     inset 0 0 0 3.5px var(--h-blue),
-    0 0 0 4px rgb(173 71 35 / 0.2);
+    0 0 0 4px rgb(232 89 12 / 0.2);
 }
 .h-note-line {
   position: absolute;
@@ -833,8 +833,9 @@
   padding: 0 6px 0 20px;
   border: 0;
   border-radius: 999px;
-  background: var(--h-blue);
-  color: #fff;
+  /* vivid orange pill, espresso label (≥ 4.5:1) */
+  background: var(--h-hot);
+  color: var(--h-ink);
   font: inherit;
   font-weight: 600;
   white-space: nowrap;
@@ -856,8 +857,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #fff;
-  color: var(--h-blue);
+  background: var(--h-ink);
+  color: #fff;
 }
 .h-cta-ar .u-ico {
   width: 15px;
@@ -867,7 +868,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .h-cta:hover {
-    background: #93391b;
+    background: #f26a1e;
   }
   .h-cta:hover .h-cta-ar .u-ico {
     transform: translateY(2px);
@@ -1126,8 +1127,9 @@
   padding: 0 var(--h-px);
   /* faded in by the wipe through the colour only (--blue-a): fading the element
      itself would regroup its 3-D subtree and rebuild layers mid-sweep */
-  background: color-mix(in srgb, var(--h-blue) calc(var(--blue-a, 1) * 100%), transparent);
-  color: var(--h-on-dark);
+  /* vivid orange band, espresso type on it (as in the reference): ≥ 4.5:1 */
+  background: color-mix(in srgb, var(--h-hot) calc(var(--blue-a, 1) * 100%), transparent);
+  color: var(--h-ink);
 }
 .h-band-def {
   position: absolute;
@@ -1150,7 +1152,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  color: var(--h-on-dark);
+  color: var(--h-ink);
 }
 .h-list li:nth-child(2) {
   margin-left: 18px;
@@ -1165,7 +1167,7 @@
   margin-left: 72px;
 }
 .h-list span {
-  color: rgb(246 238 226 / 0.6);
+  color: rgb(30 23 18 / 0.55);
 }
 .h-stmt {
   margin: 0;
@@ -1176,7 +1178,7 @@
   font-style: normal;
   line-height: 1.02;
   letter-spacing: -0.012em;
-  color: var(--h-on-dark);
+  color: var(--h-ink);
   text-wrap: balance;
 }
 .h-stmt .rw {
@@ -1639,6 +1641,9 @@
 .bf-hello :is(.h-blue, .h-close) .slot-ph {
   background: transparent;
   border-color: rgb(246 238 226 / 0.36);
+}
+.bf-hello .h-blue .slot-ph {
+  border-color: rgb(30 23 18 / 0.3);
 }
 
 /* depth: inside the preserve-3d world z-index alone does not order coplanar

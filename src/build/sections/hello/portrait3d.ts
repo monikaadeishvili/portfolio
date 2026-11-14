@@ -272,8 +272,8 @@ float fbm(vec2 p) {
   return s;
 }
 // the burning edge: an ember, terracotta with an apricot glow
-const vec3 BLUE = vec3(0.77, 0.34, 0.18);
-const vec3 GLOW = vec3(1.0, 0.8, 0.6);
+const vec3 BLUE = vec3(0.91, 0.35, 0.05);
+const vec3 GLOW = vec3(1.0, 0.74, 0.45);
 float luma(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }
 float pxd(float e) { return e / max(fwidth(e), 1e-4); }
 void main() {
@@ -393,10 +393,10 @@ const loadImage = (url: string) => {
 const GRAINS = 80000
 /** motes carried off her edges by the wind */
 const MOTES = 5200
-/* Golden hour: umber shadows → terracotta → apricot light (names kept from the first palette) */
+/* Golden hour: umber shadows → vivid orange → apricot light (names kept from the first palette) */
 const NAVY: [number, number, number] = [0.13, 0.085, 0.055]
-const BLUE: [number, number, number] = [0.77, 0.34, 0.18]
-const PERI: [number, number, number] = [0.96, 0.78, 0.6]
+const BLUE: [number, number, number] = [0.91, 0.35, 0.05]
+const PERI: [number, number, number] = [1.0, 0.76, 0.5]
 
 /** The three.js side of the portrait. `ok` is false when WebGL2 is unavailable. */
 export class Portrait3D {

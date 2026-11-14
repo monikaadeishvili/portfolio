@@ -43,8 +43,8 @@ html.is-coarse .bstage a {
 .wbg-hello {
   background:
     radial-gradient(60% 55% at 50% 38%, #f6efe4 0%, transparent 72%),
-    radial-gradient(42% 38% at 86% 84%, rgb(240 162 110 / 0.18) 0%, transparent 70%),
-    radial-gradient(34% 30% at 10% 12%, rgb(240 162 110 / 0.1) 0%, transparent 70%),
+    radial-gradient(42% 38% at 86% 84%, rgb(255 140 60 / 0.16) 0%, transparent 70%),
+    radial-gradient(34% 30% at 10% 12%, rgb(255 140 60 / 0.09) 0%, transparent 70%),
     #ebe2d4;
 }
 .wbg-origin {
