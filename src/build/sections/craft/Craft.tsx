@@ -20,8 +20,6 @@ import './craft.css'
 
 const K = { lime: '#C6F135', sand: '#EBE2D4', orange: '#E8590C', ink: '#1E1712' }
 const STK_TONE = [K.sand, K.sand, K.lime, K.orange, K.lime, K.sand]
-const TRAY_AT = [0.05, 0.275, 0.5, 0.725, 0.95]
-const TRAY_TONE = [K.sand, K.sand, K.lime, K.sand, K.orange]
 const RULE_TRAVEL = ['leap', 'slap', 'stamp'] as const
 const RULE_PARK = ['-260,10', '1150,150', '-260,330']
 const RULE_NAME = ['Rule / Research', 'Rule / Systems', 'Rule / Calm']
@@ -162,14 +160,6 @@ export function Craft({ lay, live }: SectionProps) {
               <span className="hk-ovf" aria-hidden="true">
                 Overflow: Horizontal <span className="hk-ovf-ar">⇆</span>
               </span>
-              <Piece id="hk-apart" name="Button / Take it apart" kind="bubble" tone={K.lime} order={2} at={0.1} className="hk-apartslot">
-                <div className="hk-apart-w">
-                  <button type="button" className="hk-apart" aria-pressed="false">
-                    <span className="hk-apart-l">Take it apart</span>
-                  </button>
-                  <span className="hk-apart-hint">or press and hold the model</span>
-                </div>
-              </Piece>
               <Piece id="hk-rail" name="Rail / Process" kind="bubble" tone={K.sand} order={0} at={0.03} className="hk-railslot">
                 <div className="hk-rail" aria-hidden="true">
                   <div className="hk-rail-ticks">
@@ -182,18 +172,15 @@ export function Craft({ lay, live }: SectionProps) {
                   <i className="hk-thumb" />
                 </div>
               </Piece>
-              <div className="hk-tray">
-                <span className="hk-tray-l">Made so far</span>
-                <ul className="hk-tray-row" aria-label="Made so far">
-                  {PROCESS.map((s, i) => (
-                    <li key={s.tray}>
-                      <Piece id={`hk-t${i}`} name={`Chip / ${s.tray}`} kind="bubble" tone={TRAY_TONE[i]} order={3 + i} at={TRAY_AT[i]}>
-                        <span className={`hk-tchip${i === 4 ? ' is-live' : ''}`}>{s.tray}</span>
-                      </Piece>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* not a control: the model itself is what you press */}
+              <p className="hk-hold" aria-hidden="true">
+                <i className="hk-hold-ic" />
+                <span className="hk-hold-a">
+                  <span className="hk-hold-m">Press and hold the model</span>
+                  <span className="hk-hold-t">Tap the model</span> to take it apart
+                </span>
+                <span className="hk-hold-b">Let go to put it back</span>
+              </p>
             </div>
           </div>
         </Region>

@@ -26,7 +26,7 @@ export const CHAPTERS: Chapter[] = [
   {
     id: 'craft',
     num: '02',
-    frame: 'Craft',
+    frame: 'How I Think',
     ruler: 'HOW I THINK',
     headline: ['I think in ', { em: 'components.' }],
     body: 'Every product I design is built from the same small parts. Scroll sideways and watch one kit become five things.',

@@ -438,7 +438,7 @@
   z-index: 4;
   pointer-events: none;
 }
-.hk-hud :is(.slot, button) {
+.hk-hud .slot {
   pointer-events: auto;
 }
 .hk-ovf {
@@ -455,61 +455,79 @@
 .hk-ovf-ar {
   color: var(--k-lime);
 }
-.slot.hk-apartslot {
+/* the one hint: plain words, not a control (the model is what you press) */
+.hk-hold {
   position: absolute;
   right: 56px;
-  bottom: 96px;
-}
-.hk-apart-w {
+  bottom: 33px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-.hk-apart {
-  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  height: 40px;
-  padding: 0 18px 0 14px;
-  border-radius: 999px;
-  background: var(--k-bg2);
-  box-shadow: inset 0 0 0 1px rgb(198 241 53 / 0.45);
-  color: var(--k-sand);
-  font: 600 14px/1 var(--f-ui);
-  transition:
-    transform 140ms var(--k-ease-out),
-    background-color 160ms ease;
+  gap: 15px;
+  margin: 0;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--k-mute);
+  opacity: 0;
 }
-.hk-apart::before {
-  content: '';
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
+.hk-hold-ic {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   background: var(--k-lime);
-  transform: rotate(45deg);
-  transition: transform 260ms var(--k-ease-out);
 }
-.hk-apart[aria-pressed='true']::before {
-  transform: rotate(225deg) scale(0.8);
+.hk-hold-ic::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--k-lime);
+  animation: hk-press 2.4s var(--k-ease-out) infinite;
 }
-.hk-apart:active {
-  transform: scale(0.97);
-}
-.hk-apart:focus-visible {
-  outline: 2px solid var(--k-lime);
-  outline-offset: 3px;
-}
-@media (hover: hover) and (pointer: fine) {
-  .hk-apart:hover {
-    background: #362b23;
+@keyframes hk-press {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.9;
+  }
+  70%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
   }
 }
-.hk-apart-hint {
-  font-family: var(--f-mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--k-mute);
+.hk-hold-b,
+.hk-hold-t {
+  display: none;
+}
+.hk-hold[data-on='1'] .hk-hold-a {
+  display: none;
+}
+.hk-hold[data-on='1'] .hk-hold-b {
+  display: inline;
+  color: var(--k-lime);
+}
+.hk-hold[data-on='1'] .hk-hold-ic::after {
+  animation: none;
+  opacity: 1;
+  transform: scale(1.5);
+}
+@media (hover: none) {
+  .hk-hold-m {
+    display: none;
+  }
+  .hk-hold-t {
+    display: inline;
+  }
+}
+.bf:not([data-near='1']) .hk-hold-ic::after {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hk-hold-ic::after {
+    animation: none;
+  }
 }
 .slot.hk-railslot {
   position: absolute;
@@ -543,49 +561,6 @@
   border-radius: 2px;
   background: var(--k-lime);
   box-shadow: 0 0 12px rgb(198 241 53 / 0.6);
-}
-.hk-tray {
-  position: absolute;
-  right: 56px;
-  bottom: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
-}
-.hk-tray-l {
-  font-family: var(--f-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--k-mute);
-}
-.hk-tray-row {
-  display: flex;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.hk-tchip {
-  display: inline-flex;
-  align-items: center;
-  height: 30px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: var(--k-bg2);
-  box-shadow: inset 0 0 0 1px var(--k-line);
-  color: var(--k-sand);
-  font-family: var(--f-mono);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.hk-tchip.is-live {
-  background: var(--k-orange);
-  box-shadow: none;
-  color: #fff;
-  font-weight: 600;
 }
 
 /* -- 2 · the rules: a staircase of plates */
@@ -701,7 +676,7 @@
 .bstage[data-lay='narrow'] .hk-pin {
   height: 660px;
 }
-.bstage[data-lay='narrow'] :is(.hk-back, .hk-ovf, .hk-redl, .hk-apart-hint) {
+.bstage[data-lay='narrow'] :is(.hk-back, .hk-ovf, .hk-redl) {
   display: none;
 }
 .bstage[data-lay='narrow'] .hk-gl {
@@ -734,42 +709,23 @@
   font-size: 10px;
   padding: 5px 9px;
 }
-.bstage[data-lay='narrow'] .slot.hk-apartslot {
-  right: 14px;
+.bstage[data-lay='narrow'] .hk-hold {
+  right: auto;
+  left: 20px;
   top: 14px;
   bottom: auto;
-}
-.bstage[data-lay='narrow'] .hk-apart {
-  height: 34px;
-  font-size: 12px;
+  font-size: 10px;
 }
 .bstage[data-lay='narrow'] .slot.hk-railslot {
   left: 20px;
   right: 20px;
-  bottom: 62px;
+  bottom: 24px;
 }
 .bstage[data-lay='narrow'] .hk-rail {
   width: auto;
 }
 .bstage[data-lay='narrow'] .hk-tick {
   font-size: 9px;
-}
-.bstage[data-lay='narrow'] .hk-tray {
-  left: 20px;
-  right: 20px;
-  bottom: 14px;
-  align-items: flex-start;
-}
-.bstage[data-lay='narrow'] .hk-tray-l {
-  display: none;
-}
-.bstage[data-lay='narrow'] .hk-tchip {
-  height: 26px;
-  padding: 0 9px;
-  font-size: 10px;
-}
-.bstage[data-lay='narrow'] .hk-tray-row {
-  gap: 5px;
 }
 .bstage[data-lay='narrow'] .hk-r2 {
   padding: 48px 0 40px;
@@ -799,10 +755,10 @@
 .bstage.is-static .hk-pin {
   height: auto;
 }
-.bstage.is-static :is(.hk-gl, .hk-back, .hk-hit, .hk-ovf, .slot.hk-apartslot, .slot.hk-railslot) {
+.bstage.is-static :is(.hk-gl, .hk-back, .hk-hit, .hk-ovf, .hk-hold, .slot.hk-railslot) {
   display: none;
 }
-.bstage.is-static :is(.hk-clip, .hk-hud, .hk-tray) {
+.bstage.is-static :is(.hk-clip, .hk-hud) {
   position: static;
   overflow: visible;
 }
@@ -818,10 +774,6 @@
 }
 .bstage.is-static .hk-body {
   width: auto;
-}
-.bstage.is-static .hk-tray {
-  align-items: flex-start;
-  padding: 32px 56px 0;
 }
 .bstage[data-lay='narrow'].is-static .hk-track {
   grid-template-columns: 1fr;

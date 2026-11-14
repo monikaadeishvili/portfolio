@@ -4,7 +4,7 @@
  * panel track and the giant outline words (parallax), reveals each panel as
  * it nears centre, moves the rail, and feeds the 3-D kit (lazy-loaded,
  * rendering only while the section is on screen). Also wires "take it apart"
- * (press and hold the model, or the button). No layout reads in update.
+ * (press and hold the model; a tap on touch). No layout reads in update.
  */
 import { clamp01, registerFx, smooth } from '../../runtime'
 import type { KitScene } from '../../three/KitScene'
@@ -30,7 +30,7 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
   const hit = q1('.hk-hit')
   const thumb = q1('.hk-thumb')
   const ovf = q1('.hk-ovf')
-  const apart = q1<HTMLButtonElement>('.hk-apart')
+  const hold = q1('.hk-hold')
   if (!clip || !track || !gl || !canvas || !hit) return () => {}
   const panels = Array.from(track.querySelectorAll<HTMLElement>('.hk-panel')).map((el) => ({
     letters: Array.from(el.querySelectorAll<HTMLElement>('.hk-vl-in')),
@@ -102,37 +102,31 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
 
   /* ---- pointer: tilt, nudge, take it apart */
   const onMove = (e: PointerEvent) => scene?.setPointer(e.offsetX + glX, e.offsetY + glY, true)
+  /** the hint swaps to "let go" while the model is apart */
+  const apart = (on: boolean) => {
+    scene?.setExplode(on ? 1 : 0)
+    if (hold) hold.dataset.on = on ? '1' : '0'
+  }
   const onLeave = () => {
     scene?.setPointer(0, 0, false)
-    if (!pressed) scene?.setExplode(0)
+    apart(false)
   }
-  let pressed = false
   let pulse = 0
   const onDown = (e: PointerEvent) => {
+    apart(true)
+    // touch: a tap plays a short out-and-back pulse
     if (e.pointerType !== 'mouse') {
-      // touch: a tap plays a short out-and-back pulse
-      scene?.setExplode(1)
       window.clearTimeout(pulse)
-      pulse = window.setTimeout(() => !pressed && scene?.setExplode(0), 600)
-      return
+      pulse = window.setTimeout(() => apart(false), 700)
     }
-    scene?.setExplode(1)
   }
-  const onUp = () => {
-    if (!pressed) scene?.setExplode(0)
-  }
-  const onApart = () => {
-    pressed = !pressed
-    apart?.setAttribute('aria-pressed', String(pressed))
-    const l = apart?.querySelector('.hk-apart-l')
-    if (l) l.textContent = pressed ? 'Put it back' : 'Take it apart'
-    scene?.setExplode(pressed ? 1 : 0)
+  const onUp = (e: PointerEvent) => {
+    if (e.pointerType === 'mouse') apart(false)
   }
   hit.addEventListener('pointermove', onMove, { passive: true })
   hit.addEventListener('pointerleave', onLeave)
   hit.addEventListener('pointerdown', onDown)
   window.addEventListener('pointerup', onUp)
-  apart?.addEventListener('click', onApart)
 
   const anchor: [number, number] = [0, 0]
   const RED_PARTS = [START.dot + 0, START.card + 0, HERO_PILL]
@@ -185,6 +179,7 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
         cache.ovf = ov
         if (ovf) ovf.style.opacity = ov
         if (back) back.style.opacity = ov
+        if (hold) hold.style.opacity = ov
       }
       // each panel reveals as it nears the centre (d = signed distance in panels)
       panels.forEach((p, k) => {
@@ -249,7 +244,6 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
     hit.removeEventListener('pointerleave', onLeave)
     hit.removeEventListener('pointerdown', onDown)
     window.removeEventListener('pointerup', onUp)
-    apart?.removeEventListener('click', onApart)
     scene?.dispose()
     scene = null
     track.style.transform = ''
