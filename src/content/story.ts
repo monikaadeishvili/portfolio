@@ -65,7 +65,8 @@ export const HELLO = {
   support: ['Taste comes with experience. I have ', '7+ years', ' of it.'] as const,
   intro: "Hi, I'm Monika, a product designer.",
   marquee: { lead: 'FROM A ', empty: 'BLANK FIGMA FILE', mid: ' TO ', full: 'A PRODUCT PEOPLE USE', tail: ' — ' },
-  workedWith: ['DAZN', 'NOTA by M&T Bank'],
+  /** companies and named client products from the resume (the Worked with marquee) */
+  workedWith: ['DAZN', 'Nota by M&T Bank', 'Contrast', 'Forcoda', 'Studious', 'Hello Audio', 'Roomistry', 'Startup Mentor AI', '4twiggers', 'Realoffer', 'Moneymarket', 'Xpresso', 'Refresh Miami', 'Graft', 'Bizzy', 'Burq', 'Dinespace'],
   clients: '18 client products',
   hint: ['This page builds itself.', "Your product won't."] as const,
   primary: 'See how I work',

@@ -1124,15 +1124,9 @@
 .h-blue {
   position: absolute;
   inset: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-  align-items: center;
-  padding: 0 var(--h-px);
-  /* faded in by the wipe through the colour only (--blue-a): fading the element
-     itself would regroup its 3-D subtree and rebuild layers mid-sweep */
-  /* vivid orange band, espresso type on it (as in the reference): ≥ 4.5:1 */
-  background: color-mix(in srgb, var(--h-hot) calc(var(--blue-a, 1) * 100%), transparent);
-  color: var(--h-ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .h-band-def {
   position: absolute;
@@ -1145,55 +1139,70 @@
   font-size: 24px;
   color: var(--plain-2);
 }
-.slot.h-listslot {
-  align-self: center;
+/* the ribbons: two tapes crossing the band, drifting opposite ways. Their
+   colours fill in with the wipe through --blue-a only (fading the elements
+   would regroup their 3-D subtree mid-sweep) */
+.slot.h-ribslot {
+  position: relative;
+  margin: 0 -3%;
 }
-.h-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  color: var(--h-ink);
+.slot.h-ribslot-b {
+  margin-top: 0;
 }
-.h-list li:nth-child(2) {
-  margin-left: 18px;
-}
-.h-list li:nth-child(3) {
-  margin-left: 36px;
-}
-.h-list li:nth-child(4) {
-  margin-left: 54px;
-}
-.h-list li:nth-child(5) {
-  margin-left: 72px;
-}
-.h-list span {
-  color: rgb(30 23 18 / 0.55);
-}
-.h-stmt {
-  margin: 0;
-  padding-left: 18px;
-  font-family: var(--h-serif);
-  font-size: 68px;
-  font-weight: 400;
-  font-style: normal;
-  line-height: 1.02;
-  letter-spacing: -0.012em;
-  color: var(--h-ink);
-  text-wrap: balance;
-}
-.h-stmt .rw {
-  display: inline-block;
+.h-rib {
+  --rib-bg: var(--h-ink);
+  --rib-fg: var(--h-on-dark);
   overflow: hidden;
-  padding: 0.04em 0.02em 0.12em;
-  margin: -0.04em -0.02em -0.12em;
-  vertical-align: top;
+  padding: 20px 0 22px;
+  background: color-mix(in srgb, var(--rib-bg) calc(var(--blue-a, 1) * 100%), transparent);
+  color: color-mix(in srgb, var(--rib-fg) calc(var(--blue-a, 1) * 100%), transparent);
+  transform: rotate(-2.2deg);
+  box-shadow: 0 10px 24px -14px rgb(30 23 18 / calc(var(--blue-a, 1) * 0.45));
 }
-.h-stmt .rw-in {
-  display: inline-block;
+.h-rib-b {
+  --rib-bg: var(--h-hot);
+  --rib-fg: #fff;
+  /* crosses over the dark tape (a few px forward: coplanar layers under the
+     tilted camera do not order reliably by z-index alone) */
+  transform: rotate(1.8deg) translateZ(3px);
 }
+.bf-hello .bf-body .h-rib,
+.bf-hello .bf-body .h-rib * {
+  transform-style: flat;
+}
+.h-rib-rail {
+  display: flex;
+  width: max-content;
+}
+.h-rib-set {
+  display: flex;
+  align-items: center;
+}
+.h-rib-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  padding-right: 28px;
+  white-space: nowrap;
+}
+.h-rib-t {
+  font-family: var(--h-plain-sans);
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+.h-rib-ico {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* reduced motion / static: the tapes stand still */
 
 /* -- three columns of numerals over ghost words */
 .h-cellsw {
@@ -1335,22 +1344,86 @@
 .h-ww {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 40px;
+  gap: 28px;
   height: 104px;
   margin: 0;
-  padding: 0 var(--h-px);
+  padding: 0 0 0 var(--h-px);
 }
 .h-ww-l {
+  flex: none;
   color: var(--h-ink-2);
 }
+/* the marquee window: names fade in and out at both edges */
+.h-ww-mq {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.bf-hello .bf-body .h-ww-mq,
+.bf-hello .bf-body .h-ww-mq * {
+  transform-style: flat;
+}
+.h-ww-rail {
+  display: flex;
+  width: max-content;
+}
+.h-ww-set {
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  margin: 0;
+  padding: 0 56px 0 0;
+  list-style: none;
+}
+/* the names: the headline's variable face, muted, lightening under the cursor */
 .h-ww-n {
-  font-family: var(--h-display);
+  font-family: 'Big Shoulders Display Variable', var(--h-display);
   font-size: 40px;
+  font-weight: 900;
   line-height: 1;
   text-transform: uppercase;
-  color: var(--h-ink);
+  color: var(--h-ink-2);
   white-space: nowrap;
+}
+.h-ww-n {
+  display: flex;
+  justify-content: center;
+}
+.h-ww-vis {
+  display: inline-flex;
+}
+/* the strip is not a selectable layer on hover: no lift, no outline (only the letters react) */
+.bf-hello .slot.h-wwslot.is-hover > .alive > .alive-in {
+  transform: none;
+}
+.bf-hello .slot.h-wwslot.is-hover > .alive > .alive-in > .alive-outline {
+  opacity: 0;
+}
+.h-ww-n .h-ch {
+  --hs: 0.02em;
+}
+/* reduced motion / static: one copy, wrapped and centred, no drift */
+.bstage.is-static .h-ww-mq {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.bstage.is-static .h-ww-rail {
+  width: auto;
+}
+.bstage.is-static .h-ww-set {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 32px;
+  padding: 12px 0;
+}
+.bstage.is-static .h-ww-set + .h-ww-set {
+  display: none;
+}
+.bstage.is-static .h-ww {
+  height: auto;
+  padding: 0 var(--h-px);
 }
 
 /* -- the near-black close */
@@ -1573,26 +1646,29 @@
 }
 .bstage[data-lay='narrow'] .h-blue {
   position: relative;
-  grid-template-columns: 1fr;
-  gap: 22px;
-  padding: 34px var(--h-px) 38px;
+  padding: 30px 0 34px;
 }
 .bstage[data-lay='narrow'] .h-band-def {
   font-size: 16px;
   padding: 0 20px;
   text-align: center;
 }
-.bstage[data-lay='narrow'] .h-list {
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 4px 12px;
+.bstage[data-lay='narrow'] .h-rib {
+  padding: 12px 0 13px;
 }
-.bstage[data-lay='narrow'] .h-list li {
-  margin-left: 0;
+.bstage[data-lay='narrow'] .h-rib-t {
+  font-size: 24px;
 }
-.bstage[data-lay='narrow'] .h-stmt {
-  padding-left: 0;
-  font-size: calc(var(--FW) * 0.105);
+.bstage[data-lay='narrow'] .h-rib-ico {
+  width: 22px;
+  height: 22px;
+}
+.bstage[data-lay='narrow'] .h-rib-item {
+  gap: 16px;
+  padding-right: 16px;
+}
+.bstage[data-lay='narrow'] .slot.h-ribslot-b {
+  margin-top: 0;
 }
 .bstage[data-lay='narrow'] .h-cell {
   min-height: 170px;
@@ -1613,18 +1689,22 @@
   font-size: 11px;
 }
 .bstage[data-lay='narrow'] .h-ww {
-  flex-wrap: wrap;
-  gap: 8px 18px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
   height: auto;
-  padding: 26px var(--h-px);
+  padding: 22px 0;
 }
 .bstage[data-lay='narrow'] .h-ww-l {
-  width: 100%;
   text-align: center;
   font-size: 11px;
 }
 .bstage[data-lay='narrow'] .h-ww-n {
-  font-size: 24px;
+  font-size: 26px;
+}
+.bstage[data-lay='narrow'] .h-ww-set {
+  gap: 34px;
+  padding-right: 34px;
 }
 .bstage[data-lay='narrow'] .slot.h-hint-slot {
   padding: 96px 20px 64px;

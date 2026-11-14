@@ -28,10 +28,29 @@ const STROKE = 0.024
 /** re-measure cached letter centres at most this often while hovering (ms) */
 const REMEASURE = 350
 
+export interface WakeOpts {
+  /** one span per letter */
+  chars: HTMLElement[]
+  /** rows that keep their alignment and give lost width up evenly from both ends */
+  rowEls?: HTMLElement[]
+  /** cheap proximity test: letters are only measured while the cursor is near these */
+  zones: HTMLElement[]
+  /** re-measure cadence for the letter centres (ms; lower for moving letters) */
+  remeasure?: number
+}
+
+/** the headline: both lines, rows centred-shrinking */
 export function mountHeadWake(board: HTMLElement) {
+  return mountWake({
+    chars: Array.from(board.querySelectorAll<HTMLElement>('.h-l1 .h-ch, .h-l2 .h-ch')),
+    rowEls: Array.from(board.querySelectorAll<HTMLElement>('.h-l1 .h-row, .h-l2 .h-row')),
+    zones: Array.from(board.querySelectorAll<HTMLElement>('.h-title .h-l1, .h-l2')),
+  })
+}
+
+export function mountWake({ chars, rowEls = [], zones, remeasure = REMEASURE }: WakeOpts) {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {}
   if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return () => {}
-  const chars = Array.from(board.querySelectorAll<HTMLElement>('.h-l1 .h-ch, .h-l2 .h-ch'))
   const n = chars.length
   if (!n) return () => {}
   const thin = new Float32Array(n)
@@ -48,9 +67,8 @@ export function mountHeadWake(board: HTMLElement) {
   const rowOf = new Int16Array(n)
   // each headline row keeps its alignment at rest; while letters are lighter (and
   // narrower) the row is nudged so it gives up the width evenly from both ends
-  const rowEls = Array.from(board.querySelectorAll<HTMLElement>('.h-l1 .h-row, .h-l2 .h-row'))
   const rows = rowEls.map((el) => ({ el, side: getComputedStyle(el).justifyContent === 'flex-end' ? -1 : 1, last: '' }))
-  chars.forEach((c, i) => (rowOf[i] = rowEls.indexOf(c.closest<HTMLElement>('.h-row')!)))
+  chars.forEach((c, i) => (rowOf[i] = rowEls.findIndex((r) => r.contains(c))))
   const lost = new Float32Array(rows.length)
 
   let measured = false
@@ -113,10 +131,22 @@ export function mountHeadWake(board: HTMLElement) {
     // only on the finished, designed headline (not mid-wipe or while the switch plays)
     const active = has && tasteFx.T >= 1 && !tasteFx.manual
     let near = false
+    // cheap first: is the cursor near any zone at all? (one rect per zone)
+    let zoned = false
     if (active) {
+      for (const z of zones) {
+        const r = z.getBoundingClientRect()
+        const m = Math.max(40, r.height * 0.6)
+        if (px > r.left - m && px < r.right + m && py > r.top - m && py < r.bottom + m) {
+          zoned = true
+          break
+        }
+      }
+    }
+    if (zoned) {
       if (!measured) measureWidths()
       // cached centres: refresh after scroll/resize, or every so often
-      if (dirty || now - stamp > REMEASURE) {
+      if (dirty || now - stamp > remeasure) {
         for (let i = 0; i < n; i++) {
           const r = chars[i].getBoundingClientRect()
           cx[i] = r.left + r.width / 2
@@ -168,7 +198,7 @@ export function mountHeadWake(board: HTMLElement) {
         else c.setProperty('--hs', `${((STROKE * (w - W_LO)) / (W_HI - W_LO)).toFixed(4)}em`)
       }
       // width this letter gives up (width is near-linear in weight across 700–900)
-      if (w !== W_HI) lost[rowOf[i]] += ((w9[i] - w7[i]) * (W_HI - w)) / (W_HI - W_LO)
+      if (w !== W_HI && rowOf[i] >= 0) lost[rowOf[i]] += ((w9[i] - w7[i]) * (W_HI - w)) / (W_HI - W_LO)
     }
     // split the lost width between both ends of each row (2-D: no compositing layer)
     rows.forEach((r, k) => {
