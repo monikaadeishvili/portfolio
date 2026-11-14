@@ -72,6 +72,15 @@ export interface Portrait3DFrame {
 const DEPTH = 0.2
 /** how much of the canvas height she fills (margin for the tilt) */
 const FIT = 0.95
+/**
+ * The canvas overscans the portrait box so particles can drift freely around
+ * her: OX of the box width on each side, OY of its height above (none below —
+ * she stands on the region's bottom edge). Exported for the controller.
+ */
+export const OX = 0.55
+export const OY = 0.16
+/** faint free-floating grains around her */
+const AMBIENT = 1500
 const FOV = 18
 const SEG_Y = 340
 
@@ -122,7 +131,7 @@ const PTS_VERT = /* glsl */ `
 in vec3 position;   // home (relief space)
 in vec4 aCol;       // rgb = ink colour, a = photo luminance (normalised)
 in vec4 aRnd;       // per-particle random 0..1
-in float aKind;     // 0 body grain, 1 wind mote
+in float aKind;     // 0 body grain, 1 wind mote, 2 ambient
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 uniform float uTime;
@@ -131,6 +140,7 @@ uniform vec2 uRes;    // canvas px
 uniform vec3 uHv;     // hover centre (uv, top-left) + amount
 uniform float uPx;    // point size scale (device px per unit)
 uniform vec3 uPt;     // pointer (uv, top-left) + strength
+uniform vec4 uExt;    // ambient field in group space: x0, y0, w, h
 out vec3 vCol;
 out float vA;
 out float vSoft;
@@ -143,7 +153,15 @@ void main() {
   p.z += sin(t * 0.7 + position.y * 4.0) * 0.004;
   // wind motes: lift off her edges, drift right and up with the shawl, fade, loop
   float life = fract(t * (0.07 + 0.06 * r.x) + r.y);
-  float mote = aKind;
+  float mote = step(0.5, aKind) * (1.0 - step(1.5, aKind));
+  float amb = step(1.5, aKind);
+  if (amb > 0.5) {
+    // ambient: slow, free drift through the whole field, wrapping round
+    vec2 q = position.xy + vec2(t * 0.006 * (r.x - 0.5), t * (0.004 + 0.007 * r.y));
+    q += vec2(sin(t * 0.21 + r.z * 6.283), cos(t * 0.17 + r.w * 6.283)) * 0.02;
+    q = uExt.xy + mod(q - uExt.xy, uExt.zw);
+    p = vec3(q, position.z);
+  }
   if (mote > 0.5) {
     vec3 wind = vec3(0.21 + 0.12 * r.z, 0.05 + 0.06 * (r.w - 0.3), 0.04 * (r.x - 0.5));
     vec3 turb = vec3(sin(t * 1.3 + r.z * 9.0 + life * 7.0), cos(t * 1.1 + r.w * 7.0 + life * 5.0), sin(t * 0.9 + r.x * 5.0)) * 0.018 * life;
@@ -153,7 +171,7 @@ void main() {
   float f = smoothstep(0.0, 1.0, clamp(uForm * 1.25 - r.x * 0.25, 0.0, 1.0));
   vec3 away = normalize(vec3(r.y - 0.5, r.z - 0.5, r.w - 0.5) + 1e-3) * (0.35 + 0.45 * r.x);
   away.xy = mat2(cos(r.w * 3.0), -sin(r.w * 3.0), sin(r.w * 3.0), cos(r.w * 3.0)) * away.xy;
-  p = mix(p + away, p, f);
+  p = mix(p + away * (1.0 - amb), p, f);
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   vec4 clip = projectionMatrix * mv;
   // hover: grains just outside the reveal circle are blown outward, like dust in a gust
@@ -187,11 +205,18 @@ void main() {
   vCol = mix(aCol.rgb, vec3(0.86, 0.9, 1.0), glint * 0.85);
   vSoft = 1.0 - smoothstep(0.25, 0.75, depthK);
   vA = mix(0.0, 1.0, smoothstep(0.0, 0.35, f)) * (1.0 - band * 0.35) * mix(0.5, 1.0, depthK) * (1.0 - part * 0.25);
+  // a soft oval falloff toward the canvas edge (never a rectangle)
+  vec2 ov = (px / uRes - vec2(0.5, 0.55)) * vec2(2.0, 2.1);
+  float oval = 1.0 - smoothstep(0.62, 1.0, length(ov));
   if (mote > 0.5) {
-    // fade before the canvas edge so no mote is ever clipped
-    vec2 e2 = min(px, uRes - px);
-    vA *= sin(3.14159 * life) * 0.85 * smoothstep(0.0, uRes.y * 0.06, min(e2.x, e2.y));
+    vA *= sin(3.14159 * life) * 0.8 * oval;
     gl_PointSize *= mix(0.8, 1.35, r.z);
+  }
+  if (amb > 0.5) {
+    // very faint, small, twinkling softly
+    vA = (0.1 + 0.16 * r.z) * oval * smoothstep(0.0, 0.6, f) * (0.7 + 0.3 * sin(t * (0.8 + r.x) + r.y * 20.0)) * (1.0 - band);
+    gl_PointSize = uPx * mix(0.9, 1.6, r.w);
+    vSoft = r.x;
   }
 }
 `
@@ -429,7 +454,7 @@ export class Portrait3D {
       glslVersion: GLSL3,
       vertexShader: PTS_VERT,
       fragmentShader: PTS_FRAG,
-      uniforms: { uTime: { value: 0 }, uForm: { value: 1 }, uRes: { value: [2, 2] }, uHv: { value: [0.5, 0.5, 0] }, uPx: { value: 2 }, uPt: { value: [0.5, 0.5, 0] } },
+      uniforms: { uTime: { value: 0 }, uForm: { value: 1 }, uRes: { value: [2, 2] }, uHv: { value: [0.5, 0.5, 0] }, uPx: { value: 2 }, uPt: { value: [0.5, 0.5, 0] }, uExt: { value: [0, 0, 1, 1] } },
       transparent: true,
       depthTest: false,
       depthWrite: false,
@@ -472,6 +497,8 @@ export class Portrait3D {
     this.compScene.add(quad)
     this.scenePts.add(this.gPts)
     this.scenePhoto.add(this.gPhoto)
+    this.gPts.position.y = -OY / 2
+    this.gPhoto.position.y = -OY / 2
 
     try {
       this.renderer = new WebGLRenderer({ canvas, alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'high-performance' })
@@ -671,6 +698,19 @@ export class Portrait3D {
       rn.push(rnd(), rnd(), rnd(), rnd())
       kind.push(1)
     }
+    // ambient: spread over the whole canvas (group space: the figure's centre is the origin)
+    const W = this.aspect * (1 + 2 * OX)
+    const H = 1 + OY
+    const ext: [number, number, number, number] = [-W / 2, -H / 2 + OY / 2, W, H]
+    this.ptsMat.uniforms.uExt.value = ext
+    for (let m = 0; m < AMBIENT; m++) {
+      pos.push(ext[0] + rnd() * ext[2], ext[1] + rnd() * ext[3], (rnd() - 0.4) * 0.3)
+      const t = 0.35 + rnd() * 0.65
+      const c = t < 0.5 ? NAVY.map((n, j) => n + (BLUE[j] - n) * (t / 0.5)) : BLUE.map((n, j) => n + (PERI[j] - n) * ((t - 0.5) / 0.5))
+      col.push(c[0], c[1], c[2], t)
+      rn.push(rnd(), rnd(), rnd(), rnd())
+      kind.push(2)
+    }
     const g = new BufferGeometry()
     g.setAttribute('position', new Float32BufferAttribute(pos, 3))
     g.setAttribute('aCol', new Float32BufferAttribute(col, 4))
@@ -711,7 +751,7 @@ export class Portrait3D {
       this.rtPhoto!.setSize(w, h)
     }
     this.cam3.aspect = w / h
-    this.cam3.position.set(0, 0, 0.5 / Math.tan((FOV * Math.PI) / 360))
+    this.cam3.position.set(0, 0, (0.5 * (1 + OY)) / Math.tan((FOV * Math.PI) / 360))
     this.cam3.lookAt(0, 0, 0)
     this.cam3.updateProjectionMatrix()
     this.lastPhoto = ''

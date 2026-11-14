@@ -15,6 +15,10 @@ import { project, unproject, type Geo, type Proj } from '../../camera'
 import { live } from '../../loop'
 import { range, registerFx, type FxEnv } from '../../runtime'
 import type { Portrait3DFrame } from './portrait3d'
+
+/** canvas overscan around the portrait box (keep in sync with portrait3d.ts and .h-port-gl) */
+const OX = 0.55
+const OY = 0.16
 import { taste, tasteFx } from './taste'
 
 const SRC = '/monika-new.webp'
@@ -102,6 +106,7 @@ export function mountPortrait(board: HTMLElement) {
 
   /* ---- geometry (board px) */
   const box: [number, number, number, number] = [0, 0, 1, 1]
+  const cbox: [number, number, number, number] = [0, 0, 1, 1]
   const ph: [number, number, number, number] = [0, 0.38, 1, 1]
   let reachA = 0
   let reachB = 0
@@ -114,35 +119,39 @@ export function mountPortrait(board: HTMLElement) {
     box[1] = o.y
     box[2] = Math.max(1, o.w)
     box[3] = Math.max(1, o.h)
+    cbox[0] = box[0] - OX * box[2]
+    cbox[1] = box[1] - OY * box[3]
+    cbox[2] = box[2] * (1 + 2 * OX)
+    cbox[3] = box[3] * (1 + OY)
     if (twin) {
       const t = offsetIn(twin, board)
-      ph[0] = (t.x - o.x) / box[2]
-      ph[1] = (t.y - o.y) / box[3]
-      ph[2] = (t.x + t.w - o.x) / box[2]
-      ph[3] = (t.y + t.h - o.y) / box[3]
+      ph[0] = (t.x - cbox[0]) / cbox[2]
+      ph[1] = (t.y - cbox[1]) / cbox[3]
+      ph[2] = (t.x + t.w - cbox[0]) / cbox[2]
+      ph[3] = (t.y + t.h - cbox[1]) / cbox[3]
     }
     // the largest scale the camera shows her at: the flat hold
     let sMax = 0.5
     g.keys[0].forEach((k) => (sMax = Math.max(sMax, k.c.s)))
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
-    const k = Math.min(1, 2048 / Math.max(box[2], box[3]) / (sMax * dpr))
-    sized[0] = box[2] * sMax * dpr * k
-    sized[1] = box[3] * sMax * dpr * k
+    const k = Math.min(1, 2048 / Math.max(cbox[2], cbox[3]) / (sMax * dpr))
+    sized[0] = cbox[2] * sMax * dpr * k
+    sized[1] = cbox[3] * sMax * dpr * k
     gl.size(sized[0], sized[1])
     const b = g.boards[0]
-    corners[0] = b.x + box[0]
-    corners[1] = b.y + box[1]
-    corners[2] = b.x + box[0] + box[2]
-    corners[3] = b.y + box[1]
-    corners[4] = b.x + box[0]
-    corners[5] = b.y + box[1] + box[3]
-    corners[6] = b.x + box[0] + box[2]
-    corners[7] = b.y + box[1] + box[3]
+    corners[0] = b.x + cbox[0]
+    corners[1] = b.y + cbox[1]
+    corners[2] = b.x + cbox[0] + cbox[2]
+    corners[3] = b.y + cbox[1]
+    corners[4] = b.x + cbox[0]
+    corners[5] = b.y + cbox[1] + cbox[3]
+    corners[6] = b.x + cbox[0] + cbox[2]
+    corners[7] = b.y + cbox[1] + cbox[3]
     dirty = true
   }
 
   /* ---- state */
-  const F: Portrait3DFrame = { time: 0, dt: 0, box, sw: [0, 0], r: 0, ring: 0, arrA: 0, arrB: 0, ph, phOn: 1, man: 0, hot: 1, tilt: [0, 0], hv: [0.5, 0.3, 0], pt: [0.5, 0.5, 0] }
+  const F: Portrait3DFrame = { time: 0, dt: 0, box: cbox, sw: [0, 0], r: 0, ring: 0, arrA: 0, arrB: 0, ph, phOn: 1, man: 0, hot: 1, tilt: [0, 0], hv: [0.5, 0.3, 0], pt: [0.5, 0.5, 0] }
   const pr: Proj = { x: 0, y: 0, f: 1 }
   const wp = { x: 0, y: 0 }
   let key = ''
@@ -183,6 +192,8 @@ export function mountPortrait(board: HTMLElement) {
     return scr.x1 > 0 && scr.y1 > 0 && scr.x0 < window.innerWidth && scr.y0 < window.innerHeight
   }
 
+  const cu = (u: number) => (u + OX) / (1 + 2 * OX)
+  const cv = (v: number) => (v + OY) / (1 + OY)
   const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2)
 
   const update = (e: FxEnv) => {
@@ -252,13 +263,13 @@ export function mountPortrait(board: HTMLElement) {
       near = curU > -0.15 && curU < 1.15 && curV > -0.08 && curV < 1.05
       inside = curU > 0.02 && curU < 0.98 && curV > 0.02 && curV < 1 && (gl.hit ? gl.hit(curU, curV) : true)
       if (near) {
-        F.pt[0] = curU
-        F.pt[1] = curV
+        F.pt[0] = cu(curU)
+        F.pt[1] = cv(curV)
       }
       if (inside) {
         const k = 1 - Math.exp(-dt * 12)
-        F.hv[0] += (curU - F.hv[0]) * (hvRaw <= 0 ? 1 : k)
-        F.hv[1] += (curV - F.hv[1]) * (hvRaw <= 0 ? 1 : k)
+        F.hv[0] += (cu(curU) - F.hv[0]) * (hvRaw <= 0 ? 1 : k)
+        F.hv[1] += (cv(curV) - F.hv[1]) * (hvRaw <= 0 ? 1 : k)
         if (!interacted) interacted = true
       }
     }
@@ -276,8 +287,8 @@ export function mountPortrait(board: HTMLElement) {
       peekT += dt
       if (peekT < PEEK_S * 0.55) {
         peek = true
-        F.hv[0] = 0.4
-        F.hv[1] = 0.16
+        F.hv[0] = cu(0.4)
+        F.hv[1] = cv(0.16)
       }
       if (peekT >= PEEK_S) {
         peekT = -1
@@ -321,7 +332,7 @@ export function mountPortrait(board: HTMLElement) {
     /* draw only while something changes */
     const ring = T > 0 && T < 1 ? 1 : 0
     const moving = ring || (arrA > 0 && arrA < 1) || (arrB > 0 && arrB < 1) || (hvRaw > 0 && hvRaw < 1) || inside || tiltLive
-    const k = `${arrA.toFixed(4)}|${arrB.toFixed(4)}|${tasteFx.r.toFixed(1)}|${box.map((v) => v.toFixed(1)).join(',')}|${hvRaw.toFixed(3)}`
+    const k = `${arrA.toFixed(4)}|${arrB.toFixed(4)}|${tasteFx.r.toFixed(1)}|${cbox.map((v) => v.toFixed(1)).join(',')}|${hvRaw.toFixed(3)}`
     if (!dirty && !moving && k === key) return
     key = k
     dirty = false

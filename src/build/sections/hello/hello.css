@@ -672,7 +672,16 @@
   margin: 0;
   touch-action: pan-y;
 }
-.h-port-gl,
+/* the canvas overscans the portrait box so particles drift freely around her
+   (keep in sync with OX / OY in portrait3d.ts and portraitFx.ts) */
+.h-port-gl {
+  position: absolute;
+  left: -55%;
+  right: -55%;
+  top: -16%;
+  bottom: 0;
+  pointer-events: none;
+}
 .h-port-cv {
   position: absolute;
   inset: 0;
