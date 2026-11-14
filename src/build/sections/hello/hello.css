@@ -28,7 +28,10 @@
   --h-cap: 16px;
   --h-rad: 36px;
   --h-nav: 72px;
-  --port-h: calc(var(--h-r0) * 0.78);
+  /* the portrait is scaled up from its base size (feet stay on the baseline);
+     the grey "taste off" placeholder keeps the base size */
+  --port-k: 1.12;
+  --port-h: calc(var(--h-r0) * 0.78 * var(--port-k));
   --port-w: calc(var(--port-h) * 0.584444);
   --sw-h: calc(var(--h-fs) * 0.8);
   --sw-w: calc(var(--sw-h) * 1.86);
@@ -957,12 +960,12 @@
 .hd-img {
   position: absolute;
   z-index: -1;
-  left: calc(50% - var(--port-w) / 2);
+  left: calc(50% - var(--port-w) / var(--port-k) / 2);
   bottom: 0;
   display: grid;
   place-items: center;
-  width: var(--port-w);
-  height: calc(var(--port-h) * 0.6);
+  width: calc(var(--port-w) / var(--port-k));
+  height: calc(var(--port-h) / var(--port-k) * 0.6);
   border-radius: 14px;
   background: #f0f0f2;
   box-shadow: inset 0 0 0 1px var(--plain-line);
@@ -1387,6 +1390,7 @@
   --h-cap: 12px;
   --h-rad: 22px;
   --h-nav: 52px;
+  --port-k: 1;
   --port-w: calc(var(--FW) * 0.72);
   --port-h: calc(var(--port-w) / 0.584444);
   --h-r0: calc(var(--h-nav) + var(--h-fs) * 2.7 + 92px + var(--port-h));
