@@ -231,7 +231,7 @@ export function Inspector2() {
   const sec = c?.section ?? ch
   const fname = frameName(sec, hello.name)
   // 01 Hello's frame reads as an untouched default until taste is applied
-  const frameFill = sec === 0 ? (hello.taste ? '#F6F6F3' : '#FFFFFF') : '#FFFDF8'
+  const frameFill = sec === 0 ? (hello.taste ? '#F3ECE1' : '#FFFFFF') : '#FFFDF8'
   const fill = c?.tone ?? frameFill
   const fillRef = useRef<HTMLSpanElement>(null)
   const hexRef = useRef<HTMLSpanElement>(null)

@@ -1,22 +1,25 @@
 /* ============================================ 01 Hello — same tools → taste */
 .bf-hello {
   /* designed world */
-  --h-ink: #0b0b0c;
-  --h-ink-2: #4a4a4f;
-  --h-board: #f6f6f3;
-  --h-canvas: #f1f1ee;
-  --h-blue: #0a4bff;
-  /* electric blue lifted for near-black grounds (≥ 4.5:1 there) */
-  --h-blue-dk: #4a78ff;
-  --h-glow: #9db8ff;
-  --h-line: rgb(11 11 12 / 0.1);
-  --h-line-2: rgb(11 11 12 / 0.16);
+  --h-ink: #1e1712;
+  --h-ink-2: #5a4c40;
+  --h-board: #f3ece1;
+  --h-canvas: #ebe2d4;
+  /* Golden hour: terracotta from the sunset light (≥ 4.5:1 on the board) */
+  --h-blue: #ad4723;
+  /* the brighter terracotta, for display type only (≥ 3:1 at large sizes) */
+  --h-hot: #c4562e;
+  /* apricot, for espresso grounds (≥ 4.5:1 there) */
+  --h-blue-dk: #f0a26e;
+  --h-glow: #f4c096;
+  --h-line: rgb(30 23 18 / 0.1);
+  --h-line-2: rgb(30 23 18 / 0.16);
   --h-green: #1fa45a;
-  --h-on-dark: #f1f1ee;
+  --h-on-dark: #f6eee2;
   --h-display: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
   --h-serif: 'Instrument Serif', 'Times New Roman', serif;
   --h-plain-sans: 'Inter Variable', Inter, system-ui, sans-serif;
-  --h-shadow: 0 1px 2px rgb(11 11 12 / 0.06), 0 10px 24px -14px rgb(11 11 12 / 0.28);
+  --h-shadow: 0 1px 2px rgb(30 23 18 / 0.06), 0 10px 24px -14px rgb(30 23 18 / 0.28);
   --h-ease: cubic-bezier(0.23, 1, 0.32, 1);
   /* scale (board px; the camera fits the board to the free canvas) */
   --h-px: 48px;
@@ -30,7 +33,7 @@
   --sw-h: calc(var(--h-fs) * 0.8);
   --sw-w: calc(var(--sw-h) * 1.86);
   /* State A: the bland default */
-  --world: #f1f1ee;
+  --world: #ebe2d4;
   --accent: var(--h-blue);
   --plain-canvas: #e8e9ec;
   --plain-ink: #3a3a3a;
@@ -52,10 +55,10 @@
   border-radius: var(--h-rad);
   background: var(--h-board);
   box-shadow:
-    0 0 0 1px rgb(11 11 12 / 0.08),
-    0 1px 2px rgb(11 11 12 / 0.04),
-    0 18px 40px -24px rgb(11 11 12 / 0.16),
-    0 60px 120px -60px rgb(11 11 12 / 0.22);
+    0 0 0 1px rgb(30 23 18 / 0.08),
+    0 1px 2px rgb(30 23 18 / 0.04),
+    0 18px 40px -24px rgb(30 23 18 / 0.16),
+    0 60px 120px -60px rgb(30 23 18 / 0.22);
 }
 .bf-hello .alive-legs i,
 .bf-hello .alive-legs i::after {
@@ -126,8 +129,8 @@
   /* no blurred glow: the ring is resized every frame and a blur along a
      2000px circle was re-rasterised each time */
   box-shadow:
-    0 0 0 3px rgb(157 184 255 / 0.35),
-    0 0 0 7px rgb(10 75 255 / 0.07);
+    0 0 0 3px rgb(244 192 150 / 0.35),
+    0 0 0 7px rgb(173 71 35 / 0.07);
   pointer-events: none;
   visibility: hidden;
   contain: strict;
@@ -215,7 +218,7 @@
 }
 .tp {
   fill: none;
-  stroke: rgb(11 11 12 / 0.07);
+  stroke: rgb(30 23 18 / 0.07);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
@@ -275,7 +278,7 @@
   letter-spacing: 0;
   text-align: center;
   text-transform: uppercase;
-  color: rgb(11 11 12 / 0.05);
+  color: rgb(30 23 18 / 0.05);
   white-space: nowrap;
   user-select: none;
 }
@@ -458,7 +461,7 @@
   right: var(--h-px);
   top: 596px;
   z-index: 3;
-  color: var(--h-blue);
+  color: var(--h-hot);
   /* the line is one plane at +4px; its words and the switch are coplanar inside it.
      Left preserve-3d, Chrome's 3D hit test lets the flat text row swallow pointer
      events meant for the switch (elementFromPoint returned .h-row, not the button) */
@@ -474,8 +477,8 @@
 /* line 2 passes in front of her blazer: a soft, short porcelain halo (invisible on the board) lifts it off the black */
 .h-l2 .rw-in {
   text-shadow:
-    0 0 0.012em rgb(246 246 243 / 0.4),
-    0 0 0.11em rgb(246 246 243 / 0.26);
+    0 0 0.012em rgb(243 236 225 / 0.4),
+    0 0 0.11em rgb(243 236 225 / 0.26);
 }
 .h-l1 .rw,
 .h-l2 .rw {
@@ -522,7 +525,7 @@
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 0.06),
     0 0 0 calc(var(--h-fs) * 0.05) var(--h-board),
-    0 14px 26px -14px rgb(11 11 12 / 0.6);
+    0 14px 26px -14px rgb(30 23 18 / 0.6);
   transition: transform 160ms var(--h-ease);
 }
 .h-sw:active {
@@ -550,11 +553,11 @@
 }
 .h-sw[data-on='1'] .h-sw-knob {
   transform: translateX(calc(var(--sw-w) - var(--sw-h)));
-  background: var(--h-blue);
+  background: var(--h-hot);
   box-shadow:
     inset 0 -1px 0 rgb(0 0 0 / 0.18),
-    0 0 0 1px rgb(157 184 255 / 0.4),
-    0 0 14px rgb(10 75 255 / 0.55);
+    0 0 0 1px rgb(244 192 150 / 0.4),
+    0 0 14px rgb(173 71 35 / 0.55);
 }
 @media (hover: hover) and (pointer: fine) {
   .h-sw:hover .h-sw-knob {
@@ -744,7 +747,7 @@
   background: var(--h-board);
   box-shadow:
     inset 0 0 0 3.5px var(--h-blue),
-    0 0 0 4px rgb(10 75 255 / 0.2);
+    0 0 0 4px rgb(173 71 35 / 0.2);
 }
 .h-note-line {
   position: absolute;
@@ -810,9 +813,9 @@
   border-radius: 999px;
   background: #fff;
   box-shadow:
-    0 0 0 1px rgb(11 11 12 / 0.06),
-    0 2px 4px rgb(11 11 12 / 0.06),
-    0 18px 36px -16px rgb(11 11 12 / 0.4);
+    0 0 0 1px rgb(30 23 18 / 0.06),
+    0 2px 4px rgb(30 23 18 / 0.06),
+    0 18px 36px -16px rgb(30 23 18 / 0.4);
 }
 .h-pill-links {
   display: flex;
@@ -864,7 +867,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .h-cta:hover {
-    background: #003ae6;
+    background: #93391b;
   }
   .h-cta:hover .h-cta-ar .u-ico {
     transform: translateY(2px);
@@ -1162,7 +1165,7 @@
   margin-left: 72px;
 }
 .h-list span {
-  color: rgb(241 241 238 / 0.6);
+  color: rgb(246 238 226 / 0.6);
 }
 .h-stmt {
   margin: 0;
@@ -1218,7 +1221,7 @@
   font-size: 172px;
   line-height: 0.82;
   text-transform: uppercase;
-  color: rgb(11 11 12 / 0.042);
+  color: rgb(30 23 18 / 0.042);
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
@@ -1395,7 +1398,7 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  box-shadow: inset 0 0 0 1px rgb(241 241 238 / 0.28);
+  box-shadow: inset 0 0 0 1px rgb(246 238 226 / 0.28);
   color: var(--h-on-dark);
   transition:
     background-color 200ms ease,
@@ -1486,7 +1489,7 @@
   box-shadow:
     inset 0 0 0 1px rgb(255 255 255 / 0.06),
     0 0 0 3px var(--h-board),
-    0 10px 20px -12px rgb(11 11 12 / 0.6);
+    0 10px 20px -12px rgb(30 23 18 / 0.6);
 }
 .bstage[data-lay='narrow'] .slot.h-pillslot {
   bottom: 16px;
@@ -1635,7 +1638,7 @@
 /* placeholders on the blue band and the dark close stay quiet (no milky fill) */
 .bf-hello :is(.h-blue, .h-close) .slot-ph {
   background: transparent;
-  border-color: rgb(241 241 238 / 0.36);
+  border-color: rgb(246 238 226 / 0.36);
 }
 
 /* depth: inside the preserve-3d world z-index alone does not order coplanar

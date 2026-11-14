@@ -24,11 +24,11 @@ import './hello.css'
 
 /** designed fills (Layers / Inspector read these as the pieces' fills) */
 const HC = {
-  ink: '#0B0B0C',
-  board: '#F6F6F3',
-  canvas: '#F1F1EE',
-  blue: '#0A4BFF',
-  glow: '#9DB8FF',
+  ink: '#1E1712',
+  board: '#F3ECE1',
+  canvas: '#EBE2D4',
+  blue: '#AD4723',
+  glow: '#F4C096',
   green: '#1FA45A',
   white: '#FFFFFF',
 }

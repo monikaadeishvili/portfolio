@@ -202,7 +202,7 @@ void main() {
   // depth of field: grains behind her are larger, fainter, softer
   float s = mix(1.25, 1.0, depthK) * mix(0.85, 1.45, depthK) * mix(1.0, 2.1, big) * (1.0 + 0.9 * glint) * (1.0 + part * 0.6);
   gl_PointSize = s * uPx * mix(1.6, 1.0, f);
-  vCol = mix(aCol.rgb, vec3(0.86, 0.9, 1.0), glint * 0.85);
+  vCol = mix(aCol.rgb, vec3(1.0, 0.93, 0.82), glint * 0.85);
   vSoft = 1.0 - smoothstep(0.25, 0.75, depthK);
   vA = mix(0.0, 1.0, smoothstep(0.0, 0.35, f)) * (1.0 - band * 0.35) * mix(0.5, 1.0, depthK) * (1.0 - part * 0.25);
   // a soft oval falloff toward the canvas edge (never a rectangle)
@@ -271,8 +271,9 @@ float fbm(vec2 p) {
   for (int i = 0; i < 4; i++) { s += a * noise(p); p = p * 2.07 + 17.3; a *= 0.5; }
   return s;
 }
-const vec3 BLUE = vec3(0.039, 0.294, 1.0);
-const vec3 GLOW = vec3(0.616, 0.722, 1.0);
+// the burning edge: an ember, terracotta with an apricot glow
+const vec3 BLUE = vec3(0.77, 0.34, 0.18);
+const vec3 GLOW = vec3(1.0, 0.8, 0.6);
 float luma(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }
 float pxd(float e) { return e / max(fwidth(e), 1e-4); }
 void main() {
@@ -368,7 +369,7 @@ void main() {
   float gT = exp(-dt * dt / 40.0) * uRing * mix(a, max(a, phA), uMan);
   float gP = exp(-dh * dh / 34.0) * rimH * a;
   float glow = max(max(gA, gB), max(gT, gP));
-  vec3 hotCol = mix(vec3(0.92, 0.92, 0.94), mix(GLOW, vec3(0.94, 0.96, 1.0), 0.45), d);
+  vec3 hotCol = mix(vec3(0.94, 0.91, 0.86), mix(GLOW, vec3(1.0, 0.95, 0.88), 0.45), d);
   float ca = clamp(core * flick * uHot, 0.0, 1.0);
   float ga = clamp(glow * 0.42 * flick * uHot, 0.0, 1.0) * (1.0 - ca);
   outc.rgb = outc.rgb * (1.0 - ga) + BLUE * ga;
@@ -392,9 +393,10 @@ const loadImage = (url: string) => {
 const GRAINS = 80000
 /** motes carried off her edges by the wind */
 const MOTES = 5200
-const NAVY: [number, number, number] = [0.02, 0.04, 0.2]
-const BLUE: [number, number, number] = [0.039, 0.294, 1.0]
-const PERI: [number, number, number] = [0.74, 0.8, 1.0]
+/* Golden hour: umber shadows → terracotta → apricot light (names kept from the first palette) */
+const NAVY: [number, number, number] = [0.13, 0.085, 0.055]
+const BLUE: [number, number, number] = [0.77, 0.34, 0.18]
+const PERI: [number, number, number] = [0.96, 0.78, 0.6]
 
 /** The three.js side of the portrait. `ok` is false when WebGL2 is unavailable. */
 export class Portrait3D {
