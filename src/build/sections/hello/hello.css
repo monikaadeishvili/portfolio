@@ -268,7 +268,8 @@
   left: calc(200% / 3);
 }
 .bstage:not(.is-static) .hg {
-  visibility: hidden;
+  /* drawn in along the wipe by taste.ts (a clip, never visibility: see there) */
+  clip-path: inset(0 0 100% 0);
 }
 .h-ghost {
   position: absolute;

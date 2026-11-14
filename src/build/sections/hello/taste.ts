@@ -451,8 +451,11 @@ export function mountTaste(board: HTMLElement) {
       // the plain board's corners/shadow must not peek out from under the designed one
       plainBg.style.opacity = bo === '1' ? '0' : ''
     }
-    // the stage dressing (contours, ghost name) surfaces behind the front
-    const fxO = T >= 1 ? 1 : smooth(0.12, 0.7, frac)
+    // the stage dressing (contours, ghost name) surfaces behind the front. Its
+    // floor is 0.002, never 0: at exactly 0 the browser drops the dressing's
+    // layers (one is board-sized) and rebuilds them all in the frame it
+    // reappears — a visible blink mid-sweep
+    const fxO = T >= 1 ? 1 : Math.max(0.002, smooth(0.12, 0.7, frac))
     const fxK = fxO.toFixed(3)
     if (bgfx && fxK !== cBgfx) {
       cBgfx = fxK
@@ -532,14 +535,13 @@ export function mountTaste(board: HTMLElement) {
       const k = T >= 1 ? 'full' : ext < 0 ? 'none' : `${Math.max(0, gd.c - ext - gd.a).toFixed(1)}|${Math.max(0, gd.b - (gd.c + ext)).toFixed(1)}`
       if (k === gd.last) continue
       gd.last = k
-      if (k === 'none') gd.el.style.visibility = 'hidden'
+      // hidden by a full clip, never `visibility` / `clip-path: none` (either
+      // one rebuilds the line's layer, a blink mid-sweep)
+      if (k === 'none') gd.el.style.clipPath = gd.v ? 'inset(0 0 100% 0)' : 'inset(0 100% 0 0)'
+      else if (k === 'full') gd.el.style.clipPath = 'inset(0 0 0 0)'
       else {
-        gd.el.style.visibility = 'visible'
-        if (k === 'full') gd.el.style.clipPath = 'none'
-        else {
-          const [i0, i1] = k.split('|')
-          gd.el.style.clipPath = gd.v ? `inset(${i0}px 0 ${i1}px 0)` : `inset(0 ${i1}px 0 ${i0}px)`
-        }
+        const [i0, i1] = k.split('|')
+        gd.el.style.clipPath = gd.v ? `inset(${i0}px 0 ${i1}px 0)` : `inset(0 ${i1}px 0 ${i0}px)`
       }
     }
 
