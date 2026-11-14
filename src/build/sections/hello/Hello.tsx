@@ -110,35 +110,12 @@ function Contours() {
   )
 }
 
-function Nav({ onNav, narrow }: { onNav: SectionProps['onNav']; narrow: boolean }) {
-  const go = (to: 'work' | 'about' | 'contact') => (e: React.MouseEvent) => {
-    e.preventDefault()
-    onNav(to)
-  }
+function Nav({ onNav }: { onNav: SectionProps['onNav'] }) {
   return (
     <nav className="h-navbar" aria-label="Site">
-      <a className="h-brand" href="#ch-hello" onClick={go('about')}>
+      <a className="h-brand" href="#ch-hello" onClick={(e) => (e.preventDefault(), onNav('about'))}>
         Monika Adeishvili
       </a>
-      {!narrow && (
-        <ul className="h-links">
-          <li>
-            <a href="#ch-proof" onClick={go('work')}>
-              Work
-            </a>
-          </li>
-          <li>
-            <a href="#ch-origin" onClick={go('about')}>
-              About
-            </a>
-          </li>
-          <li>
-            <a href="#ch-contact" onClick={go('contact')}>
-              Contact
-            </a>
-          </li>
-        </ul>
-      )}
       <a className="h-navcta" href={`mailto:${EMAIL}`}>
         <span aria-hidden="true">[</span> {HELLO.ghost} <span className="h-navcta-ar" aria-hidden="true">→</span> <span aria-hidden="true">]</span>
       </a>
@@ -146,7 +123,7 @@ function Nav({ onNav, narrow }: { onNav: SectionProps['onNav']; narrow: boolean 
   )
 }
 
-function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boolean; live: boolean; onNav: SectionProps['onNav']; onJump: SectionProps['onJump']; plain: boolean; onToggle: () => void }) {
+function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live: boolean; onNav: SectionProps['onNav']; plain: boolean; onToggle: () => void }) {
   const h1Ref = useRef<HTMLHeadingElement>(null)
   useLayerText(h1Ref, 'h-title', 'Heading / H1')
   const [s0, s1, s2] = HELLO.support
@@ -163,9 +140,6 @@ function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boole
               <span>Contact</span>
             </span>
           )}
-          <span className="hd-navbtn" data-tw="ghost">
-            {HELLO.ghost}
-          </span>
         </div>
         <div className="hd-hero">
           <span className="hd-badge" data-tw="badge">
@@ -189,8 +163,8 @@ function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boole
             <span className="hd-cap" data-tw="cap">
               {HELLO.intro}
             </span>
-            <span className="hd-btn" data-tw="btn">
-              {HELLO.primary}
+            <span className="hd-btn" data-tw="ghost">
+              {HELLO.ghost}
             </span>
           </div>
         </div>
@@ -213,7 +187,7 @@ function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boole
       {/* nav */}
       <Piece id="h-nav" name="Nav" kind="bubble" tone={HC.board} order={0} at={0.4} className="h-nav">
         <div className="h-swap">
-          <Nav onNav={onNav} narrow={narrow} />
+          <Nav onNav={onNav} />
         </div>
       </Piece>
 
@@ -302,27 +276,19 @@ function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boole
       {/* the floating pill */}
       <Piece id="h-pill" name="Nav / Pill" kind="hero" tone={HC.blue} travel="leap" order={2} at={0.9} dur={0.22} park="40,-236" parkN="176,-96" className="h-pillslot" eyes={{ x: 82, y: -8, s: 16 }}>
         <div className="h-swap">
-          <div className="h-pill">
-            {!narrow && (
-              <span className="h-pill-links">
-                <a href="#ch-proof" onClick={(e) => (e.preventDefault(), onNav('work'))}>
-                  Work
-                </a>
-                <a href="#ch-origin" onClick={(e) => (e.preventDefault(), onNav('about'))}>
-                  About
-                </a>
-                <a href="#ch-contact" onClick={(e) => (e.preventDefault(), onNav('contact'))}>
-                  Contact
-                </a>
-              </span>
-            )}
-            <button type="button" className="h-cta" onClick={() => onJump(1)}>
-              {HELLO.primary}
-              <span className="h-cta-ar" aria-hidden="true">
-                <Arrow dir="down" />
-              </span>
-            </button>
-          </div>
+          <nav className="h-pill" aria-label="Sections">
+            <span className="h-pill-links">
+              <a href="#ch-proof" onClick={(e) => (e.preventDefault(), onNav('work'))}>
+                Work
+              </a>
+              <a href="#ch-origin" onClick={(e) => (e.preventDefault(), onNav('about'))}>
+                About
+              </a>
+              <a href="#ch-contact" onClick={(e) => (e.preventDefault(), onNav('contact'))}>
+                Contact
+              </a>
+            </span>
+          </nav>
         </div>
       </Piece>
     </Region>
@@ -471,7 +437,7 @@ export function Hello({ lay, live, onNav, onJump }: SectionProps) {
       }
     >
       <div ref={boardRef} className="h-ring" aria-hidden="true" />
-      <Stage narrow={narrow} live={live} onNav={onNav} onJump={onJump} plain={plain} onToggle={onToggle} />
+      <Stage narrow={narrow} live={live} onNav={onNav} plain={plain} onToggle={onToggle} />
 
       <Region index={1} label="Facts" className="h-r1">
         <div ref={r1Ref} className="h-r1-in">

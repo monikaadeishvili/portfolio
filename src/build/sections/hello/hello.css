@@ -305,23 +305,11 @@
 .h-brand {
   font-weight: 600;
 }
-.h-links {
-  position: absolute;
-  left: 50%;
-  display: flex;
-  gap: 34px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  translate: -50% 0;
-}
-.h-links a,
 .h-navcta,
 .h-pill-links a {
   position: relative;
   transition: color 160ms ease;
 }
-.h-links a::after,
 .h-pill-links a::after {
   content: '';
   position: absolute;
@@ -344,7 +332,6 @@
   transition: transform 220ms var(--h-ease);
 }
 @media (hover: hover) and (pointer: fine) {
-  .h-links a:hover::after,
   .h-pill-links a:hover::after {
     transform: scaleX(1);
     transform-origin: 0 50%;
@@ -804,9 +791,8 @@
 .h-pill {
   display: flex;
   align-items: center;
-  gap: 26px;
-  height: 58px;
-  padding: 0 7px 0 26px;
+  height: 52px;
+  padding: 0 28px;
   border-radius: 999px;
   background: #fff;
   box-shadow:
@@ -822,54 +808,9 @@
   color: var(--h-ink);
   text-decoration: none;
 }
-.h-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  height: 44px;
-  padding: 0 6px 0 20px;
-  border: 0;
-  border-radius: 999px;
-  /* vivid orange pill, espresso label (≥ 4.5:1) */
-  background: var(--h-hot);
-  color: var(--h-ink);
-  font: inherit;
-  font-weight: 600;
-  white-space: nowrap;
-  transition:
-    transform 160ms var(--h-ease),
-    background-color 200ms ease;
-}
-.h-cta:active {
-  transform: scale(0.97);
-}
-.h-cta:focus-visible,
 .h-hint-ar:focus-visible {
   outline: 2px solid var(--h-blue);
   outline-offset: 3px;
-}
-.h-cta-ar {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--h-ink);
-  color: #fff;
-}
-.h-cta-ar .u-ico {
-  width: 15px;
-  height: 15px;
-  stroke-width: 2;
-  transition: transform 220ms var(--h-ease);
-}
-@media (hover: hover) and (pointer: fine) {
-  .h-cta:hover {
-    background: #f26a1e;
-  }
-  .h-cta:hover .h-cta-ar .u-ico {
-    transform: translateY(2px);
-  }
 }
 
 /* ========================================== State A: the bland twins */
@@ -915,20 +856,6 @@
   margin-left: auto;
   font-size: 16px;
   color: var(--plain-2);
-}
-.hd-navbtn {
-  display: inline-flex;
-  align-items: center;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 8px;
-  background: #2f6bff;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 500;
-}
-.bstage[data-lay='narrow'] .hd-navbtn {
-  margin-left: auto;
 }
 .hd-hero {
   display: flex;
@@ -979,22 +906,15 @@
   line-height: 1.5;
   color: var(--plain-2);
 }
-/* the default's caption + button: the left column, beside the image placeholder */
+/* the default's caption + button: centred under the lead, above the image placeholder */
 .hd-side {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.bstage:not([data-lay='narrow']) .hd-side {
-  position: absolute;
-  left: var(--h-px);
-  top: calc(var(--h-r0) - var(--port-h) * 0.42);
-  align-items: flex-start;
-  text-align: left;
-}
 .hd-cap {
   display: block;
-  margin-top: 4px;
+  margin-top: 12px;
   font-size: 15px;
   color: #8c8c92;
 }
@@ -1459,9 +1379,6 @@
 .bstage[data-lay='narrow'] .h-ghost {
   top: calc(var(--h-r0) - var(--port-h) - var(--FW) * 0.08);
 }
-.bstage[data-lay='narrow'] .h-links {
-  display: none;
-}
 .bstage[data-lay='narrow'] .slot.h-metaslot {
   left: var(--h-px);
   right: var(--h-px);
@@ -1494,12 +1411,11 @@
   bottom: 16px;
 }
 .bstage[data-lay='narrow'] .h-pill {
-  height: auto;
-  padding: 5px;
-  gap: 0;
+  height: 44px;
+  padding: 0 20px;
 }
-.bstage[data-lay='narrow'] .h-cta {
-  height: 42px;
+.bstage[data-lay='narrow'] .h-pill-links {
+  gap: 18px;
 }
 .bstage[data-lay='narrow'] .h-try {
   font-size: 11px;
@@ -1509,11 +1425,6 @@
 }
 .bstage[data-lay='narrow'] .hd-brand {
   font-size: 14px;
-}
-.bstage[data-lay='narrow'] .hd-navbtn {
-  height: 30px;
-  padding: 0 11px;
-  font-size: 12px;
 }
 .bstage[data-lay='narrow'] .hd-hero {
   padding-top: 22px;
