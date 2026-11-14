@@ -316,6 +316,10 @@ export function startLoop(ctx: LoopCtx) {
         sy *= 1 - 0.05 * c.wob
       }
       const b = P.b
+      // a standing hero pivots on its bottom edge, but its legs, outline and a
+      // wobble-tipped corner reach below it: lift it clear of the floor plane,
+      // or the tilted floor slices its lower part off (3-D intersection)
+      if (c.kind === 'hero' && P.state !== 'placed' && b > 0.001) z += b * (26 + Math.abs(Math.sin((rot * Math.PI) / 180)) * c.w * 0.5)
       const bill = b > 0.001 ? ` rotateZ(${(-rz * b).toFixed(2)}deg) rotateX(${(-rx * b).toFixed(2)}deg)` : ''
       const tr = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px)${bill} rotate(${rot.toFixed(2)}deg) scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`
       if (tr !== c.last) {

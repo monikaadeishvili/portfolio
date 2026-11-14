@@ -240,7 +240,9 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   })
   regs.forEach((l) => l.sort((a, b) => a.index - b.index))
 
-  const sTilt = narrow ? (view.w * 0.8) / FW : (view.w * 0.66) / FW
+  // tilted views: width-fit, but capped by height so on wide, short windows the
+  // heroes parked above the artboard stay clear of the top bar
+  const sTilt = narrow ? (view.w * 0.8) / FW : Math.min(view.w * 0.66, view.h * 1.0) / FW
   const sDesc = narrow ? (view.w * 0.86) / FW : Math.min(1.1, (view.w * 0.66) / FW)
   const tilt = narrow ? { rx: 30, rz: -4 } : { rx: 40, rz: -6 }
   const sHold = (h: number) => (narrow ? Math.min((view.w * 0.94) / FW, (view.h * 0.94) / h) : Math.min(1.25, (view.w * 0.8) / FW, (view.h * 0.9) / h))
@@ -281,7 +283,9 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
     const ty = b.y + r0.y + r0.h * (narrow ? 0.5 : 0.52)
     // the very first view sits closer: the page and its heroes fill the canvas
     const sT = i === 0 && !narrow ? sTilt * 1.12 : sTilt
-    const tiltPose = (s: number, rz: number): CamPose => ({ x: cxw, y: ty, s, rx: tilt.rx, rz })
+    // aim a little above the region's centre: the board sits lower in the frame,
+    // leaving headroom for the heroes parked above it
+    const tiltPose = (s: number, rz: number): CamPose => ({ x: cxw, y: ty - (narrow ? 0 : 44), s, rx: tilt.rx, rz })
     const big = i === 0 && !narrow
     // 01 Hello: the frame from just above the artboard's top edge to a peek of the region below
     const fH = r0.y + r0.h + 34
