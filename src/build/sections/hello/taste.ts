@@ -219,6 +219,7 @@ export function mountTaste(board: HTMLElement) {
   let mRaw = 1
   let lm = 1
   let idle = 0
+  let landed = 0
   let lastP = -1
   // write caches
   let cCv = ''
@@ -417,8 +418,12 @@ export function mountTaste(board: HTMLElement) {
     if (inHold && !taste.used && M >= 1 && Math.abs(p - lastP) < 1e-6) idle += e.dt
     else idle = 0
     lastP = p
+    // the cursor's dare waits for a real pause; the switch's own "try me"
+    // + shake starts as soon as taste has landed (scrolling or not)
     taste.nag = idle > 8
-    const nag = taste.nag ? '1' : '0'
+    if (inHold && !taste.used && M >= 1) landed += e.dt
+    else landed = 0
+    const nag = landed > 0.45 ? '1' : '0'
     if (nag !== cNag) {
       cNag = nag
       swWrap.dataset.nag = nag

@@ -551,27 +551,45 @@
     scale: 1.04;
   }
 }
-/* idle in the hold: a little wiggle and a dare */
+/* taste has landed and the switch is untouched: a shake and a dare */
 .h-sw-wrap[data-nag='1'] .h-sw {
-  animation: sw-nag 3.2s var(--h-ease) infinite;
+  animation: sw-nag 1.9s cubic-bezier(0.36, 0.07, 0.19, 0.97) 0.1s infinite;
 }
 @keyframes sw-nag {
   0%,
-  30%,
+  46%,
   100% {
     rotate: 0deg;
+    translate: 0 0;
   }
-  6% {
-    rotate: -4deg;
+  5% {
+    rotate: -11deg;
+    translate: -5px 0;
   }
-  12% {
-    rotate: 3.2deg;
+  11% {
+    rotate: 10deg;
+    translate: 5px 0;
   }
-  18% {
-    rotate: -2deg;
+  17% {
+    rotate: -8deg;
+    translate: -4px 0;
   }
-  24% {
-    rotate: 0.8deg;
+  23% {
+    rotate: 6deg;
+    translate: 3px 0;
+  }
+  30% {
+    rotate: -3.5deg;
+    translate: -1.5px 0;
+  }
+  38% {
+    rotate: 1.2deg;
+    translate: 0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .h-sw-wrap[data-nag='1'] .h-sw {
+    animation: none;
   }
 }
 .h-try {
