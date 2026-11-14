@@ -25,12 +25,28 @@ const sink = {
   active: -1,
 }
 
+/**
+ * Every chapter gets an equal share of the ruler, however long it scrolls:
+ * scroll progress maps piecewise onto the track, chapter by chapter.
+ */
+export function rulerX(p: number, chapters: RulerChapter[]) {
+  const n = chapters.length
+  if (!n) return p
+  let i = 0
+  for (let k = 0; k < n; k++) if (p >= chapters[k].at) i = k
+  const a = chapters[i].at
+  const b = chapters[i + 1]?.at ?? 1
+  const f = b > a ? Math.min(1, Math.max(0, (p - a) / (b - a))) : 0
+  return (i + f) / n
+}
+
 export function updateRuler(p: number) {
   const k = Math.round(p * 2000)
   if (k === sink.last) return
   sink.last = k
-  if (sink.head) sink.head.style.transform = `translate3d(${(p * 100).toFixed(2)}cqw, 0, 0)`
-  if (sink.fill) sink.fill.style.transform = `scaleX(${p.toFixed(4)})`
+  const x = rulerX(p, sink.chapters)
+  if (sink.head) sink.head.style.transform = `translate3d(${(x * 100).toFixed(2)}cqw, 0, 0)`
+  if (sink.fill) sink.fill.style.transform = `scaleX(${x.toFixed(4)})`
   let a = 0
   sink.chapters.forEach((c, i) => {
     if (p >= c.at - 0.0005) a = i
@@ -85,16 +101,15 @@ export function ChapterRuler({ chapters, variant = 'dock', label = 'Chapters', s
         {subs && subs.length > 0 && (
           <div className="ruler-subs" aria-hidden="true">
             {subs.map((s) => (
-              <i key={s.toFixed(4)} style={{ left: `${(s * 100).toFixed(3)}%` }} />
+              <i key={s.toFixed(4)} style={{ left: `${(rulerX(s, chapters) * 100).toFixed(3)}%` }} />
             ))}
           </div>
         )}
         <div className="ruler-fill" aria-hidden="true" />
         <ol className="ruler-marks">
           {chapters.map((c, i) => {
-            const next = chapters[i + 1]?.at ?? 1
             return (
-              <li key={c.label} style={{ left: `${c.at * 100}%`, width: `${(next - c.at) * 100}%` }}>
+              <li key={c.label} style={{ left: `${(i * 100) / chapters.length}%`, width: `${100 / chapters.length}%` }}>
                 <button type="button" className="ruler-mark" onClick={() => jumpTo(c.jump)}>
                   <span className="ruler-num" aria-hidden="true">
                     {String(i + 1).padStart(2, '0')}

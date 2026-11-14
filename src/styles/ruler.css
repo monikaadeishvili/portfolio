@@ -173,7 +173,7 @@
   z-index: 40;
   left: 50%;
   bottom: 16px;
-  width: min(880px, calc(100vw - 600px));
+  width: min(640px, calc(100vw - 600px));
   min-width: 440px;
   height: 56px;
   translate: -50% 0;
@@ -321,6 +321,39 @@
 .dock.tb-unit .tb-row {
   padding-top: 6px;
 }
+/* a slimmer ruler in the dock: shorter track, smaller labels and ticks */
+.dock .ruler {
+  gap: 8px;
+  padding: 0 8px 0 4px;
+}
+.dock .ruler-track {
+  height: 30px;
+}
+.dock .ruler-time {
+  padding: 3px 6px;
+  font-size: 10.5px;
+}
+.dock .ruler-mark {
+  padding: 2px 0 0 5px;
+  font-size: 9px;
+}
+.dock .ruler-ticks {
+  bottom: 5px;
+  height: 8px;
+  background-size: 100% 8px, 100% 4px;
+}
+.dock .ruler-fill {
+  bottom: 4px;
+}
+.dock .ruler-head i {
+  top: 11px;
+}
+.dock .ruler-head i::before {
+  left: -3px;
+  top: -5px;
+  width: 8px;
+  height: 8px;
+}
 /* phone: one row — the ruler and a compact Play */
 .dock.tb-unit.is-compact {
   min-width: 0;
@@ -339,4 +372,10 @@
 }
 .dock.is-compact .play-word {
   display: none;
+}
+.dock .ruler-subs {
+  bottom: 5px;
+}
+.dock .ruler-subs i {
+  height: 7px;
 }
