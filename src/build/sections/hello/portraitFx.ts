@@ -33,6 +33,7 @@ interface Renderer {
   ready: boolean
   size(w: number, h: number): void
   render(f: Portrait3DFrame): void
+  hit?(u: number, v: number): boolean
   resetTrail(): void
   sync(): void
   dispose(): void
@@ -141,7 +142,7 @@ export function mountPortrait(board: HTMLElement) {
   }
 
   /* ---- state */
-  const F: Portrait3DFrame = { time: 0, dt: 0, box, sw: [0, 0], r: 0, ring: 0, arrA: 0, arrB: 0, ph, phOn: 1, man: 0, hot: 1, tilt: [0, 0], hv: [0.5, 0.3, 0] }
+  const F: Portrait3DFrame = { time: 0, dt: 0, box, sw: [0, 0], r: 0, ring: 0, arrA: 0, arrB: 0, ph, phOn: 1, man: 0, hot: 1, tilt: [0, 0], hv: [0.5, 0.3, 0], pt: [0.5, 0.5, 0] }
   const pr: Proj = { x: 0, y: 0, f: 1 }
   const wp = { x: 0, y: 0 }
   let key = ''
@@ -153,6 +154,7 @@ export function mountPortrait(board: HTMLElement) {
   let cueK = ''
   let fbK = ''
   let hvRaw = 0
+  let ptRaw = 0
   let curU = 0
   let curV = 0
 
@@ -243,9 +245,16 @@ export function mountPortrait(board: HTMLElement) {
 
     /* hover: is the pointer over her? */
     let inside = false
+    let near = false
     const live1 = !ptr.out && ptr.t > 0 && (!ptr.touch || ptr.down)
     if (playable && live1 && toUV(ptr.x, ptr.y)) {
-      inside = curU > 0.02 && curU < 0.98 && curV > 0.02 && curV < 1
+      // near: the dust parts around the pointer; inside (over her, not the empty box): the photo
+      near = curU > -0.15 && curU < 1.15 && curV > -0.08 && curV < 1.05
+      inside = curU > 0.02 && curU < 0.98 && curV > 0.02 && curV < 1 && (gl.hit ? gl.hit(curU, curV) : true)
+      if (near) {
+        F.pt[0] = curU
+        F.pt[1] = curV
+      }
       if (inside) {
         const k = 1 - Math.exp(-dt * 12)
         F.hv[0] += (curU - F.hv[0]) * (hvRaw <= 0 ? 1 : k)
@@ -280,6 +289,8 @@ export function mountPortrait(board: HTMLElement) {
     hvRaw = want ? Math.min(1, hvRaw + dt / HV_IN) : Math.max(0, hvRaw - dt / HV_OUT)
     if (!playable) hvRaw = 0
     F.hv[2] = ease(hvRaw)
+    ptRaw = near && playable ? Math.min(1, ptRaw + dt / 0.25) : Math.max(0, ptRaw - dt / 0.6)
+    F.pt[2] = ease(ptRaw)
 
     /* tilt toward the pointer (+ a gentle sway), back to rest when she is not on stage */
     let ty = 0
@@ -333,7 +344,7 @@ export function mountPortrait(board: HTMLElement) {
     w.__momoShot = () => (gl.render(F), canvas.toDataURL('image/png'))
     // dev: time n full frames (both relief passes + composite, a live hover edge), GPU-synchronised
     w.__momoBench = (n: number) => {
-      const f: Portrait3DFrame = { ...F, tilt: [0, 0], hv: [0.5, 0.3, 0.4], ring: 1, arrA: 1, arrB: 1, dt: 1 / 60 }
+      const f: Portrait3DFrame = { ...F, tilt: [0, 0], hv: [0.5, 0.3, 0.4], pt: [0.5, 0.3, 1], ring: 1, arrA: 1, arrB: 1, dt: 1 / 60 }
       gl.render(f)
       gl.sync()
       const ts: number[] = []

@@ -63,6 +63,8 @@ export interface Portrait3DFrame {
   tilt: [number, number]
   /** hover reveal: centre (canvas uv, top-left origin) and amount 0..1 */
   hv: [number, number, number]
+  /** pointer near her: canvas uv (top-left) + strength 0..1, the dust parts around it */
+  pt: [number, number, number]
 }
 
 /* ------------------------------------------------------------- tuning */
@@ -128,8 +130,10 @@ uniform float uForm;  // 0 scattered dust .. 1 gathered into her
 uniform vec2 uRes;    // canvas px
 uniform vec3 uHv;     // hover centre (uv, top-left) + amount
 uniform float uPx;    // point size scale (device px per unit)
+uniform vec3 uPt;     // pointer (uv, top-left) + strength
 out vec3 vCol;
 out float vA;
+out float vSoft;
 void main() {
   vec3 p = position;
   float t = uTime;
@@ -162,14 +166,27 @@ void main() {
   vec2 dir = dv / max(dd, 1.0);
   vec2 tang = vec2(-dir.y, dir.x) * (r.y - 0.5) * 1.2;
   px += (dir + tang) * band * uRes.y * (0.05 + 0.09 * r.z);
+  // the dust parts around the pointer and swirls a little, like a hand through smoke
+  vec2 pc2 = vec2(uPt.x * uRes.x, (1.0 - uPt.y) * uRes.y);
+  vec2 pv = px - pc2;
+  float pd = length(pv);
+  float Rp = uRes.y * (0.075 + 0.025 * r.z);
+  float part = uPt.z * pow(clamp(1.0 - pd / Rp, 0.0, 1.0), 2.0);
+  vec2 pdir = pv / max(pd, 1.0);
+  px += (pdir + vec2(-pdir.y, pdir.x) * (0.35 + 0.4 * (r.w - 0.5))) * part * uRes.y * 0.05;
   clip.xy = ((px / uRes) * 2.0 - 1.0) * clip.w;
   gl_Position = clip;
   // size: a fine engraving; nearer grains a touch larger, a few larger motes
   float depthK = clamp(0.5 + position.z * 3.0, 0.0, 1.0);
-  float s = mix(0.9, 1.5, depthK) * mix(1.0, 2.1, step(0.985, r.x));
+  float big = step(0.985, r.x);
+  // a few grains catch the light now and then
+  float glint = big * pow(max(sin(t * (1.1 + r.z) + r.y * 40.0), 0.0), 10.0);
+  // depth of field: grains behind her are larger, fainter, softer
+  float s = mix(1.25, 1.0, depthK) * mix(0.85, 1.45, depthK) * mix(1.0, 2.1, big) * (1.0 + 0.9 * glint) * (1.0 + part * 0.6);
   gl_PointSize = s * uPx * mix(1.6, 1.0, f);
-  vCol = aCol.rgb;
-  vA = mix(0.0, 1.0, smoothstep(0.0, 0.35, f)) * (1.0 - band * 0.35) * mix(0.55, 1.0, depthK);
+  vCol = mix(aCol.rgb, vec3(0.86, 0.9, 1.0), glint * 0.85);
+  vSoft = 1.0 - smoothstep(0.25, 0.75, depthK);
+  vA = mix(0.0, 1.0, smoothstep(0.0, 0.35, f)) * (1.0 - band * 0.35) * mix(0.5, 1.0, depthK) * (1.0 - part * 0.25);
   if (mote > 0.5) {
     // fade before the canvas edge so no mote is ever clipped
     vec2 e2 = min(px, uRes - px);
@@ -183,11 +200,12 @@ const PTS_FRAG = /* glsl */ `
 precision highp float;
 in vec3 vCol;
 in float vA;
+in float vSoft;
 out vec4 o;
 void main() {
   vec2 c = gl_PointCoord - 0.5;
   float d = length(c);
-  float a = (1.0 - smoothstep(0.32, 0.5, d)) * vA;
+  float a = (1.0 - smoothstep(mix(0.32, 0.05, vSoft), 0.5, d)) * vA;
   if (a < 0.004) discard;
   o = vec4(vCol * a, a);
 }
@@ -383,6 +401,9 @@ export class Portrait3D {
   private lost = false
   /** how many grains were placed (dev readout) */
   grains = 0
+  private hitM: Uint8Array | null = null
+  private hitW = 0
+  private hitH = 0
   private onLost = (e: Event) => {
     e.preventDefault()
     this.lost = true
@@ -408,7 +429,7 @@ export class Portrait3D {
       glslVersion: GLSL3,
       vertexShader: PTS_VERT,
       fragmentShader: PTS_FRAG,
-      uniforms: { uTime: { value: 0 }, uForm: { value: 1 }, uRes: { value: [2, 2] }, uHv: { value: [0.5, 0.5, 0] }, uPx: { value: 2 } },
+      uniforms: { uTime: { value: 0 }, uForm: { value: 1 }, uRes: { value: [2, 2] }, uHv: { value: [0.5, 0.5, 0] }, uPx: { value: 2 }, uPt: { value: [0.5, 0.5, 0] } },
       transparent: true,
       depthTest: false,
       depthWrite: false,
@@ -604,6 +625,27 @@ export class Portrait3D {
         rn.push(rnd(), rnd(), rnd(), rnd())
       }
     }
+    // hit mask: the silhouette at 1/4 resolution, grown by ~2 cells so grazing her counts
+    {
+      const hw = Math.ceil(dw / 4)
+      const hh = Math.ceil(dh / 4)
+      const m0 = new Uint8Array(hw * hh)
+      for (let y = 0; y < dh; y++) for (let x = 0; x < dw; x++) if (px[(y * dw + x) * 4 + 3] > 128) m0[(y >> 2) * hw + (x >> 2)] = 1
+      const m1 = new Uint8Array(hw * hh)
+      for (let y = 0; y < hh; y++)
+        for (let x = 0; x < hw; x++) {
+          let on = 0
+          for (let j = -2; j <= 2 && !on; j++) for (let i = -2; i <= 2 && !on; i++) {
+            const xx = x + i
+            const yy = y + j
+            if (xx >= 0 && yy >= 0 && xx < hw && yy < hh && m0[yy * hw + xx]) on = 1
+          }
+          m1[y * hw + x] = on
+        }
+      this.hitM = m1
+      this.hitW = hw
+      this.hitH = hh
+    }
     const kind: number[] = new Array(pos.length / 3).fill(0)
     // motes: seeded on her silhouette (more on the windward right, where the shawl flies)
     const edges: number[] = []
@@ -639,6 +681,16 @@ export class Portrait3D {
     const pts = new Points(g, this.ptsMat)
     pts.frustumCulled = false
     this.gPts.add(pts)
+  }
+
+  /** is the canvas uv (top-left origin) over her (with a small margin)? */
+  hit(u: number, v: number) {
+    const m = this.hitM
+    if (!m) return u > 0 && u < 1 && v > 0 && v < 1
+    const x = Math.floor(((u - 0.5) / FIT + 0.5) * this.hitW)
+    const y = Math.floor(((v - 0.5) / FIT + 0.5) * this.hitH)
+    if (x < 0 || y < 0 || x >= this.hitW || y >= this.hitH) return false
+    return m[y * this.hitW + x] > 0
   }
 
   /** backing-store size in device px */
@@ -678,6 +730,7 @@ export class Portrait3D {
     P.uForm.value = f.arrB
     P.uRes.value = [this.w, this.h]
     P.uHv.value = f.hv
+    P.uPt.value = f.pt
     P.uPx.value = this.h / 440
     r.setRenderTarget(this.rtArt)
     r.clear()
