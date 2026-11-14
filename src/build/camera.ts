@@ -318,8 +318,16 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
         // keep the region's top in view
         yBuild = Math.min(yBuild, b.y + reg.y + visD * 0.5 - 40)
       }
-      K.push({ u: a + w * 0.3, c: { x: cxw, y: yBuild, s: sD, rx: narrow ? 6 : 10, rz: 0 } })
-      K.push({ u: a + w * 0.92, c: { x: cxw, y: yBuild, s: sD, rx: 2, rz: 0 } })
+      if (reg.el?.dataset.pan != null) {
+        // a pan region: the camera glides in, then holds flat and fitted while
+        // the region's content travels sideways (the section's fx drives it)
+        const sP = narrow ? Math.min((view.w * 0.96) / FW, (view.h * 0.94) / reg.h) : Math.min(1.25, free.w / FW, free.h / reg.h)
+        K.push({ u: a + w * 0.08, c: { x: cxw, y: yc, s: sP, rx: 0, rz: 0 } })
+        K.push({ u: a + w * 0.96, c: { x: cxw, y: yc, s: sP, rx: 0, rz: 0 } })
+      } else {
+        K.push({ u: a + w * 0.3, c: { x: cxw, y: yBuild, s: sD, rx: narrow ? 6 : 10, rz: 0 } })
+        K.push({ u: a + w * 0.92, c: { x: cxw, y: yBuild, s: sD, rx: 2, rz: 0 } })
+      }
       W.push([secP(i, a + w * 0.16), secP(i, a + w * 1.02)])
       a += w
     }

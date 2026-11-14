@@ -78,8 +78,10 @@ html.is-coarse .bstage a {
 }
 .wbg-craft {
   background:
-    radial-gradient(60% 55% at 50% 40%, #f2fbcf 0%, transparent 75%),
-    #d9f08a;
+    radial-gradient(60% 55% at 50% 40%, #f3ece1 0%, transparent 72%),
+    radial-gradient(40% 36% at 84% 82%, rgb(198 241 53 / 0.16) 0%, transparent 70%),
+    radial-gradient(34% 30% at 12% 14%, rgb(232 89 12 / 0.08) 0%, transparent 70%),
+    #e4dacb;
 }
 .wbg-proof {
   background:
@@ -238,7 +240,7 @@ html.is-coarse .bstage a {
   padding: 44px 56px 56px;
   transform-style: preserve-3d;
 }
-.bf-body :is(div, ul, ol, li, section, figure, header, nav, footer):not(.alive, .alive *, .slot-ph, .alive-shadow, .trail, .cs *, .cs) {
+.bf-body :is(div, ul, ol, li, section, figure, header, nav, footer):not(.alive, .alive *, .slot-ph, .alive-shadow, .trail, .cs *, .cs, .k-gl, .k-gl *) {
   transform-style: preserve-3d;
 }
 .rg {
@@ -920,7 +922,7 @@ html.is-deck-drag .cur-you .cur-hand {
   background: #0a0d26;
 }
 .bstage.is-static .bf-craft .bf-world {
-  background: #d9f08a;
+  background: #e4dacb;
 }
 .bstage.is-static .bf-proof .bf-world {
   background: #bfe4fb;

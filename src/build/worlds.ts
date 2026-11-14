@@ -21,7 +21,7 @@ export interface World {
 export const WORLDS: World[] = [
   { id: 'hello', pal: ['#E8590C', '#1E1712', '#EBE2D4'], shadow: 0.16 },
   { id: 'origin', pal: ['#4652E8', '#FF5C39', '#FFE6A8'], shadow: 0.42 },
-  { id: 'craft', pal: ['#8FD614', '#16131D', '#FFFFFF'], shadow: 0.26 },
+  { id: 'craft', pal: ['#C6F135', '#1E1712', '#EBE2D4'], shadow: 0.4 },
   { id: 'proof', pal: ['#2DB8FF', '#16131D', '#E6F6FF'], shadow: 0.24 },
   { id: 'contact', pal: ['#FF7AD1', '#8B5CFF', '#FFD9F0'], shadow: 0.22 },
 ]
@@ -35,7 +35,7 @@ export const SPLIT_PAL: [string, string, string] = ['#B6F03A', '#2DB8FF', '#FF7A
  * for the "same tools → taste" beat; everything is normalised so the other
  * sections keep exactly the same absolute scroll length (SCROLL_VH grows).
  */
-const RAW_W = [0.145, 0.15, 0.23, 0.135, 0.098]
+const RAW_W = [0.145, 0.15, 0.34, 0.135, 0.098]
 const RAW_TR = 0.068
 const RAW_SUM = RAW_W.reduce((a, b) => a + b, 0) + RAW_TR * 4
 export const TR_LEN = RAW_TR / RAW_SUM
@@ -77,7 +77,16 @@ export const PH0: Phases = {
   descStart: 0.57,
   descEnd: 0.87,
 }
-export const phOf = (i: number): Phases => (i === 0 ? PH0 : PH)
+/** 03 How I think: a short top build, then a long descent whose middle region
+ *  is the sideways pan through the five-step process */
+export const PH2: Phases = {
+  arrive: 0.04,
+  topEnd: 0.2,
+  flat: 0.245,
+  descStart: 0.28,
+  descEnd: 0.9,
+}
+export const phOf = (i: number): Phases => (i === 0 ? PH0 : i === 2 ? PH2 : PH)
 
 export const secU = (i: number, p: number) => (p - SEC[i][0]) / (SEC[i][1] - SEC[i][0])
 export const secP = (i: number, u: number) => SEC[i][0] + u * (SEC[i][1] - SEC[i][0])
