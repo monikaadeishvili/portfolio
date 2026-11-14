@@ -884,10 +884,6 @@
   transform: scale(0.97);
 }
 .h-cta:focus-visible,
-.h-hint-ar:focus-visible {
-  outline: 2px solid var(--h-blue);
-  outline-offset: 3px;
-}
 .h-cta-ar {
   display: grid;
   place-items: center;
@@ -1473,55 +1469,28 @@
   line-height: 0.96;
   text-transform: uppercase;
 }
+/* letters that can be knocked about (./closeFx.ts) */
+.h-cw {
+  display: inline-block;
+  white-space: nowrap;
+}
+.h-cl {
+  display: inline-block;
+  transform-origin: 50% 70%;
+}
 .h-hint-a {
   color: var(--h-on-dark);
 }
 .h-hint-b {
   color: var(--h-blue-dk);
 }
-.h-hint-ar {
-  display: inline-grid;
-  place-items: center;
-  width: 60px;
-  height: 60px;
-  margin-left: 0.18em;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  box-shadow: inset 0 0 0 1px rgb(246 238 226 / 0.28);
-  color: var(--h-on-dark);
-  transition:
-    background-color 200ms ease,
-    color 200ms ease,
-    transform 160ms var(--h-ease);
-}
-.h-hint-ar:active {
-  transform: scale(0.96);
-}
-.h-hint-ar:focus-visible {
-  outline-color: var(--h-glow);
-}
-.h-hint-ar .u-ico {
-  width: 20px;
-  height: 20px;
-  stroke-width: 1.8;
-  animation: h-bob 1.8s ease-in-out infinite;
-}
-@media (hover: hover) and (pointer: fine) {
-  .h-hint-ar:hover {
-    background: var(--h-blue);
-    color: #fff;
-  }
-}
 
 /* paused off-screen, gone for reduced motion */
-.bf:not([data-near='1']) :is(.h-hint-ar .u-ico, .h-topo, .h-badge i::after, .h-live::after),
-.bstage.is-static .h-hint-ar .u-ico {
+.bf:not([data-near='1']) :is(.h-topo, .h-badge i::after, .h-live::after),
+.bstage.is-static .h-topo {
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
-  .h-hint-ar .u-ico,
   .h-addtaste span,
   .h-topo,
   .h-badge i::after,
@@ -1729,13 +1698,6 @@
 }
 .bstage[data-lay='narrow'] :is(.h-hint-a, .h-hint-b) {
   white-space: nowrap;
-}
-.bstage[data-lay='narrow'] .h-hint-ar {
-  margin: 18px 0 0;
-}
-.bstage[data-lay='narrow'] .h-hint-ar {
-  width: 44px;
-  height: 44px;
 }
 
 /* the facts region stays an empty page below the fold until it builds */

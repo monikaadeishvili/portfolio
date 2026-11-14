@@ -11,7 +11,7 @@
  * uppercase editorial captions on a three-column hairline grid; then an
  * electric-blue statement band, ghost-word facts and a near-black close.
  */
-import { useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { Fragment, type RefObject, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Arrow } from '../../../ui/components'
 import { EMAIL, HELLO, LINKS } from '../../../content/story'
 import { Piece, Region, Reveal, useSection } from '../../parts'
@@ -22,6 +22,7 @@ import { mountTaste, taste } from './taste'
 import { mountPortrait } from './portraitFx'
 import { mountHeadWake } from './headWake'
 import { mountRibbons, mountWw } from './wwMarquee'
+import { mountClose } from './closeFx'
 import './hello.css'
 
 /** designed fills (Layers / Inspector read these as the pieces' fills) */
@@ -400,7 +401,27 @@ function Odo({ value, suffix = '' }: { value: string; suffix?: string }) {
   )
 }
 
-export function Hello({ lay, live, onNav, onJump }: SectionProps) {
+/** a line split into letters, words kept whole */
+function CloseLetters({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(' ').map((w, wi) => (
+        <Fragment key={wi}>
+          {wi > 0 && ' '}
+          <span className="h-cw">
+            {Array.from(w).map((c, ci) => (
+              <span key={ci} className="h-cl">
+                {c}
+              </span>
+            ))}
+          </span>
+        </Fragment>
+      ))}
+    </>
+  )
+}
+
+export function Hello({ lay, live, onNav }: SectionProps) {
   const narrow = lay === 'narrow'
   const boardRef = useRef<HTMLDivElement>(null)
   const r1Ref = useRef<HTMLDivElement>(null)
@@ -420,7 +441,9 @@ export function Hello({ lay, live, onNav, onJump }: SectionProps) {
     const c = mountHeadWake(board)
     const d = mountWw(board)
     const r = mountRibbons(board)
+    const cl = mountClose(board)
     return () => {
+      cl()
       r()
       d()
       c()
@@ -637,11 +660,17 @@ export function Hello({ lay, live, onNav, onJump }: SectionProps) {
           <div className="h-close">
             <div className="h-base" aria-hidden="true" />
             <Piece id="h-hint" name="Closing line" kind="bubble" tone={HC.blue} order={6} at={1} className="h-hint-slot">
+              {/* the letters play what the line says (./closeFx.ts) */}
               <p className="h-hint-p">
-                <span className="h-hint-a">{HELLO.hint[0]}</span> <span className="h-hint-b">{HELLO.hint[1]}</span>
-                <button type="button" className="h-hint-ar" aria-label="Next: How I think" onClick={() => onJump(1)}>
-                  <Arrow dir="down" />
-                </button>
+                <span className="sr-only">
+                  {HELLO.hint[0]} {HELLO.hint[1]}
+                </span>
+                <span className="h-hint-a" aria-hidden="true">
+                  <CloseLetters text={HELLO.hint[0]} />
+                </span>{' '}
+                <span className="h-hint-b" aria-hidden="true">
+                  <CloseLetters text={HELLO.hint[1]} />
+                </span>
               </p>
             </Piece>
           </div>
