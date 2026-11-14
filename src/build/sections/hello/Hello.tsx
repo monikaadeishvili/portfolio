@@ -249,7 +249,7 @@ function Stage({ narrow, live, onNav, onJump, plain, onToggle }: { narrow: boole
       {/* the portrait (WebGL canvas mounted by ./portraitFx; the img is the fallback + alt) */}
       <figure className="h-port" data-port="">
         <div className="h-port-gl" aria-hidden="true" />
-        <img className="h-port-img" src="/monika-cut.webp" alt="Monika Adeishvili" width={1301} height={1600} decoding="async" fetchPriority="high" />
+        <img className="h-port-img" src="/monika-new.webp" alt="Monika Adeishvili" width={1052} height={1800} decoding="async" fetchPriority="high" />
       </figure>
 
       {/* headline line 2: electric blue, lower right, in front of her */}

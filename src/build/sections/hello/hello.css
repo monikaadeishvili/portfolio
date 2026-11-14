@@ -26,7 +26,7 @@
   --h-rad: 36px;
   --h-nav: 72px;
   --port-h: calc(var(--h-r0) * 0.78);
-  --port-w: calc(var(--port-h) * 0.813125);
+  --port-w: calc(var(--port-h) * 0.584444);
   --sw-h: calc(var(--h-fs) * 0.8);
   --sw-w: calc(var(--sw-h) * 1.86);
   /* State A: the bland default */
@@ -1438,8 +1438,8 @@
   --h-cap: 12px;
   --h-rad: 22px;
   --h-nav: 52px;
-  --port-w: var(--FW);
-  --port-h: calc(var(--FW) / 0.813125);
+  --port-w: calc(var(--FW) * 0.72);
+  --port-h: calc(var(--port-w) / 0.584444);
   --h-r0: calc(var(--h-nav) + var(--h-fs) * 2.7 + 92px + var(--port-h));
 }
 .bstage[data-lay='narrow'] .h-title {
