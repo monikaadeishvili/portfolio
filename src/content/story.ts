@@ -54,7 +54,7 @@ export const HELLO = {
   badge: 'Open to new work',
   line1: 'Everyone has the same tools now.',
   line2: 'Not the same taste.',
-  support: ['Taste comes with experience. I have ', '7+ years', ' of it.'] as const,
+  support: ['Taste comes with experience.', 'I have ', '7+ years', ' of it.'] as const,
   intro: "Hi, I'm Monika, a product designer.",
   marquee: { lead: 'FROM A ', empty: 'BLANK FIGMA FILE', mid: ' TO ', full: 'A PRODUCT PEOPLE USE', tail: ' — ' },
   /** companies and named client products from the resume (the Worked with marquee) */

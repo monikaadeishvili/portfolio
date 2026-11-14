@@ -738,10 +738,15 @@
   left: var(--h-px);
   top: 640px;
   z-index: 4;
-  width: 262px;
+  width: max-content;
+}
+/* two lines, each kept whole */
+.h-exp-l {
+  display: block;
+  white-space: nowrap;
 }
 .h-exp strong {
-  font-weight: 600;
+  font-weight: 800;
   white-space: nowrap;
   color: var(--h-blue);
 }

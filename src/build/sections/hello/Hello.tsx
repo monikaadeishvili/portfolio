@@ -191,7 +191,7 @@ function Nav({ onNav }: { onNav: SectionProps['onNav'] }) {
 function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live: boolean; onNav: SectionProps['onNav']; plain: boolean; onToggle: () => void }) {
   const h1Ref = useRef<HTMLHeadingElement>(null)
   useLayerText(h1Ref, 'h-title', 'Heading / H1')
-  const [s0, s1, s2] = HELLO.support
+  const [s0, s1, s2, s3] = HELLO.support
   return (
     <Region index={0} label="Hero" className={`h-r0${plain ? ' is-plain' : ''}`} hold="0.52,0.36,0.64">
       {/* State A: the competent-but-forgettable default (visual twins only) */}
@@ -220,9 +220,9 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
             </span>
           </div>
           <p className="hd-p" data-tw="lead">
-            {s0}
-            {s1}
+            {s0} {s1}
             {s2}
+            {s3}
           </p>
           <div className="hd-side">
             <span className="hd-cap" data-tw="cap">
@@ -309,9 +309,12 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
       <Piece id="h-cap" name="Caption / Experience" kind="bubble" tone={HC.ink} order={2} at={0.56} className="h-capslot">
         <div className="h-swap">
           <p className="h-cap h-exp">
-            {s0}
-            <strong>{s1}</strong>
-            {s2}
+            <span className="h-exp-l">{s0}</span>
+            <span className="h-exp-l">
+              {s1}
+              <strong>{s2}</strong>
+              {s3}
+            </span>
           </p>
         </div>
       </Piece>
