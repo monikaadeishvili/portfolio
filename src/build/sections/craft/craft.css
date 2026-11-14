@@ -23,7 +23,7 @@
     0 50px 90px -40px rgb(30 23 18 / 0.55);
 }
 .bf-craft .bf-label {
-  color: #3a2d22;
+  color: var(--k-lime);
 }
 /* the root wrapper takes no box: regions stay the artboard's direct flow */
 .hk-root {

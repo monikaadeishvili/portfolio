@@ -76,12 +76,13 @@ html.is-coarse .bstage a {
     opacity: 1;
   }
 }
+/* 02 How I think: lights off. A deep olive night, lit by the section's lime */
 .wbg-craft {
   background:
-    radial-gradient(60% 55% at 50% 40%, #f3ece1 0%, transparent 72%),
-    radial-gradient(40% 36% at 84% 82%, rgb(198 241 53 / 0.16) 0%, transparent 70%),
-    radial-gradient(34% 30% at 12% 14%, rgb(232 89 12 / 0.08) 0%, transparent 70%),
-    #e4dacb;
+    radial-gradient(60% 55% at 50% 40%, #2a3418 0%, transparent 72%),
+    radial-gradient(40% 36% at 84% 82%, rgb(198 241 53 / 0.13) 0%, transparent 70%),
+    radial-gradient(34% 30% at 12% 14%, rgb(232 89 12 / 0.1) 0%, transparent 70%),
+    #171d0e;
 }
 .wbg-proof {
   background:
@@ -110,7 +111,6 @@ html.is-coarse .bstage a {
   mask-image: radial-gradient(closest-side, transparent 30%, #000 85%);
 }
 .bstage[data-world='0'] .bspeed,
-.bstage[data-world='1'] .bspeed,
 .bstage[data-world='2'] .bspeed {
   background-image: repeating-linear-gradient(0deg, transparent 0 34px, rgb(22 19 29 / 0.25) 34px 36px, transparent 36px 90px);
 }
@@ -158,12 +158,12 @@ html.is-coarse .bstage a {
   background-position: 0 0, 39px 65px;
 }
 .wdot-craft {
-  /* drafting table: a darker blueprint grid instead of dots */
+  /* drafting table: a blueprint grid, drawn in lime light */
   background-image:
-    linear-gradient(rgb(54 92 0 / 0.26) 1.2px, transparent 1.2px),
-    linear-gradient(90deg, rgb(54 92 0 / 0.26) 1.2px, transparent 1.2px),
-    linear-gradient(rgb(54 92 0 / 0.11) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(54 92 0 / 0.11) 1px, transparent 1px);
+    linear-gradient(rgb(198 241 53 / 0.17) 1.2px, transparent 1.2px),
+    linear-gradient(90deg, rgb(198 241 53 / 0.17) 1.2px, transparent 1.2px),
+    linear-gradient(rgb(198 241 53 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(198 241 53 / 0.06) 1px, transparent 1px);
   background-size: 130px 130px, 130px 130px, 26px 26px, 26px 26px;
 }
 .wdot-proof {
@@ -311,8 +311,8 @@ html.is-coarse .bstage a {
   border-left: 1px solid rgb(255 61 154 / 0.45);
   border-right: 1px solid rgb(255 61 154 / 0.45);
 }
-.bf-origin {
-  --sheet-line: rgb(255 244 220 / 0.6);
+.bf-craft {
+  --sheet-line: rgb(235 226 212 / 0.55);
 }
 
 /* ------------------------------------------------- typographic reveals */
@@ -453,9 +453,9 @@ html.is-coarse .bstage a {
   width: 11px;
   height: 5px;
 }
-.bf-origin .alive-legs i,
-.bf-origin .alive-legs i::after {
-  background: #fff4dc;
+.bf-craft .alive-legs i,
+.bf-craft .alive-legs i::after {
+  background: #ebe2d4;
 }
 /* trail: three dots in the piece's colour behind a spat piece */
 .trail {
@@ -818,6 +818,12 @@ html.is-deck-drag .cur-you .cur-hand {
   transform: scale(0.84) rotate(-8deg);
 }
 
+/* the visitor's cursor turns light on the dark canvas */
+.bstage[data-world='1'] .cur-you .cur-arrow path {
+  fill: #fff4dc;
+  stroke: var(--ink);
+}
+
 /* narrow artboards */
 .bstage[data-lay='narrow'] .bf-body {
   padding: 22px 18px 26px;
@@ -923,7 +929,7 @@ html.is-deck-drag .cur-you .cur-hand {
   background: #0a0d26;
 }
 .bstage.is-static .bf-craft .bf-world {
-  background: #e4dacb;
+  background: #171d0e;
 }
 .bstage.is-static .bf-proof .bf-world {
   background: #bfe4fb;
