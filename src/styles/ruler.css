@@ -50,6 +50,7 @@
   pointer-events: none;
 }
 .ruler-fill {
+  will-change: transform;
   position: absolute;
   left: 0;
   right: 0;

@@ -114,13 +114,30 @@
   position: relative;
   height: 680px;
 }
+/* the pin's layers sit inside the camera's 3-D context: z-index means nothing
+   there, and co-planar layers flicker as they re-sort. Each gets its own depth. */
+.hk-back {
+  transform: translateZ(0);
+}
+.hk-gl {
+  transform: translateZ(2px);
+}
+.hk-clip {
+  transform: translateZ(4px);
+}
+.hk-hit {
+  transform: translateZ(6px);
+}
+.hk-hud {
+  transform: translateZ(8px);
+}
 /* giant outline words, on their own (slower) track */
 .hk-back {
   position: absolute;
   inset: 0;
   overflow: clip;
   pointer-events: none;
-  opacity: 0;
+  opacity: 0.002;
 }
 .hk-back-track {
   display: flex;
