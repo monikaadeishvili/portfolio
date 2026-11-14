@@ -351,12 +351,18 @@ function PlayButton() {
   useEffect(() => {
     let raf = 0
     let last = -1
+    let lastOff = ''
     const paint = () => {
       raf = 0
       const max = storyMax()
       const p = Math.min(1, Math.max(0, window.scrollY / Math.max(1, max)))
       const pct = Math.round(p * 100)
-      ringRef.current?.style.setProperty('stroke-dashoffset', (1 - p).toFixed(4))
+      // the ring only repaints when it visibly moves
+      const off = (1 - p).toFixed(3)
+      if (off !== lastOff) {
+        lastOff = off
+        ringRef.current?.style.setProperty('stroke-dashoffset', off)
+      }
       if (pct !== last && pctRef.current) {
         last = pct
         pctRef.current.textContent = String(pct)

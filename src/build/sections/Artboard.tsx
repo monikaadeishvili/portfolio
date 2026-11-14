@@ -71,6 +71,7 @@ export function Artboard({
           cache[k] = key
           sh.style.transform = `translate3d(0, 0, ${z.toFixed(1)}px)`
           sh.style.opacity = op.toFixed(2)
+          // three artboard-sized layers: they only exist while they show
           sh.style.visibility = op < 0.01 ? 'hidden' : ''
         })
       },

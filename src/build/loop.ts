@@ -9,11 +9,11 @@ import { readEyes, updateEyes } from '../scene/Eyes'
 import { hover, pointer, scene, ui } from '../scene/store'
 import { bots, updateCursors } from '../canvas/Cursors'
 import { updateRuler } from '../chrome/ChapterRuler'
-import { camAt, chargeOf, project, regionProgress, type CamPose, type Geo, type Proj } from './camera'
+import { camAt, chargeOf, project, regionProgress, TR_SHAPE, type CamPose, type Geo, type Proj } from './camera'
 import { bubbleAt, makeState, type BubState } from './bubble/choreo'
 import { Bubble, MAX_BALLS, MAX_CORES, type BubbleFrame } from './bubble/organism2'
 import { clamp01, evalPose, fxs, outBack, pieces, rnd, settleOf, smooth, texts, type FxEnv, type Piece, type TextBlock } from './runtime'
-import { hex, LAST, NS, SEC, sectionAt, secU, type RGB } from './worlds'
+import { hex, LAST, NS, SEC, sectionAt, secU, TR_SHAPE_OF, type RGB } from './worlds'
 import { bsinks, chapterCh, inspSel, inspState, moodCh, placedVer, regionCh, type InspState } from './bstore'
 
 export interface LoopCtx {
@@ -123,6 +123,27 @@ export function startLoop(ctx: LoopCtx) {
     narrow: false,
   }
 
+  /** is artboard k's projected outline in (or near) the window? Shows a
+   *  quarter-screen early, hides 40% out, so it only ever switches off-screen */
+  const boardInView = (g: Geo, k: number, was: boolean) => {
+    const b = g.boards[k]
+    const W = window.innerWidth
+    const H = window.innerHeight
+    const m = was ? 0.4 : 0.25
+    let x0 = 1e9
+    let y0 = 1e9
+    let x1 = -1e9
+    let y1 = -1e9
+    for (let c = 0; c < 4; c++) {
+      project(g, cam, c & 1 ? b.x + b.w : b.x, c & 2 ? b.y + b.h : b.y, 0, pr)
+      x0 = Math.min(x0, pr.x)
+      x1 = Math.max(x1, pr.x)
+      y0 = Math.min(y0, pr.y)
+      y1 = Math.max(y1, pr.y)
+    }
+    return x1 > -W * m && x0 < W * (1 + m) && y1 > -H * m && y0 < H * (1 + m)
+  }
+
   const tick = (time: number, deltaMs: number) => {
     const t = time
     const dt = Math.min(Math.max(deltaMs, 1) / 1000, 0.05)
@@ -154,6 +175,9 @@ export function startLoop(ctx: LoopCtx) {
       cam.rx -= (1 - e) * 16
       cam.rz += (1 - e) * 12
     }
+    // speed streaks read the camera's travel before the shake is added
+    const travelX = cam.x
+    const travelY = cam.y
     if (S.tr >= 0 && !scene.reduced) {
       const ch = chargeOf(S.tr, S.tu)
       if (ch > 0.01) {
@@ -183,10 +207,10 @@ export function startLoop(ctx: LoopCtx) {
     }
     // speed streaks while the camera travels between worlds
     project(g, cam, cam.x, cam.y, 0, pr)
-    const vx = (cam.x - prevSX) * s
-    const vy = (cam.y - prevSY) * s
-    prevSX = cam.x
-    prevSY = cam.y
+    const vx = (travelX - prevSX) * s
+    const vy = (travelY - prevSY) * s
+    prevSX = travelX
+    prevSY = travelY
     const v = Math.hypot(vx, vy) / dt
     const target = S.tr >= 0 ? clamp01((v - 500) / 2600) * 0.6 : 0
     speedOp += (target - speedOp) * Math.min(1, dt * 8)
@@ -196,12 +220,17 @@ export function startLoop(ctx: LoopCtx) {
       if (sk !== lastSpeed) {
         lastSpeed = sk
         ctx.speed.style.opacity = speedOp < 0.01 ? '0' : speedOp.toFixed(2)
+        ctx.speed.style.visibility = speedOp < 0.01 ? 'hidden' : 'visible'
         if (speedOp >= 0.01) ctx.speed.style.transform = `rotate(${ang.toFixed(0)}deg)`
       }
     }
 
     /* -------------------------------------------- WRITE: worlds */
+    const trM0 = S.tr >= 0 ? TR_SHAPE[TR_SHAPE_OF(S.tr)].m0 : 0
     for (let k = 0; k < NS; k++) {
+      // a world's background and dot paper only exist while they show: each is
+      // a screen (or more) of GPU memory, and they fade in from nothing, so
+      // switching them on cannot flash
       const w = S.world[k]
       const ws = w < 0.005 ? '0' : w > 0.995 ? '1' : w.toFixed(3)
       if (ws !== worldOp[k]) {
@@ -212,12 +241,16 @@ export function startLoop(ctx: LoopCtx) {
           el.style.visibility = ws === '0' ? 'hidden' : ''
         }
       }
-      // each world is sealed: only its own artboard shows, neighbours cross-fade
-      // in and out within the transition (opacity flattens 3-D, so only then)
+      // each world shows only its own artboard. Two full artboards on screen at
+      // once overflow the GPU's raster budget and layers drop out (flicker), so
+      // the board being left fades as the bubble charges (a fading board is one
+      // flat layer, cheap while it slides away); the board arriving comes in
+      // whole, switched on while it is still out of frame
       let bo = 0
       if (S.tr < 0) bo = k === sec ? 1 : 0
-      else if (k === S.tr) bo = 1 - smooth(0.12, 0.55, S.tu)
-      else if (k === S.tr + 1) bo = smooth(0.62, 0.92, S.tu)
+      // the board being left starts fading under the launch flash, after the shake
+      else if (k === S.tr) bo = 1 - smooth(trM0 - 0.02, trM0 + 0.2, S.tu)
+      else if (k === S.tr + 1) bo = boardInView(g, k, boardNear[k] !== '0' && boardNear[k] !== '') ? 1 : 0
       const bk = bo < 0.005 ? '0' : bo > 0.995 ? '1' : bo.toFixed(3)
       const el = ctx.boards[k]
       if (el && bk !== boardNear[k]) {
@@ -228,7 +261,7 @@ export function startLoop(ctx: LoopCtx) {
     }
     // dashed slots only show for regions that are building (or built)
     if (frame % 3 === 0) {
-      for (let i = Math.max(0, sec - 1); i <= Math.min(4, sec + 1); i++) {
+      for (let i = Math.max(0, sec - 1); i <= Math.min(LAST, sec + 1); i++) {
         const regs = g.regs[i]
         for (let r = 0; r < regs.length; r++) {
           const w = g.wins[i][r]
@@ -329,8 +362,8 @@ export function startLoop(ctx: LoopCtx) {
       const opS = op < 0.01 ? 'h' : op > 0.995 ? '1' : op.toFixed(2)
       if (opS !== c.lastOp) {
         c.lastOp = opS
-        c.alive.style.opacity = op < 0.01 ? '0' : opS
-        c.alive.style.visibility = op < 0.01 ? 'hidden' : ''
+        c.alive.style.opacity = opS === 'h' ? '0' : opS
+        c.alive.style.visibility = opS === 'h' ? 'hidden' : ''
       }
       // screen centre (for the cursor look + the goo)
       if (near && (P.state !== 'placed' || P.ball > 0)) {
@@ -631,7 +664,8 @@ export function startLoop(ctx: LoopCtx) {
     let st: InspState = 'waiting'
     if (sel) st = sel.pose.state === 'placed' ? 'placed' : sel.pose.state === 'leaping' ? 'flying' : sel.pose.state === 'inside' ? 'inside' : 'waiting'
     inspState.set(st)
-    if (frame % 2 === 0) {
+    // live inspector values: calmer in a transition (every repaint of the panel costs raster)
+    if (frame % (S.tr >= 0 ? 6 : 2) === 0) {
       let vals: Record<string, string> | null = null
       if (sel) {
         const b = g.boards[sel.section]

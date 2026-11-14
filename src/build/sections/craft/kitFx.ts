@@ -6,7 +6,6 @@
  * rendering only while the section is on screen). Also wires "take it apart"
  * (press and hold the model, or the button). No layout reads in update.
  */
-import { live } from '../../loop'
 import { clamp01, registerFx, smooth } from '../../runtime'
 import type { KitScene } from '../../three/KitScene'
 import { HERO_PILL, START } from '../../three/kitForms'
@@ -54,15 +53,15 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
   let loading = false
   let dead = false
   let ready = false
-  let shown = ''
   let frame = 0
   let sPrev = 0
   let vel = 0
   const cache = { track: '', back: '', thumb: '', ovf: '', redl: ['', '', ''] }
 
+  // one fixed resolution: resizing the canvas mid-scroll blanks its layer for a frame
   const pixelRatio = () => {
     const dpr = Math.min(2, window.devicePixelRatio || 1)
-    return narrow ? dpr * 0.75 : Math.min(1.5, Math.max(0.8, live.cam.s * dpr * 1.1))
+    return narrow ? dpr * 0.75 : Math.min(1.5, dpr * 1.1)
   }
   const measure = () => {
     PW = clip.offsetWidth || 1
@@ -148,13 +147,8 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
     section: 1,
     measure: () => measure(),
     update: (e) => {
-      if (!e.near) {
-        if (shown !== 'h') {
-          shown = 'h'
-          gl.style.visibility = 'hidden'
-        }
-        return
-      }
+      // off-section the whole artboard is hidden; the canvas layer itself is never toggled
+      if (!e.near) return
       if (!loading) load()
       // the pan: region 1's progress → station coordinate s (0..4)
       const q = e.reg[1] ?? 0
@@ -186,7 +180,7 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
           thumb.style.transform = th
         }
       }
-      const ov = pre.toFixed(2)
+      const ov = Math.max(0.002, pre).toFixed(3)
       if (ov !== cache.ovf) {
         cache.ovf = ov
         if (ovf) ovf.style.opacity = ov
@@ -199,7 +193,8 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
         p.letters.forEach((l, j) => {
           // staggered on the way in/out, all landed at the stop
           const v = 1 - smooth(0.12, 0.48, ad * (1 + j * 0.08))
-          const key = v >= 0.999 ? '' : `translateY(${((1 - v) * 110).toFixed(1)}%)`
+          // always a transform (dropping it re-layers the letter)
+          const key = `translateY(${(v >= 0.999 ? 0 : (1 - v) * 110).toFixed(1)}%)`
           if (key !== p.cache[j]) {
             p.cache[j] = key
             l.style.transform = key
@@ -207,32 +202,22 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
         })
         p.fades.forEach((el, j) => {
           // gone before it crosses the stage (the copy never shows through the parts)
-          const a = 1 - smooth(0.1, 0.38, ad + j * 0.04)
+          const a = Math.max(0.002, 1 - smooth(0.1, 0.38, ad + j * 0.04))
           const key = `${a.toFixed(3)}|${(d * 60).toFixed(1)}`
           const n = p.letters.length + j
           if (key === p.cache[n]) return
           p.cache[n] = key
           el.style.opacity = a.toFixed(3)
-          el.style.transform = a >= 0.999 ? '' : `translateX(${(d * 60).toFixed(1)}px)`
+          el.style.transform = `translateX(${(a >= 0.999 ? 0 : d * 60).toFixed(1)}px)`
         })
       })
 
       // the 3-D: render only while this section is on screen
       const on = ready && e.u > -0.02 && e.u < 0.97 && !document.hidden
-      const sh = on ? 'v' : 'h'
-      if (sh !== shown) {
-        shown = sh
-        gl.style.visibility = on ? '' : 'hidden'
-      }
       if (!on || !scene) return
       // the intro (only loose parts on screen): 30fps is plenty
       frame++
       if (q <= 0 && pre <= 0 && frame % 2) return
-      const want = pixelRatio()
-      if (Math.abs(want - pr) / pr > 0.15) {
-        pr = want
-        scene.resize(glW, glH, pr)
-      }
       scene.render({ pre, s, t: e.t, dt: e.dt * (q <= 0 && pre <= 0 ? 2 : 1), vel })
       // handoff redline labels follow their parts (wide only)
       if (!narrow) {
@@ -245,7 +230,7 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
           }
           if (key === cache.redl[i]) return
           cache.redl[i] = key
-          if (key === 'h') el.style.opacity = '0'
+          if (key === 'h') el.style.opacity = '0.002'
           else {
             const [o, x, y] = key.split('|')
             el.style.opacity = o

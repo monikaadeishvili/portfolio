@@ -94,18 +94,20 @@ html.is-coarse .bstage a {
     radial-gradient(70% 60% at 90% 90%, #b9a8ff 0%, transparent 70%),
     linear-gradient(140deg, #ff9fd8, #a58bff);
 }
-/* speed streaks while the camera travels between worlds */
+/* speed streaks while the camera travels between worlds: a square just
+   larger than the screen's diagonal (so any rotation still covers it), and
+   no layer at all while it is off (it is big, and it carries a mask) */
 .bspeed {
   position: absolute;
-  left: -50%;
-  top: -50%;
-  width: 200%;
-  height: 200%;
+  left: calc(50% - 60vmax);
+  top: calc(50% - 60vmax);
+  width: 120vmax;
+  height: 120vmax;
   opacity: 0;
+  visibility: hidden;
   background-image: repeating-linear-gradient(0deg, transparent 0 34px, rgb(255 255 255 / 0.55) 34px 36px, transparent 36px 90px);
   -webkit-mask-image: radial-gradient(closest-side, transparent 30%, #000 85%);
   mask-image: radial-gradient(closest-side, transparent 30%, #000 85%);
-  will-change: opacity, transform;
 }
 .bstage[data-world='0'] .bspeed,
 .bstage[data-world='1'] .bspeed,
@@ -130,14 +132,16 @@ html.is-coarse .bstage a {
   will-change: transform;
 }
 /* dot grid, one per world, cross-faded */
+/* the dot paper follows the camera (snapped to the dot pitch), so it only has
+   to be bigger than the widest view. No soft-edge mask: a mask this size
+   inside the zooming 3-D world re-rasters on every frame of a transition and
+   overflows the GPU, which is what made the panels and dots flicker. */
 .bpaper {
   position: absolute;
   left: 0;
   top: 0;
-  width: 5200px;
-  height: 4200px;
-  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
-  mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+  width: 7800px;
+  height: 6400px;
   pointer-events: none;
 }
 .wdot {
@@ -237,7 +241,7 @@ html.is-coarse .bstage a {
   padding: 44px 56px 56px;
   transform-style: preserve-3d;
 }
-.bf-body :is(div, ul, ol, li, section, figure, header, nav, footer):not(.alive, .alive *, .slot-ph, .alive-shadow, .trail, .cs *, .cs, .k-gl, .k-gl *) {
+.bf-body :is(div, ul, ol, li, section, figure, header, nav, footer):not(.alive, .alive *, .slot-ph, .alive-shadow, .trail, .cs *, .cs, .hk-gl, .hk-gl *, .hk-back, .hk-back *, .hk-clip, .hk-clip *, .hk-hit) {
   transform-style: preserve-3d;
 }
 .rg {
@@ -333,10 +337,15 @@ html.is-coarse .bstage a {
    again during the build; each rebuild re-rasterised the panel from scratch
    and it blinked. Pin each one to its own permanent layer. */
 .bstage,
-.bstage .chrome,
+.chrome,
 .bstage .cursors,
 .bstage .cur-bubble {
   will-change: transform;
+}
+/* the worlds cross-fade on the compositor, not by repainting a screenful */
+.wbg,
+.wdot {
+  will-change: opacity;
 }
 .rv-title {
   font-family: var(--f-display);
