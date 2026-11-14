@@ -27,10 +27,10 @@ export function mountFun(root: HTMLElement, narrow: boolean) {
   const end = root.querySelector<HTMLElement>('.fun-end')
   const caps = Array.from(root.querySelectorAll<HTMLElement>('.fun-cap[data-a]')).map((el) => ({ el, a: Number(el.dataset.a), b: Number(el.dataset.b), key: '' }))
   const chrome = [
-    { sel: '.topbar', x: 0, y: -420, r: -3 },
-    { sel: '.layers', x: -135, y: 8, r: -13 },
-    { sel: '.inspector', x: 135, y: 10, r: 12 },
-    { sel: '.dock', x: 0, y: 260, r: 6 },
+    { sel: '.topbar', x: 0, y: -420, r: 0, fade: true },
+    { sel: '.layers', x: -135, y: 8, r: -13, fade: false },
+    { sel: '.inspector', x: 135, y: 10, r: 12, fade: false },
+    { sel: '.dock', x: 0, y: 260, r: 6, fade: false },
   ].map((c) => ({ ...c, el: document.querySelector<HTMLElement>(c.sel), key: '' }))
 
   let trip: TripScene | null = null
@@ -151,6 +151,11 @@ export function mountFun(root: HTMLElement, narrow: boolean) {
       if (key === c.key) return
       c.key = key
       c.el.style.transform = key
+      // the top nav bar simply goes: lifted, faded, then gone for the trip
+      if (c.fade) {
+        c.el.style.opacity = e <= 0 ? '' : (1 - smooth(0, 0.5, e)).toFixed(3)
+        c.el.style.visibility = e >= 0.5 ? 'hidden' : ''
+      }
     })
 
     const wantOn = ready && f > 0.0006
@@ -222,7 +227,12 @@ export function mountFun(root: HTMLElement, narrow: boolean) {
     root.removeEventListener('click', onAct)
     window.removeEventListener('resize', onResize)
     window.clearTimeout(rz)
-    chrome.forEach((c) => c.el && (c.el.style.transform = ''))
+    chrome.forEach((c) => {
+      if (!c.el) return
+      c.el.style.transform = ''
+      c.el.style.opacity = ''
+      c.el.style.visibility = ''
+    })
     stage.classList.remove('is-tripping')
     trip?.dispose()
     trip = null
