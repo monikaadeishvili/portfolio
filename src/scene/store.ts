@@ -89,5 +89,13 @@ export const ui = {
   scrollTo: null as null | ((y: number, duration: number, steady?: boolean) => void),
 }
 
+/** scroll length of the story itself (the five sections), excluding the
+ *  After hours trip that hangs below it */
+export function storyMax() {
+  const sp = typeof document === 'undefined' ? null : document.querySelector<HTMLElement>('.scroll-spacer')
+  const vh = window.innerHeight
+  return sp ? Math.max(1, sp.offsetTop + sp.offsetHeight - vh) : Math.max(1, document.documentElement.scrollHeight - vh)
+}
+
 /** cached rects for the current frame (filled in the loop's read phase) */
 export const rectCache = new Map<string, DOMRect>()

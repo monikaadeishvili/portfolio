@@ -125,3 +125,19 @@ export const LINKS = [
 export const FOOTER = 'Designed in momo. Built from components. Alicante, 2026.'
 
 export const segText = (segs: Seg[]) => segs.map((s) => (typeof s === 'string' ? s : s.em)).join('')
+
+/** 06 After hours: the trip below the contact section */
+export const AFTER = {
+  hint: 'psst… it keeps going',
+  caps: [
+    { text: 'Wait. You scrolled past the end?', at: [0.004, 0.105], pos: 'top' },
+    { text: 'Nobody scrolls this far. Here’s a treat.', at: [0.11, 0.25], pos: 'bottom' },
+    { text: 'My tools, on their day off.', at: [0.33, 0.53], pos: 'top' },
+    { text: 'Every file ends up here eventually.', at: [0.63, 0.8], pos: 'bottom' },
+  ],
+  poke: 'Click anywhere. It reacts.',
+  pokeTouch: 'Tap anywhere. It reacts.',
+  end: 'Okay. Back to work?',
+  top: 'Rewind to the top',
+  hello: 'Say hello',
+} as const

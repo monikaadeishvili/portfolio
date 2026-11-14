@@ -1,6 +1,6 @@
 /** Page 2 chrome: Layers (current section's regions), Inspector (live travel / bubble mood), Dock */
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
-import { hover, tool, ui, type Breakpoint, type Tool } from '../scene/store'
+import { hover, storyMax, tool, ui, type Breakpoint, type Tool } from '../scene/store'
 import { Chevron, LayerIcon, ToolIcon } from '../chrome/Icons'
 import { ChapterRuler, type RulerChapter } from '../chrome/ChapterRuler'
 import { CHAPTERS } from '../content/story'
@@ -353,7 +353,7 @@ function PlayButton() {
     let last = -1
     const paint = () => {
       raf = 0
-      const max = document.documentElement.scrollHeight - window.innerHeight
+      const max = storyMax()
       const p = Math.min(1, Math.max(0, window.scrollY / Math.max(1, max)))
       const pct = Math.round(p * 100)
       ringRef.current?.style.setProperty('stroke-dashoffset', (1 - p).toFixed(4))
@@ -402,7 +402,7 @@ function PlayButton() {
   }, [playing])
 
   const play = () => {
-    const max = document.documentElement.scrollHeight - window.innerHeight
+    const max = storyMax()
     if (playing) {
       ui.scrollTo?.(window.scrollY, 0)
       setPlaying(false)

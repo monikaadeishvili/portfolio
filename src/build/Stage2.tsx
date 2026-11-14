@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, type CSSProperties } f
 import Lenis from 'lenis'
 import { gsap, ScrollTrigger } from '../scene/gsap'
 import { Eyes } from '../scene/Eyes'
-import { hover, pointer, scene, tool, ui, type Breakpoint } from '../scene/store'
+import { hover, pointer, scene, storyMax, tool, ui, type Breakpoint } from '../scene/store'
 import { Cursors, cursorConfig, type BotKey, type Region as CurRegion, type Story } from '../canvas/Cursors'
 import { PenTrail } from '../canvas/PenTrail'
 import { ColorPicker } from '../canvas/ColorPicker'
@@ -14,6 +14,7 @@ import { Bubble } from './bubble/organism2'
 import { pieces, texts } from './runtime'
 import { live, nudge, startLoop } from './loop'
 import { chapterCh, rulerSubs } from './bstore'
+import { Fun, FUN_VH } from './sections/fun/Fun'
 import { holdOf, SCROLL_VH, sectionAt, secP, secU, transitionAt } from './worlds'
 import { installOverlapCheck } from './dev/overlap'
 import { taste } from './sections/hello/taste'
@@ -235,7 +236,7 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
       const sec = e.target.closest<HTMLElement>('.bf')
       if (!sec) return
       const i = Number(sec.dataset.frame)
-      const max = document.documentElement.scrollHeight - window.innerHeight
+      const max = storyMax()
       // a region with its own hold ("u,min,max"): stay if it is in view, else go there
       const hold = e.target.closest<HTMLElement>('[data-hold]')?.dataset.hold
       if (hold) {
@@ -394,7 +395,7 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
   const worlds = ['hello', 'origin', 'craft', 'proof', 'contact']
   return (
     <>
-      <main ref={rootRef} className={`bstage${reduced ? ' is-static' : ''}`} data-bp={bp} data-lay={lay} data-world="0" style={style} data-deck-layer="" aria-label="Canvas — five sections">
+      <main ref={rootRef} className={`bstage${reduced ? ' is-static' : ''}`} data-bp={bp} data-lay={lay} data-world="0" style={style} data-deck-layer="" aria-label="Canvas — five sections and an after-hours trip">
         {!reduced && (
           <div className="bworld-bg" aria-hidden="true">
             {worlds.map((w, i) => (
@@ -449,11 +450,13 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
             scroll to add taste <span>↓</span>
           </p>
         )}
+        {!reduced && <Fun narrow={lay === 'narrow'} />}
         {!reduced && <PenTrail />}
         {!reduced && <ColorPicker />}
         {!reduced && <Cursors />}
       </main>
       {!reduced && <div className="scroll-spacer" ref={spacerRef} aria-hidden="true" style={{ '--len': `${SCROLL_VH}vh` } as CSSProperties} />}
+      {!reduced && <div className="fun-spacer" aria-hidden="true" style={{ '--len': `${FUN_VH}vh` } as CSSProperties} />}
     </>
   )
 }
