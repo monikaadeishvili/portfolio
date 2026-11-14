@@ -776,6 +776,11 @@ export class Portrait3D {
   /** kept for the old interface (the hover reveal needs no buffer) */
   resetTrail() {}
 
+  /** colour picker: drawing-buffer px to read after the next composite, and that read (straight RGBA) */
+  pickReq: [number, number] | null = null
+  picked: [number, number, number, number] | null = null
+  private pickBuf = new Uint8Array(4)
+
   render(f: Portrait3DFrame) {
     const r = this.renderer
     if (!r || !this.ok || !this.ready || this.lost || !this.rtArt || !this.rtPhoto) return
@@ -820,6 +825,16 @@ export class Portrait3D {
     r.setRenderTarget(null)
     r.clear()
     r.render(this.compScene, this.compCam)
+    // the colour picker reads one pixel while the frame is still in the buffer
+    if (this.pickReq) {
+      const gl = r.getContext()
+      const [x, y] = this.pickReq
+      const b = this.pickBuf
+      gl.readPixels(x, this.canvas.height - 1 - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, b)
+      const a = b[3] / 255
+      this.picked = a > 0 ? [b[0] / a, b[1] / a, b[2] / a, b[3]] : [0, 0, 0, 0]
+      this.pickReq = null
+    }
   }
 
   /** dev: block until the GPU has finished (for timing a frame) */

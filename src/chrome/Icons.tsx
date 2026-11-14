@@ -51,6 +51,16 @@ export const ToolIcon: Record<Tool, () => ReactNode> = {
       <path d="M4.5 5V3.8h11V5M10 3.8V16.5M7.5 16.5h5" />
     </S>
   ),
+  picker: () => (
+    <S>
+      {/* an eyedropper, tip at the lower left */}
+      <g transform="translate(4.5 15.5) rotate(45)">
+        <path d="M-1.1-1.8V-9.5H1.1V-1.8L0 0Z" />
+        <path d="M-2.6-9.5H2.6" />
+        <rect x="-2" y="-14.2" width="4" height="4.7" rx="1.4" />
+      </g>
+    </S>
+  ),
   hand: () => (
     <S>
       <path d="M7 10V4.8a1.3 1.3 0 0 1 2.6 0V9m0-.5V3.6a1.3 1.3 0 0 1 2.6 0V9m0-4a1.3 1.3 0 0 1 2.6 0v6c0 3.5-2.2 6-5.5 6-2.6 0-3.9-1.1-5.1-2.9L3.5 12a1.4 1.4 0 0 1 2.2-1.7L7 11.6" />

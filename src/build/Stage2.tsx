@@ -5,6 +5,7 @@ import { Eyes } from '../scene/Eyes'
 import { hover, pointer, scene, tool, ui, type Breakpoint } from '../scene/store'
 import { Cursors, cursorConfig, type BotKey, type Region as CurRegion, type Story } from '../canvas/Cursors'
 import { PenTrail } from '../canvas/PenTrail'
+import { ColorPicker } from '../canvas/ColorPicker'
 import { jumpTo } from '../chrome/ChapterRuler'
 import { MomoGlyph } from '../ui/components'
 import { Sections } from './sections'
@@ -447,6 +448,7 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
           </p>
         )}
         {!reduced && <PenTrail />}
+        {!reduced && <ColorPicker />}
         {!reduced && <Cursors />}
       </main>
       {!reduced && <div className="scroll-spacer" ref={spacerRef} aria-hidden="true" style={{ '--len': `${SCROLL_VH}vh` } as CSSProperties} />}

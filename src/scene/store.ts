@@ -5,7 +5,7 @@
  */
 
 export type LayerKind = 'frame' | 'text' | 'component' | 'organism' | 'piece' | 'note'
-export type Tool = 'move' | 'frame' | 'shape' | 'pen' | 'text' | 'hand' | 'comment'
+export type Tool = 'move' | 'frame' | 'shape' | 'pen' | 'text' | 'hand' | 'comment' | 'picker'
 export type Breakpoint = 'desk' | 'tab' | 'mob'
 
 export interface LayerInfo {

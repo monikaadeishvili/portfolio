@@ -337,6 +337,17 @@ export function Cursors() {
             <circle className="cur-pen-hole" cx="0" cy="-6.4" r="1.05" />
           </g>
         </svg>
+        <svg className="cur-picker" viewBox="0 0 24 24">
+          <g transform="translate(3 21) rotate(45) scale(1.3)">
+            <path d="M-1.3-1.9V-9.6H1.3V-1.9L0 0.2Z" />
+            <rect x="-3" y="-10.4" width="6" height="1.6" rx="0.8" />
+            <rect x="-2.3" y="-15.2" width="4.6" height="5.2" rx="1.6" />
+          </g>
+        </svg>
+        <span className="cur-pick" aria-hidden="true">
+          <i className="cur-pick-sw" />
+          <b className="cur-pick-hex">#000000</b>
+        </span>
         <svg className="cur-comment" viewBox="0 0 24 24">
           <path d="M4 20V8a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v2a5 5 0 0 1-5 5H9l-5 5Z" />
         </svg>

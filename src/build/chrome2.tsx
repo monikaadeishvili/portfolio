@@ -329,6 +329,7 @@ const TOOLS: { id: Tool; label: string; key: string }[] = [
   { id: 'move', label: 'Move', key: 'V' },
   { id: 'hand', label: 'Hand — drag to scrub', key: 'H' },
   { id: 'pen', label: 'Pen — draw a path', key: 'P' },
+  { id: 'picker', label: 'Color picker — click to copy', key: 'I' },
 ]
 
 const RULER: RulerChapter[] = CHAPTERS.map((c, i) => ({ label: c.ruler, at: i === 0 ? 0 : (TRN[i - 1][0] + TRN[i - 1][1]) / 2, jump: holdOf(i) }))

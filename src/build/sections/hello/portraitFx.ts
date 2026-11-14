@@ -9,6 +9,7 @@
  * reveals the original photo through a burning-edged circle grown from the
  * cursor. The model tilts toward the pointer and sways gently.
  */
+import { registerPickSource } from '../../../canvas/colorSample'
 import { offsetIn } from '../../../scene/layout'
 import { scene } from '../../../scene/store'
 import { project, unproject, type Geo, type Proj } from '../../camera'
@@ -35,6 +36,8 @@ interface Renderer {
   size(w: number, h: number): void
   render(f: Portrait3DFrame): void
   hit?(u: number, v: number): boolean
+  pickReq?: [number, number] | null
+  picked?: [number, number, number, number] | null
   setFrame?(cx: number, cy: number, fh: number): void
   resetTrail(): void
   sync(): void
@@ -77,6 +80,17 @@ export function mountPortrait(board: HTMLElement) {
       fig.dataset.gl = '0'
     },
   )
+
+  // the dock's Color picker reads her pixel from the composite (a frame late)
+  const unPick = registerPickSource({
+    el: canvas,
+    read(x, y) {
+      const r = canvas.getBoundingClientRect()
+      if (!gl.ready || x < r.left || y < r.top || x >= r.right || y >= r.bottom) return null
+      gl.pickReq = [Math.floor(((x - r.left) / r.width) * canvas.width), Math.floor(((y - r.top) / r.height) * canvas.height)]
+      return gl.picked ?? null
+    },
+  })
 
   /* ---- pointer (mouse: hover; touch/pen: while pressed) */
   const ptr = { x: 0, y: 0, t: -1, touch: false, down: false, out: true }
@@ -385,6 +399,7 @@ export function mountPortrait(board: HTMLElement) {
   }
   return () => {
     disposed = true
+    unPick()
     off()
     if (import.meta.env.DEV) {
       delete w.__momoShot
