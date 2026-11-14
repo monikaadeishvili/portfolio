@@ -24,7 +24,7 @@ const LINES: { sec: number; key: BotKey; u0: number; u1: number; line: string }[
   { sec: 0, key: 'pm', u0: 0.22, u1: 0.38, line: 'oh. OH.' },
   { sec: 0, key: 'monika', u0: 0.47, u1: 0.535, line: 'hey, that’s me!' },
   { sec: 0, key: 'dev', u0: 0.535, u1: 0.6, line: 'hover her. trust me 👀' },
-  { sec: 0, key: 'pm', u0: 0.89, u1: 1.01, line: 'blue suits this page' },
+  { sec: 0, key: 'pm', u0: 0.89, u1: 1.01, line: 'golden hour, nice' },
   { sec: 1, key: 'dev', u0: 0.08, u1: 0.26, line: 'lights off' },
   { sec: 1, key: 'monika', u0: 0.5, u1: 0.7, line: 'my whole route' },
   { sec: 1, key: 'pm', u0: 0.74, u1: 0.95, line: '3,900 km ✈︎' },
