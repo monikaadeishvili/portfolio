@@ -481,6 +481,12 @@
 .rw-in {
   display: block;
 }
+/* the headline text is never a pointer target (cheaper hit-testing while the wake
+   runs); the Taste switch inside line 2 stays clickable */
+.h-l1,
+.h-l2 .rw {
+  pointer-events: none;
+}
 /* one span per letter so each can take its own weight; a hairline stroke brings
    the variable face's Black up to the old headline's heft (it fades as a letter thins) */
 .h-ch {
