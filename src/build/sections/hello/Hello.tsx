@@ -329,7 +329,14 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
             <svg className="h-note-line" viewBox="0 0 80 80" aria-hidden="true">
               <path d="M6 74 L58 14 H80" />
             </svg>
-            <span className="h-cap h-note-t">{HELLO.intro}</span>
+            <span className="h-cap h-note-t">
+              <span className="h-note-l">
+                {HELLO.introLines[0][0]}
+                <strong>{HELLO.introLines[0][1]}</strong>
+                {HELLO.introLines[0][2]}
+              </span>
+              <span className="h-note-l">{HELLO.introLines[1][0]}</span>
+            </span>
           </p>
         </div>
       </Piece>

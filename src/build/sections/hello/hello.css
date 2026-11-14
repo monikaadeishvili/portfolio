@@ -795,7 +795,14 @@
   position: absolute;
   left: 92px;
   top: 0;
-  max-width: 13.5em;
+}
+/* two lines, each kept whole; her name a step heavier */
+.h-note-l {
+  display: block;
+  white-space: nowrap;
+}
+.h-note-t strong {
+  font-weight: 800;
 }
 
 /* -- cursor cue */

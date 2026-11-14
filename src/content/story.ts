@@ -56,6 +56,8 @@ export const HELLO = {
   line2: 'Not the same taste.',
   support: ['Taste comes with experience.', 'I have ', '7+ years', ' of it.'] as const,
   intro: "Hi, I'm Monika, a product designer.",
+  /** the annotation on her shoulder, set on two lines */
+  introLines: [["Hi, I'm ", 'Monika', ','], ['a product designer.']] as const,
   marquee: { lead: 'FROM A ', empty: 'BLANK FIGMA FILE', mid: ' TO ', full: 'A PRODUCT PEOPLE USE', tail: ' — ' },
   /** companies and named client products from the resume (the Worked with marquee) */
   workedWith: ['DAZN', 'Nota by M&T Bank', 'Contrast', 'Forcoda', 'Studious', 'Hello Audio', 'Roomistry', 'Startup Mentor AI', '4twiggers', 'Realoffer', 'Moneymarket', 'Xpresso', 'Refresh Miami', 'Graft', 'Bizzy', 'Burq', 'Dinespace'],
