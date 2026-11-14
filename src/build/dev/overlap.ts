@@ -8,7 +8,7 @@ import type { Geo } from '../camera'
 import { gsap } from '../../scene/gsap'
 import { live } from '../loop'
 import { pieces, texts, type Piece } from '../runtime'
-import { SEC } from '../worlds'
+import { NS, SEC } from '../worlds'
 import { taste } from '../sections/hello/taste'
 
 interface Box {
@@ -87,6 +87,6 @@ export function installOverlapCheck(getGeo: () => Geo | null) {
 
 function sec(p: number) {
   let i = 0
-  for (let k = 0; k < 5; k++) if (p >= SEC[k][0] - 1e-9) i = k
+  for (let k = 0; k < NS; k++) if (p >= SEC[k][0] - 1e-9) i = k
   return i
 }

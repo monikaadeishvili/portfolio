@@ -3,7 +3,6 @@ import { MomoMark } from './Icons'
 import { ui } from '../scene/store'
 import { EMAIL } from '../content/story'
 
-const TABS = ['About', 'Work', 'Process', 'Contact']
 const PEOPLE = [
   { i: 'M', c: 'var(--violet)', n: 'Monika (owner)' },
   { i: 'P', c: 'var(--mint)', n: 'PM' },
@@ -28,28 +27,9 @@ export function TopBar() {
           <span className="crumb-sep" aria-hidden="true">
             /
           </span>
-          <span className="crumb-file">
-            monika-adeishvili<span className="crumb-ext">.momo</span>
-          </span>
+          <span className="crumb-file">Monika.Adeishvili</span>
         </nav>
       </div>
-
-      <nav className="tabs" aria-label="Pages">
-        {TABS.map((t, i) =>
-          i === 0 ? (
-            <a key={t} className="tab is-active" href="#top" aria-current="page">
-              {t}
-            </a>
-          ) : (
-            <span key={t} className="tab is-soon" tabIndex={0} role="link" aria-disabled="true" aria-describedby={`soon-${t}`}>
-              {t}
-              <span className="tip" role="tooltip" id={`soon-${t}`}>
-                soon
-              </span>
-            </span>
-          ),
-        )}
-      </nav>
 
       <div className="tb-right">
         <ul className="avatars" aria-label="People in this file">

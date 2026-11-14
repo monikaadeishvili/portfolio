@@ -6,7 +6,7 @@
 export type Seg = string | { em: string }
 
 export interface Chapter {
-  id: 'hello' | 'origin' | 'craft' | 'proof' | 'contact'
+  id: 'hello' | 'craft' | 'proof' | 'contact'
   num: string
   frame: string
   ruler: string
@@ -24,16 +24,8 @@ export const CHAPTERS: Chapter[] = [
     body: 'Taste comes with experience. I have 7+ years of it.',
   },
   {
-    id: 'origin',
-    num: '02',
-    frame: 'Origin',
-    ruler: 'TBILISI → ALICANTE',
-    headline: ['It started in Tbilisi, with ', { em: 'one landing page.' }],
-    body: 'A food-tech startup, 2020. Then a delivery platform, an agency, a bank, a sports-streaming giant. Today I design from Alicante — the curiosity is the same, the canvas got bigger.',
-  },
-  {
     id: 'craft',
-    num: '03',
+    num: '02',
     frame: 'Craft',
     ruler: 'HOW I THINK',
     headline: ['I think in ', { em: 'components.' }],
@@ -41,7 +33,7 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: 'proof',
-    num: '04',
+    num: '03',
     frame: 'Proof',
     ruler: 'PROOF',
     headline: ['Seven years, one question: ', { em: 'who is this for?' }],
@@ -49,7 +41,7 @@ export const CHAPTERS: Chapter[] = [
   },
   {
     id: 'contact',
-    num: '05',
+    num: '04',
     frame: 'Contact',
     ruler: 'SAY HELLO',
     headline: ["Let's build something people ", { em: "won't ignore." }],
@@ -125,3 +117,19 @@ export const LINKS = [
 export const FOOTER = 'Designed in momo. Built from components. Alicante, 2026.'
 
 export const segText = (segs: Seg[]) => segs.map((s) => (typeof s === 'string' ? s : s.em)).join('')
+
+/** 06 After hours: the trip below the contact section */
+export const AFTER = {
+  hint: 'psst… it keeps going',
+  caps: [
+    { text: 'Wait. You scrolled past the end?', at: [0.004, 0.105], pos: 'top' },
+    { text: 'Nobody scrolls this far. Here’s a treat.', at: [0.11, 0.25], pos: 'bottom' },
+    { text: 'My tools, on their day off.', at: [0.33, 0.53], pos: 'top' },
+    { text: 'Every file ends up here eventually.', at: [0.63, 0.8], pos: 'bottom' },
+  ],
+  poke: 'Click anywhere. It reacts.',
+  pokeTouch: 'Tap anywhere. It reacts.',
+  end: 'Okay. Back to work?',
+  top: 'Rewind to the top',
+  hello: 'Say hello',
+} as const

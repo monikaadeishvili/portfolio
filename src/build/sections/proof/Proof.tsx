@@ -28,7 +28,7 @@ export function Proof({ lay, live, onNav }: SectionProps) {
     const cache = ['', '', '']
     return registerFx({
       id: 'proof-stats',
-      section: 3,
+      section: 2,
       update: (e) => {
         if (!e.near) return
         tiles.forEach(({ s, wheels }, k) => {
@@ -56,7 +56,7 @@ export function Proof({ lay, live, onNav }: SectionProps) {
   }, [live])
 
   return (
-    <Artboard idx={3} live={live} lay={lay}>
+    <Artboard idx={2} live={live} lay={lay}>
       <div ref={rootRef} className="p-root">
         <Region index={0} label="Numbers" className="p-r0">
           <Piece id="p-nav" name="Dashboard bar" kind="bubble" tone={T.sky} order={0} className="p-navslot">
@@ -68,7 +68,7 @@ export function Proof({ lay, live, onNav }: SectionProps) {
                 <a role="listitem" href="#ch-proof" className="is-on" onClick={(e) => (e.preventDefault(), onNav('work'))}>
                   Overview
                 </a>
-                <a role="listitem" href="#ch-origin" onClick={(e) => (e.preventDefault(), onNav('about'))}>
+                <a role="listitem" href="#ch-craft" onClick={(e) => (e.preventDefault(), onNav('about'))}>
                   History
                 </a>
                 <a role="listitem" href="#ch-contact" onClick={(e) => (e.preventDefault(), onNav('contact'))}>
@@ -81,8 +81,8 @@ export function Proof({ lay, live, onNav }: SectionProps) {
             </nav>
           </Piece>
           <div className="p-top">
-            <Reveal id="p-title" as="h2" hid="h-proof" segs={CHAPTERS[3].headline} className="rv-title p-title" />
-            <Reveal id="p-para" mode="type" segs={[CHAPTERS[3].body]} className="rv-para p-para" order={1} />
+            <Reveal id="p-title" as="h2" hid="h-proof" segs={CHAPTERS[2].headline} className="rv-title p-title" />
+            <Reveal id="p-para" mode="type" segs={[CHAPTERS[2].body]} className="rv-para p-para" order={1} />
           </div>
           <ul className="p-stats" aria-label="In numbers">
             {STATS.map((s, i) => (

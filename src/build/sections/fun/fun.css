@@ -1,0 +1,246 @@
+/* ======================================================================
+   06 After hours — the trip below the story (prefix fun-)
+   ====================================================================== */
+.fun {
+  --f-ink: #120e0b;
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+.fun-cv {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+}
+.fun.is-on .fun-cv {
+  visibility: visible;
+}
+.fun.is-in .fun-cv {
+  pointer-events: auto;
+}
+/* the page underneath rests once the portal covers it */
+.bstage.is-tripping .bviewport,
+.bstage.is-tripping .bworld-bg,
+.bstage.is-tripping .bub-canvas,
+.bstage.is-tripping .bub-eyes,
+.bstage.is-tripping .cur-bot {
+  visibility: hidden;
+}
+.fun-spacer {
+  height: var(--len, 400vh);
+  pointer-events: none;
+}
+
+/* ---- the nudge at the end of the story */
+.fun-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 92px;
+  margin: 0;
+  padding: 9px 15px 9px 16px;
+  border-radius: 999px;
+  background: var(--f-ink);
+  color: #fff;
+  font: 600 13px/1 'Inter Variable', system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  translate: -50% 0;
+  opacity: 0;
+  transform: translateY(10px) scale(0.96);
+  transition:
+    opacity 260ms ease,
+    transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.fun-hint.is-v {
+  opacity: 1;
+  transform: none;
+  transition-delay: 600ms;
+}
+.fun-hint-ar {
+  display: inline-block;
+  margin-left: 4px;
+  color: #c6f135;
+  animation: fun-bob 1.1s ease-in-out infinite;
+}
+@keyframes fun-bob {
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+/* ---- the captions: every letter its own colour, wobbling */
+.fun-cap {
+  --v: 0;
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  margin: 0;
+  text-align: center;
+  font-family: 'Big Shoulders Display Variable', 'Anton', sans-serif;
+  font-weight: 900;
+  font-size: clamp(40px, 7.2vw, 122px);
+  line-height: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+  visibility: hidden;
+}
+.fun-cap.is-top {
+  top: max(9vh, 64px);
+}
+.fun-cap.is-bottom {
+  bottom: 8vh;
+}
+.fun-cap.is-v {
+  visibility: visible;
+}
+.fun-w {
+  display: inline-block;
+  margin: 0 0.11em;
+  white-space: nowrap;
+}
+.fun-l {
+  display: inline-block;
+  opacity: min(1, calc(var(--v) * 2.5));
+  transform: translateY(calc((1 - var(--v)) * 0.9em)) rotate(calc((1 - var(--v)) * var(--r) * 1deg)) scale(calc(0.35 + 0.65 * var(--v)));
+}
+.fun-li {
+  display: inline-block;
+  color: var(--c);
+  -webkit-text-stroke: 0.05em var(--f-ink);
+  paint-order: stroke fill;
+  text-shadow: 0.045em 0.06em 0 var(--f-ink);
+  animation: fun-wob 1.5s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i) * -0.17s);
+  animation-play-state: paused;
+}
+.fun-cap.is-v .fun-li {
+  animation-play-state: running;
+}
+@keyframes fun-wob {
+  from {
+    transform: translateY(-0.045em) rotate(-4deg);
+  }
+  to {
+    transform: translateY(0.05em) rotate(5deg) scale(1.05, 0.95);
+  }
+}
+
+.fun-poke {
+  position: absolute;
+  left: 50%;
+  top: 22px;
+  margin: 0;
+  padding: 8px 14px;
+  border: 2px solid var(--f-ink);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 3px 4px 0 var(--f-ink);
+  color: var(--f-ink);
+  font: 700 13px/1 'Inter Variable', system-ui, sans-serif;
+  white-space: nowrap;
+  translate: -50% 0;
+  opacity: 0;
+  transform: translateY(-12px) rotate(-2deg);
+  transition:
+    opacity 240ms ease,
+    transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.fun-poke-t {
+  display: none;
+}
+@media (hover: none) {
+  .fun-poke-m {
+    display: none;
+  }
+  .fun-poke-t {
+    display: inline;
+  }
+}
+.fun-poke.is-v {
+  opacity: 1;
+  transform: rotate(-2deg);
+}
+
+/* ---- the end: momo is awake */
+.fun-end {
+  --v: 0;
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+}
+.fun-end.is-v {
+  visibility: visible;
+}
+.fun-end .fun-end-h {
+  --v: inherit;
+  top: max(8vh, 56px);
+  visibility: inherit;
+}
+.fun-end.is-v .fun-li {
+  animation-play-state: running;
+}
+.fun-ctas {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: max(8vh, 40px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  opacity: min(1, calc(var(--v) * 1.6));
+  transform: translateY(calc((1 - var(--v)) * 40px)) scale(calc(0.85 + 0.15 * var(--v)));
+}
+.fun-end.is-live .fun-ctas {
+  pointer-events: auto;
+}
+.fun-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 24px;
+  border: 3px solid var(--f-ink);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 4px 5px 0 var(--f-ink);
+  color: var(--f-ink);
+  font: 800 17px/1 'Inter Variable', system-ui, sans-serif;
+  text-decoration: none;
+  transition:
+    transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 160ms ease;
+}
+.fun-btn.is-lime {
+  background: #c6f135;
+}
+@media (hover: hover) and (pointer: fine) {
+  .fun-btn:hover {
+    transform: translate(-2px, -2px) rotate(-1.5deg);
+    box-shadow: 6px 8px 0 var(--f-ink);
+  }
+}
+.fun-btn:active {
+  transform: translate(3px, 4px);
+  box-shadow: 1px 1px 0 var(--f-ink);
+  transition-duration: 60ms;
+}
+.fun-btn:focus-visible {
+  outline: 3px solid #ff7ad1;
+  outline-offset: 3px;
+}
+
+@media (max-width: 767px) {
+  .fun-hint {
+    bottom: 84px;
+  }
+  .fun-cap {
+    font-size: clamp(36px, 11vw, 64px);
+  }
+  .fun-btn {
+    padding: 13px 18px;
+    font-size: 15px;
+  }
+}

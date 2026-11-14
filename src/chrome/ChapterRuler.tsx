@@ -4,7 +4,7 @@
  * there. The ticker loop calls updateRuler(p); no React re-render per frame.
  */
 import { useLayoutEffect, useRef } from 'react'
-import { ui } from '../scene/store'
+import { storyMax, ui } from '../scene/store'
 
 export interface RulerChapter {
   label: string
@@ -49,7 +49,7 @@ export function updateRuler(p: number) {
 }
 
 export function jumpTo(p: number, duration = 1.6) {
-  const max = document.documentElement.scrollHeight - window.innerHeight
+  const max = storyMax()
   ui.scrollTo?.(Math.max(0, Math.min(max, p * max)), duration)
 }
 

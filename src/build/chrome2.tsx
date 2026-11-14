@@ -1,12 +1,12 @@
 /** Page 2 chrome: Layers (current section's regions), Inspector (live travel / bubble mood), Dock */
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
-import { hover, tool, ui, type Breakpoint, type Tool } from '../scene/store'
+import { hover, storyMax, tool, ui, type Breakpoint, type Tool } from '../scene/store'
 import { Chevron, LayerIcon, ToolIcon } from '../chrome/Icons'
 import { ChapterRuler, type RulerChapter } from '../chrome/ChapterRuler'
 import { CHAPTERS } from '../content/story'
 import { pieces, regions, texts, type Piece, type TextBlock } from './runtime'
 import { bsinks, chapterCh, helloName, helloTaste, inspSel, inspState, moodCh, placedVer, regionCh, rulerSubs } from './bstore'
-import { holdOf, TRN } from './worlds'
+import { LAST, topOf, TRN } from './worlds'
 import { scene } from '../scene/store'
 
 function useChannels() {
@@ -160,8 +160,8 @@ export function LayersPanel2() {
         <div className="layer-row d1 l2-row l2-bubble" role="treeitem" aria-level={2}>
           <span className="chev-pad" />
           <span className="layer-ico i-organism">{LayerIcon.organism()}</span>
-          <span className="layer-name">{ch === 4 ? 'momo (mascot)' : 'Bubble'}</span>
-          <span className="layer-tag">{ch === 4 ? 'home' : `${all.filter((c) => c.kind === 'bubble' && c.pose.state === 'inside').length} inside`}</span>
+          <span className="layer-name">{ch === LAST ? 'momo (mascot)' : 'Bubble'}</span>
+          <span className="layer-tag">{ch === LAST ? 'home' : `${all.filter((c) => c.kind === 'bubble' && c.pose.state === 'inside').length} inside`}</span>
         </div>
       </div>
       <div className="panel-foot">
@@ -332,7 +332,7 @@ const TOOLS: { id: Tool; label: string; key: string }[] = [
   { id: 'picker', label: 'Color picker — click to copy', key: 'I' },
 ]
 
-const RULER: RulerChapter[] = CHAPTERS.map((c, i) => ({ label: c.ruler, at: i === 0 ? 0 : (TRN[i - 1][0] + TRN[i - 1][1]) / 2, jump: holdOf(i) }))
+const RULER: RulerChapter[] = CHAPTERS.map((c, i) => ({ label: c.ruler, at: i === 0 ? 0 : (TRN[i - 1][0] + TRN[i - 1][1]) / 2, jump: topOf(i) }))
 
 /** seconds the Play button takes for the whole story (scaled by what is left) */
 const PLAY_SECONDS = 75
@@ -353,7 +353,7 @@ function PlayButton() {
     let last = -1
     const paint = () => {
       raf = 0
-      const max = document.documentElement.scrollHeight - window.innerHeight
+      const max = storyMax()
       const p = Math.min(1, Math.max(0, window.scrollY / Math.max(1, max)))
       const pct = Math.round(p * 100)
       ringRef.current?.style.setProperty('stroke-dashoffset', (1 - p).toFixed(4))
@@ -402,7 +402,7 @@ function PlayButton() {
   }, [playing])
 
   const play = () => {
-    const max = document.documentElement.scrollHeight - window.innerHeight
+    const max = storyMax()
     if (playing) {
       ui.scrollTo?.(window.scrollY, 0)
       setPlaying(false)

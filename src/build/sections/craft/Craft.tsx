@@ -1,5 +1,5 @@
 /**
- * 03 HOW I THINK — "The Kit". One kit of 53 clay parts (./../../three/KitScene)
+ * 02 HOW I THINK — "The Kit". One kit of 53 clay parts (./../../three/KitScene)
  * re-forms into five sculptures while the section pans sideways through her
  * process: a lens (research), a user flow, a knolled design-system shelf, an
  * exploded phone screen (handoff) and the finished phone (launch). Nothing is
@@ -47,7 +47,7 @@ export function Craft({ lay, live }: SectionProps) {
   }, [live, lay])
 
   return (
-    <Artboard idx={2} live={live} lay={lay}>
+    <Artboard idx={1} live={live} lay={lay}>
       <div ref={rootRef} className="hk-root">
         {/* 0 · intro */}
         <Region index={0} label="Intro" className="hk-r0">
@@ -57,8 +57,8 @@ export function Craft({ lay, live }: SectionProps) {
               How I think
             </span>
           </Piece>
-          <Reveal id="c-title" as="h2" hid="h-craft" segs={CHAPTERS[2].headline} className="rv-title hk-title" />
-          <Reveal id="c-para" mode="type" segs={[CHAPTERS[2].body]} className="rv-para hk-para" order={1} />
+          <Reveal id="c-title" as="h2" hid="h-craft" segs={CHAPTERS[1].headline} className="rv-title hk-title" />
+          <Reveal id="c-para" mode="type" segs={[CHAPTERS[1].body]} className="rv-para hk-para" order={1} />
           <Piece id="c-count" name="Chip / Count" kind="bubble" tone={K.sand} order={1}>
             <span className="hk-count">
               <b>{KIT_COUNT}</b> parts. <b>5</b> shapes.
