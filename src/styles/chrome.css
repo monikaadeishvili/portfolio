@@ -674,7 +674,7 @@
 }
 
 /* ------------------------------------------------------------ responsive */
-@media (max-width: 1180px) {
+@media (max-width: 767px) {
   .crumb-dim,
   .crumb-sep {
     display: none;
