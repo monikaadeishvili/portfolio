@@ -430,9 +430,10 @@
 .h-l1,
 .h-l2 {
   display: block;
-  font-family: var(--h-display);
+  /* variable weight (100–900): the letters thin out under the cursor (./headWake.ts) */
+  font-family: 'Big Shoulders Display Variable', var(--h-display);
   font-size: var(--h-fs);
-  font-weight: 400;
+  font-weight: 900;
   line-height: 0.9;
   letter-spacing: 0.004em;
   text-transform: uppercase;
@@ -479,6 +480,12 @@
 }
 .rw-in {
   display: block;
+}
+/* one span per letter so each can take its own weight; a hairline stroke brings
+   the variable face's Black up to the old headline's heft (it fades as a letter thins) */
+.h-ch {
+  display: inline-block;
+  -webkit-text-stroke: var(--hs, 0.024em) currentColor;
 }
 /* live canvas: designed words wait for the wipe (the engine reveals them) */
 .bstage:not(.is-static) :is(.h-l1, .h-l2) .rw {

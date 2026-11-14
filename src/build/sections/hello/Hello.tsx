@@ -20,6 +20,7 @@ import { Artboard, type SectionProps } from '../Artboard'
 import { TasteSwitch } from './TasteSwitch'
 import { mountTaste, taste } from './taste'
 import { mountPortrait } from './portraitFx'
+import { mountHeadWake } from './headWake'
 import './hello.css'
 
 /** designed fills (Layers / Inspector read these as the pieces' fills) */
@@ -50,13 +51,19 @@ function useLayerText(ref: RefObject<HTMLElement | null>, id: string, label: str
   }, [ctx.live, ref, id, label])
 }
 
-/** masked words (each one masked so it can rise through its own line) */
+/** masked words (each one masked so it can rise through its own line), one span per letter for the hover wake */
 function Words({ words }: { words: string[] }) {
   return (
     <>
       {words.map((w, i) => (
         <span key={i} className="rw" aria-hidden="true">
-          <span className="rw-in">{w}</span>
+          <span className="rw-in">
+            {Array.from(w).map((c, j) => (
+              <span key={j} className="h-ch">
+                {c}
+              </span>
+            ))}
+          </span>
         </span>
       ))}
     </>
@@ -336,7 +343,9 @@ export function Hello({ lay, live, onNav, onJump }: SectionProps) {
     if (!live || !board) return
     const a = mountTaste(board)
     const b = mountPortrait(board)
+    const c = mountHeadWake(board)
     return () => {
+      c()
       b()
       a()
     }

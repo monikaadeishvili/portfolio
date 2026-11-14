@@ -309,8 +309,8 @@ export function Inspector2() {
           <div className={`type-row${hello.taste ? ' is-taste' : ''}`} key={hello.taste ? 'on' : 'off'}>
             {hello.taste ? (
               <>
-                <span className="type-face">Anton</span>
-                <span className="type-meta">Regular · 94 / 90% · Uppercase</span>
+                <span className="type-face">Big Shoulders</span>
+                <span className="type-meta">Black · 94 / 90% · Uppercase</span>
               </>
             ) : (
               <>
