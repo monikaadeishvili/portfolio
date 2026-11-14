@@ -102,6 +102,8 @@ export function mountClose(board: HTMLElement) {
   }
 
   const hit = (x: number, y: number, vx: number, vy: number, tap: boolean) => {
+    // only while Hello is on screen (no layout reads anywhere else on the page)
+    if (board.dataset.near !== '1') return
     if (!measured) measure()
     project()
     if (!rect) return

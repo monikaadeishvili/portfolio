@@ -78,14 +78,15 @@ export const PROCESS = [
   { back: 'Launch', verb: 'Launch.', sub: 'A product people use.', body: 'Tested with real users, then refined. From a blank Figma file to a product people use.', makes: ['Usability tests', 'Iteration'], tray: 'Live' },
 ] as const
 
-/** 03 How I think — the three rules (the close) */
+/** 02 How I think — the quote beside the intro, one sticker per word */
+export const QUOTE = { rows: [['People', 'ignore'], ['design', 'that'], ['ignores', 'people.']], by: 'Frank Chimero' } as const
+
+/** 02 How I think — the three rules (the close) */
 export const RULES = [
   { big: 'Research first, pixels second.', line: 'I ask who it is for before I open Figma.' },
   { big: 'Systems over screens.', line: 'One decision, made once, used everywhere.' },
   { big: 'Calm beats clever.', line: 'If it needs explaining, it is not finished.' },
 ] as const
-
-export const QUOTE = { text: 'People ignore design that ignores people.', by: 'Frank Chimero' }
 
 export const STATS = [
   { n: 7, suf: '+', label: 'years designing', tone: 'yellow' },

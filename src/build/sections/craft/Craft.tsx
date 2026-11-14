@@ -9,15 +9,17 @@
  * track) · 2 the three rules, carried in by the site's creatures.
  */
 import { useLayoutEffect, useRef } from 'react'
-import { CHAPTERS, PROCESS, RULES } from '../../../content/story'
+import { CHAPTERS, PROCESS, QUOTE, RULES } from '../../../content/story'
 import { TONE_HEX as T } from '../../../ui/components'
 import { Piece, Region, Reveal } from '../../parts'
 import { Artboard, type SectionProps } from '../Artboard'
 import { KIT_COUNT } from '../../three/kitForms'
 import { mountKit } from './kitFx'
+import { mountQuote } from './quoteFx'
 import './craft.css'
 
 const K = { lime: '#C6F135', sand: '#EBE2D4', orange: '#E8590C', ink: '#1E1712' }
+const STK_TONE = [K.sand, K.sand, K.lime, K.orange, K.lime, K.sand]
 const TRAY_AT = [0.05, 0.275, 0.5, 0.725, 0.95]
 const TRAY_TONE = [K.sand, K.sand, K.lime, K.sand, K.orange]
 const RULE_TRAVEL = ['leap', 'slap', 'stamp'] as const
@@ -43,7 +45,12 @@ export function Craft({ lay, live }: SectionProps) {
   useLayoutEffect(() => {
     const root = rootRef.current
     if (!live || !root) return
-    return mountKit(root, lay === 'narrow')
+    const kit = mountKit(root, lay === 'narrow')
+    const quote = mountQuote(root)
+    return () => {
+      quote()
+      kit()
+    }
   }, [live, lay])
 
   return (
@@ -64,6 +71,43 @@ export function Craft({ lay, live }: SectionProps) {
               <b>{KIT_COUNT}</b> parts. <b>5</b> shapes.
             </span>
           </Piece>
+          {/* the quote, one sticker per word: the bubble spits them out in order
+              until the sentence stands (./quoteFx.ts: "ignores" ducks the cursor,
+              the last "people." watches it) */}
+          <figure className="hk-stk">
+            <blockquote className="sr-only">
+              {QUOTE.rows.flat().join(' ')} — {QUOTE.by}
+            </blockquote>
+            <div className="hk-stk-rows" aria-hidden="true">
+              {QUOTE.rows.map((row, r) => (
+                <div key={r} className="hk-stk-row">
+                  {row.map((w, c) => {
+                    const i = r * 2 + c
+                    return (
+                      <Piece key={i} id={`c-q${i}`} name={`Sticker / ${w.replace('.', '')}`} kind="bubble" tone={STK_TONE[i]} order={2 + i} className={i === 4 ? 'hk-st-dodge' : ''}>
+                        <span className={`hk-st hk-st-${i}`}>
+                          {w}
+                          {i === 5 && (
+                            <span className="hk-st-eyes">
+                              <i>
+                                <b />
+                              </i>
+                              <i>
+                                <b />
+                              </i>
+                            </span>
+                          )}
+                        </span>
+                      </Piece>
+                    )
+                  })}
+                </div>
+              ))}
+              <Piece id="c-qby" name="Label / Chimero" kind="bubble" tone={K.sand} order={8}>
+                <span className="hk-st-by">— {QUOTE.by}</span>
+              </Piece>
+            </div>
+          </figure>
         </Region>
 
         {/* 1 · the pan: one kit, five shapes */}

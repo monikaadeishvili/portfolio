@@ -41,8 +41,168 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 26px;
-  max-width: 700px;
+  min-height: 708px;
+  box-sizing: border-box;
   padding: 30px 0 56px 16px;
+}
+/* the quote, one sticker per word, piled in the empty right of the intro */
+.hk-stk {
+  position: absolute;
+  right: 0;
+  top: 418px;
+  margin: 0;
+}
+.hk-stk-rows {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+.hk-stk-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hk-stk-row:nth-child(2) {
+  margin-right: 54px;
+}
+.hk-stk-row:nth-child(3) {
+  margin-right: 10px;
+}
+.hk-st {
+  position: relative;
+  display: block;
+  padding: 10px 20px 9px;
+  border-radius: 14px;
+  box-shadow: 0 5px 0 #0e0a07;
+  font-family: 'Big Shoulders Display Variable', var(--f-display);
+  font-weight: 800;
+  font-size: 50px;
+  line-height: 0.95;
+  text-transform: uppercase;
+  white-space: nowrap;
+  rotate: var(--r, 0deg);
+  transition:
+    rotate 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    scale 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hk-st-0 {
+  --r: -3deg;
+  border-radius: 999px;
+  background: var(--k-sand);
+  color: var(--k-bg);
+}
+.hk-st-1 {
+  --r: 2deg;
+  background: var(--k-bg);
+  box-shadow:
+    inset 0 0 0 2.5px var(--k-sand),
+    0 5px 0 #0e0a07;
+  color: var(--k-sand);
+}
+.hk-st-2 {
+  --r: 2.5deg;
+  background: var(--k-lime);
+  color: var(--k-bg);
+}
+.hk-st-3 {
+  --r: -5deg;
+  padding: 8px 18px 7px;
+  border-radius: 999px;
+  background: var(--k-orange);
+  color: #fff5e8;
+  font-size: 36px;
+}
+/* "ignores": a dashed outline, like something that is not quite there */
+.hk-st-4 {
+  --r: -2deg;
+  padding: 3px 20px 9px;
+  background: var(--k-bg2);
+  box-shadow: 0 5px 0 #0e0a07;
+  outline: 2px dashed var(--k-lime);
+  outline-offset: -2px;
+  color: var(--k-lime);
+  font-family: var(--f-serif, 'Instrument Serif'), serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 54px;
+  line-height: 1.05;
+  text-transform: none;
+}
+.hk-st-5 {
+  --r: 3deg;
+  background: var(--k-sand);
+  color: var(--k-bg);
+}
+/* the sticker that ducks sits a hair above its neighbours (z-index means nothing in the 3-D world) */
+.slot.hk-st-dodge {
+  transform: translateZ(6px);
+}
+/* "people." has eyes on you */
+.hk-st-eyes {
+  position: absolute;
+  right: 22px;
+  top: -13px;
+  display: flex;
+  gap: 3px;
+}
+.hk-st-eyes i {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset 0 0 0 2.5px var(--k-bg);
+  animation: hk-blink 5.2s infinite;
+}
+.hk-st-eyes i:last-child {
+  animation-delay: 0.04s;
+}
+.hk-st-eyes b {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--k-bg);
+}
+@keyframes hk-blink {
+  0%,
+  94%,
+  100% {
+    scale: 1 1;
+  }
+  97% {
+    scale: 1 0.12;
+  }
+}
+.hk-st-by {
+  display: block;
+  margin: 2px 14px 0 0;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--k-mute);
+}
+@media (hover: hover) and (pointer: fine) {
+  .hk-st:hover {
+    rotate: calc(var(--r) * -1.8);
+    scale: 1.07;
+  }
+}
+.hk-st:active {
+  scale: 0.95;
+}
+.bf:not([data-near='1']) .hk-st-eyes i {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hk-st-eyes i {
+    animation: none;
+  }
+  .hk-st {
+    transition: none;
+  }
 }
 .hk-chip {
   display: inline-flex;
@@ -496,8 +656,38 @@
 
 /* -- phone */
 .bstage[data-lay='narrow'] .hk-r0 {
+  min-height: 0;
   padding: 18px 0 34px;
   gap: 18px;
+}
+.bstage[data-lay='narrow'] .hk-stk {
+  position: static;
+  margin-top: 4px;
+}
+.bstage[data-lay='narrow'] .hk-stk-rows {
+  align-items: flex-start;
+  gap: 9px;
+}
+.bstage[data-lay='narrow'] .hk-stk-row {
+  gap: 9px;
+  margin-right: 0;
+}
+.bstage[data-lay='narrow'] .hk-stk-row:nth-child(2) {
+  margin-left: 22px;
+}
+.bstage[data-lay='narrow'] .hk-st {
+  padding: 8px 15px 7px;
+  font-size: 36px;
+}
+.bstage[data-lay='narrow'] .hk-st-3 {
+  font-size: 27px;
+}
+.bstage[data-lay='narrow'] .hk-st-4 {
+  padding: 2px 15px 7px;
+  font-size: 40px;
+}
+.bstage[data-lay='narrow'] .hk-st-by {
+  margin: 2px 0 0 4px;
 }
 .bstage[data-lay='narrow'] .bf-craft .hk-title {
   font-size: 64px;
