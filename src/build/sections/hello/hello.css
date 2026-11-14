@@ -1512,7 +1512,11 @@
   height: 28px;
 }
 .bstage[data-lay='narrow'] .h-navlinks {
-  gap: 16px;
+  gap: 18px;
+}
+/* phone: the nav is ~300px wide, so first name only and no arrows */
+.bstage[data-lay='narrow'] :is(.h-brand-last, .h-navcta-ar) {
+  display: none;
 }
 .bstage[data-lay='narrow'] .h-try {
   font-size: 11px;
