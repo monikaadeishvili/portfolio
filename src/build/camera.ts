@@ -250,7 +250,7 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   // panels (16px margins), height permitting
   const vw0 = document.documentElement.clientWidth
   const vh0 = window.innerHeight
-  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - 62 - 72 - 24 }
+  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - 62 - (bp === 'mob' ? 72 : 121) - 24 } // top bar · dock (two rows on desktop/tablet) · margins
   const fit0 = (h: number) => Math.min(1.25, free.w / FW, free.h / h)
 
   pieces.forEach((c) => {

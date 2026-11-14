@@ -301,3 +301,41 @@
   gap: 2px;
   padding-top: 2px;
 }
+
+/* the Assembly dock: ruler on top, tools + Play below (one pill) */
+.dock.tb-unit {
+  height: auto;
+  min-width: 440px;
+  gap: 0;
+  padding: 4px 6px 6px;
+}
+.dock.tb-unit .tb-ruler {
+  align-items: center;
+  padding: 0 0 4px;
+}
+.dock.tb-unit .tb-ruler .ruler {
+  flex: 1;
+  min-width: 0;
+}
+.dock.tb-unit .tb-row {
+  padding-top: 6px;
+}
+/* phone: one row — the ruler and a compact Play */
+.dock.tb-unit.is-compact {
+  min-width: 0;
+  padding: 6px;
+}
+.dock.tb-unit.is-compact .tb-ruler {
+  gap: 6px;
+  padding: 0;
+  border-bottom: 0;
+}
+.dock.is-compact .play {
+  flex: none;
+  height: 38px;
+  padding: 0 10px 0 4px;
+  gap: 4px;
+}
+.dock.is-compact .play-word {
+  display: none;
+}

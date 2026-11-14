@@ -164,8 +164,10 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
       }
       build()
     }
-    ui.scrollTo = (y, duration) => {
-      if (lenis) lenis.scrollTo(y, duration > 0 ? { duration, easing: (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2) } : { immediate: true })
+    ui.scrollTo = (y, duration, steady) => {
+      // steady: constant speed with a short ease in and out (the dock's Play)
+      const ease = steady ? (k: number) => (k < 0.04 ? (k * k) / 0.08 : k > 0.96 ? 1 - ((1 - k) * (1 - k)) / 0.08 : k) : (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2)
+      if (lenis) lenis.scrollTo(y, duration > 0 ? { duration, easing: ease } : { immediate: true })
       else window.scrollTo({ top: y, behavior: duration > 0 ? 'smooth' : 'auto' })
     }
 
