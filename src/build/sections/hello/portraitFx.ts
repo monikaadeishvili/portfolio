@@ -16,9 +16,6 @@ import { live } from '../../loop'
 import { range, registerFx, type FxEnv } from '../../runtime'
 import type { Portrait3DFrame } from './portrait3d'
 
-/** canvas overscan around the portrait box (keep in sync with portrait3d.ts and .h-port-gl) */
-const OX = 0.55
-const OY = 0.16
 import { taste, tasteFx } from './taste'
 
 const SRC = '/monika-new.webp'
@@ -38,6 +35,7 @@ interface Renderer {
   size(w: number, h: number): void
   render(f: Portrait3DFrame): void
   hit?(u: number, v: number): boolean
+  setFrame?(cx: number, cy: number, fh: number): void
   resetTrail(): void
   sync(): void
   dispose(): void
@@ -71,6 +69,7 @@ export function mountPortrait(board: HTMLElement) {
       gl = r
       if (!r.ok) fig.dataset.gl = '0'
       if (sized[0]) r.size(sized[0], sized[1])
+      r.setFrame(frame[0], frame[1], frame[2])
       dirty = true
     },
     () => {
@@ -107,6 +106,10 @@ export function mountPortrait(board: HTMLElement) {
   /* ---- geometry (board px) */
   const box: [number, number, number, number] = [0, 0, 1, 1]
   const cbox: [number, number, number, number] = [0, 0, 1, 1]
+  const frame: [number, number, number] = [0.5, 0.5, 1]
+  /** her box uv → canvas uv */
+  const cu = (u: number) => (box[0] + u * box[2] - cbox[0]) / cbox[2]
+  const cv = (v: number) => (box[1] + v * box[3] - cbox[1]) / cbox[3]
   const ph: [number, number, number, number] = [0, 0.38, 1, 1]
   let reachA = 0
   let reachB = 0
@@ -119,10 +122,21 @@ export function mountPortrait(board: HTMLElement) {
     box[1] = o.y
     box[2] = Math.max(1, o.w)
     box[3] = Math.max(1, o.h)
-    cbox[0] = box[0] - OX * box[2]
-    cbox[1] = box[1] - OY * box[3]
-    cbox[2] = box[2] * (1 + 2 * OX)
-    cbox[3] = box[3] * (1 + OY)
+    // the canvas covers the hero's full width and height above her feet: the
+    // particles roam the whole stage, she stays where the layout puts her
+    const bw = g.boards[0].w
+    cbox[0] = 0
+    cbox[1] = 0
+    cbox[2] = Math.max(box[2], bw)
+    cbox[3] = box[1] + box[3]
+    host.style.left = `${cbox[0] - box[0]}px`
+    host.style.top = `${cbox[1] - box[1]}px`
+    host.style.width = `${cbox[2]}px`
+    host.style.height = `${cbox[3]}px`
+    frame[0] = cu(0.5)
+    frame[1] = cv(0.5)
+    frame[2] = box[3] / cbox[3]
+    gl.setFrame?.(frame[0], frame[1], frame[2])
     if (twin) {
       const t = offsetIn(twin, board)
       ph[0] = (t.x - cbox[0]) / cbox[2]
@@ -192,8 +206,6 @@ export function mountPortrait(board: HTMLElement) {
     return scr.x1 > 0 && scr.y1 > 0 && scr.x0 < window.innerWidth && scr.y0 < window.innerHeight
   }
 
-  const cu = (u: number) => (u + OX) / (1 + 2 * OX)
-  const cv = (v: number) => (v + OY) / (1 + OY)
   const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2)
 
   const update = (e: FxEnv) => {
@@ -385,6 +397,7 @@ export function mountPortrait(board: HTMLElement) {
     document.removeEventListener('pointerout', onOut)
     gl.dispose()
     canvas.remove()
+    host.style.left = host.style.top = host.style.width = host.style.height = ''
     delete fig.dataset.gl
     img.style.opacity = ''
     if (twin) {

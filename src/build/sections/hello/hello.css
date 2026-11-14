@@ -675,14 +675,11 @@
   margin: 0;
   touch-action: pan-y;
 }
-/* the canvas overscans the portrait box so particles drift freely around her
-   (keep in sync with OX / OY in portrait3d.ts and portraitFx.ts) */
+/* the canvas is placed by portraitFx.ts to cover the hero's full width
+   (the particles roam the whole stage); inset 0 is only the fallback */
 .h-port-gl {
   position: absolute;
-  left: -55%;
-  right: -55%;
-  top: -16%;
-  bottom: 0;
+  inset: 0;
   pointer-events: none;
 }
 .h-port-cv {

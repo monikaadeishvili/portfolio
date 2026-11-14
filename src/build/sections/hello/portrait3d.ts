@@ -72,15 +72,8 @@ export interface Portrait3DFrame {
 const DEPTH = 0.2
 /** how much of the canvas height she fills (margin for the tilt) */
 const FIT = 0.95
-/**
- * The canvas overscans the portrait box so particles can drift freely around
- * her: OX of the box width on each side, OY of its height above (none below —
- * she stands on the region's bottom edge). Exported for the controller.
- */
-export const OX = 0.55
-export const OY = 0.16
 /** faint free-floating grains around her */
-const AMBIENT = 1500
+const AMBIENT = 2600
 const FOV = 18
 const SEG_Y = 340
 
@@ -169,7 +162,7 @@ void main() {
   }
   // arrival: dust drifts in from a wide, slow swirl and settles into place
   float f = smoothstep(0.0, 1.0, clamp(uForm * 1.25 - r.x * 0.25, 0.0, 1.0));
-  vec3 away = normalize(vec3(r.y - 0.5, r.z - 0.5, r.w - 0.5) + 1e-3) * (0.35 + 0.45 * r.x);
+  vec3 away = normalize(vec3(r.y - 0.5, r.z - 0.5, r.w - 0.5) + 1e-3) * (0.3 + 0.5 * r.x);
   away.xy = mat2(cos(r.w * 3.0), -sin(r.w * 3.0), sin(r.w * 3.0), cos(r.w * 3.0)) * away.xy;
   p = mix(p + away * (1.0 - amb), p, f);
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
@@ -205,9 +198,11 @@ void main() {
   vCol = mix(aCol.rgb, vec3(1.0, 0.93, 0.82), glint * 0.85);
   vSoft = 1.0 - smoothstep(0.25, 0.75, depthK);
   vA = mix(0.0, 1.0, smoothstep(0.0, 0.35, f)) * (1.0 - band * 0.35) * mix(0.5, 1.0, depthK) * (1.0 - part * 0.25);
-  // a soft oval falloff toward the canvas edge (never a rectangle)
-  vec2 ov = (px / uRes - vec2(0.5, 0.55)) * vec2(2.0, 2.1);
-  float oval = 1.0 - smoothstep(0.62, 1.0, length(ov));
+  // a soft oval falloff toward the canvas edge (never a rectangle); her own grains
+  // only feel it while they are still scattered (arrival), never once gathered
+  vec2 ov = (px / uRes - 0.5) * 2.0;
+  float oval = 1.0 - smoothstep(0.55, 1.0, length(ov));
+  if (mote < 0.5 && amb < 0.5) vA *= mix(oval, 1.0, f);
   if (mote > 0.5) {
     vA *= sin(3.14159 * life) * 0.8 * oval;
     gl_PointSize *= mix(0.8, 1.35, r.z);
@@ -428,6 +423,8 @@ export class Portrait3D {
   private lost = false
   /** how many grains were placed (dev readout) */
   grains = 0
+  /** the figure's box inside the canvas: centre (canvas uv, top-left) and height fraction */
+  private fr = { cx: 0.5, cy: 0.5, fh: 1 }
   private hitM: Uint8Array | null = null
   private hitW = 0
   private hitH = 0
@@ -499,8 +496,6 @@ export class Portrait3D {
     this.compScene.add(quad)
     this.scenePts.add(this.gPts)
     this.scenePhoto.add(this.gPhoto)
-    this.gPts.position.y = -OY / 2
-    this.gPhoto.position.y = -OY / 2
 
     try {
       this.renderer = new WebGLRenderer({ canvas, alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'high-performance' })
@@ -700,13 +695,9 @@ export class Portrait3D {
       rn.push(rnd(), rnd(), rnd(), rnd())
       kind.push(1)
     }
-    // ambient: spread over the whole canvas (group space: the figure's centre is the origin)
-    const W = this.aspect * (1 + 2 * OX)
-    const H = 1 + OY
-    const ext: [number, number, number, number] = [-W / 2, -H / 2 + OY / 2, W, H]
-    this.ptsMat.uniforms.uExt.value = ext
+    // ambient: seeded wide; the shader wraps them into whatever the canvas covers (uExt)
     for (let m = 0; m < AMBIENT; m++) {
-      pos.push(ext[0] + rnd() * ext[2], ext[1] + rnd() * ext[3], (rnd() - 0.4) * 0.3)
+      pos.push(rnd() * 12 - 6, rnd() * 12 - 6, (rnd() - 0.4) * 0.3)
       const t = 0.35 + rnd() * 0.65
       const c = t < 0.5 ? NAVY.map((n, j) => n + (BLUE[j] - n) * (t / 0.5)) : BLUE.map((n, j) => n + (PERI[j] - n) * ((t - 0.5) / 0.5))
       col.push(c[0], c[1], c[2], t)
@@ -723,6 +714,33 @@ export class Portrait3D {
     const pts = new Points(g, this.ptsMat)
     pts.frustumCulled = false
     this.gPts.add(pts)
+  }
+
+  /**
+   * Where her box sits inside the canvas (the canvas may cover far more than
+   * her: the particles roam the whole hero). cx, cy: box centre in canvas uv
+   * (top-left origin); fh: box height / canvas height.
+   */
+  setFrame(cx: number, cy: number, fh: number) {
+    this.fr.cx = cx
+    this.fr.cy = cy
+    this.fr.fh = Math.max(0.05, fh)
+    this.applyFrame()
+  }
+
+  private applyFrame() {
+    const H = 1 / this.fr.fh
+    const W = H * (this.w / this.h)
+    const gx = (this.fr.cx - 0.5) * W
+    const gy = (0.5 - this.fr.cy) * H
+    this.gPts.position.set(gx, gy, 0)
+    this.gPhoto.position.set(gx, gy, 0)
+    this.ptsMat.uniforms.uExt.value = [-W / 2 - gx, -H / 2 - gy, W, H]
+    this.cam3.aspect = this.w / this.h
+    this.cam3.position.set(0, 0, H / 2 / Math.tan((FOV * Math.PI) / 360))
+    this.cam3.lookAt(0, 0, 0)
+    this.cam3.updateProjectionMatrix()
+    this.lastPhoto = ''
   }
 
   /** is the canvas uv (top-left origin) over her (with a small margin)? */
@@ -752,11 +770,7 @@ export class Portrait3D {
       this.rtArt.setSize(w, h)
       this.rtPhoto!.setSize(w, h)
     }
-    this.cam3.aspect = w / h
-    this.cam3.position.set(0, 0, (0.5 * (1 + OY)) / Math.tan((FOV * Math.PI) / 360))
-    this.cam3.lookAt(0, 0, 0)
-    this.cam3.updateProjectionMatrix()
-    this.lastPhoto = ''
+    this.applyFrame()
   }
 
   /** kept for the old interface (the hover reveal needs no buffer) */
