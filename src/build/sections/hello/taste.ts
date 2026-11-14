@@ -154,7 +154,7 @@ export function mountTaste(board: HTMLElement) {
   // hairline guides (draw in behind the front)
   const guides = Array.from(board.querySelectorAll<HTMLElement>('.h-grid .hg')).map((el) => ({ el, v: false, a: 0, b: 0, c: 0, n: 0, d: 0, last: '' }))
   // heroes with no bland twin: they leave with the front when taste is off
-  const extras = ['h-pill']
+  const extras = ([] as string[])
     .map((id) => board.querySelector<HTMLElement>(`[data-cid="${id}"]`))
     .filter((el): el is HTMLElement => !!el)
     .map((slot) => ({ slot, swap: slot.querySelector<HTMLElement>('.h-swap'), d: 0, last: '' }))
@@ -169,6 +169,7 @@ export function mountTaste(board: HTMLElement) {
     { key: 'l2', kind: 'head', target: '.h-l2' },
     { key: 'lead', kind: 'pop', target: '[data-cid="h-cap"]', piece: 'h-cap' },
     { key: 'cap', kind: 'pop', target: '[data-cid="h-note"]', piece: 'h-note' },
+    { key: 'btn', kind: 'tumble', target: '[data-cid="h-pill"]', piece: 'h-pill' },
   ]
   // a twin whose designed counterpart is not on this layout (the phone drops two
   // captions) simply dissolves where the front passes it

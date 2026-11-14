@@ -13,7 +13,7 @@
  */
 import { useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { Arrow } from '../../../ui/components'
-import { EMAIL, HELLO } from '../../../content/story'
+import { EMAIL, HELLO, LINKS } from '../../../content/story'
 import { Piece, Region, Reveal, useSection } from '../../parts'
 import { outCubic, range, registerFx, registerText, smooth } from '../../runtime'
 import { Artboard, type SectionProps } from '../Artboard'
@@ -35,6 +35,8 @@ const HC = {
 }
 
 const TITLE = `${HELLO.line1} ${HELLO.line2}`
+const LINKEDIN = LINKS.find((l) => l.label === 'LinkedIn')!.href
+const RESUME = '/Monika-Adeishvili-Resume-2026.pdf'
 const LIST = ['Research', 'Flows', 'Design systems', 'Handoff', 'Launch']
 const STATEMENT = 'From a blank Figma file to a product people use.'
 /** the headline, set as architecture (explicit rows: no orphans at any size) */
@@ -123,9 +125,16 @@ function Nav({ onNav }: { onNav: SectionProps['onNav'] }) {
       <a className="h-brand" href="#ch-hello" onClick={(e) => (e.preventDefault(), onNav('about'))}>
         Monika Adeishvili
       </a>
-      <a className="h-navcta" href={`mailto:${EMAIL}`}>
-        <span aria-hidden="true">[</span> {HELLO.ghost} <span className="h-navcta-ar" aria-hidden="true">→</span> <span aria-hidden="true">]</span>
-      </a>
+      <span className="h-navlinks">
+        <a className="h-navcta" href={LINKEDIN} target="_blank" rel="noopener noreferrer">
+          LinkedIn <span className="h-navcta-ar" aria-hidden="true">↗</span>
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+        <a className="h-navcta" href={RESUME} target="_blank" rel="noopener">
+          Resume <span className="h-navcta-ar" aria-hidden="true">↗</span>
+          <span className="sr-only"> (PDF, opens in a new tab)</span>
+        </a>
+      </span>
     </nav>
   )
 }
@@ -170,7 +179,7 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
             <span className="hd-cap" data-tw="cap">
               {HELLO.intro}
             </span>
-            <span className="hd-btn" data-tw="ghost">
+            <span className="hd-btn" data-tw="btn">
               {HELLO.ghost}
             </span>
           </div>
@@ -295,6 +304,12 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
                 Contact
               </a>
             </span>
+            <a className="h-cta" href={`mailto:${EMAIL}`}>
+              {HELLO.ghost}
+              <span className="h-cta-ar" aria-hidden="true">
+                <Arrow dir="right" />
+              </span>
+            </a>
           </nav>
         </div>
       </Piece>

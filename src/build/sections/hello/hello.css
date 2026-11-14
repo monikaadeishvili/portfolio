@@ -325,6 +325,10 @@
   transform-origin: 100% 50%;
   transition: transform 220ms var(--h-ease);
 }
+.h-navlinks {
+  display: flex;
+  gap: 32px;
+}
 .h-navcta {
   display: inline-flex;
   gap: 0.4em;
@@ -343,7 +347,7 @@
     color: var(--h-blue);
   }
   .h-navcta:hover .h-navcta-ar {
-    transform: translateX(3px);
+    transform: translate(2px, -2px);
   }
 }
 .h-navbar a:focus-visible,
@@ -825,8 +829,9 @@
 .h-pill {
   display: flex;
   align-items: center;
-  height: 52px;
-  padding: 0 28px;
+  gap: 26px;
+  height: 58px;
+  padding: 0 7px 0 26px;
   border-radius: 999px;
   background: #fff;
   box-shadow:
@@ -842,9 +847,53 @@
   color: var(--h-ink);
   text-decoration: none;
 }
+.h-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 44px;
+  padding: 0 6px 0 20px;
+  border-radius: 999px;
+  /* vivid orange pill, espresso label (≥ 4.5:1) */
+  background: var(--h-hot);
+  color: var(--h-ink);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform 160ms var(--h-ease),
+    background-color 200ms ease;
+}
+.h-cta:active {
+  transform: scale(0.97);
+}
+.h-cta:focus-visible,
 .h-hint-ar:focus-visible {
   outline: 2px solid var(--h-blue);
   outline-offset: 3px;
+}
+.h-cta-ar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--h-ink);
+  color: #fff;
+}
+.h-cta-ar .u-ico {
+  width: 15px;
+  height: 15px;
+  stroke-width: 2;
+  transition: transform 220ms var(--h-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .h-cta:hover {
+    background: #f26a1e;
+  }
+  .h-cta:hover .h-cta-ar .u-ico {
+    transform: translateX(2px);
+  }
 }
 
 /* ========================================== State A: the bland twins */
@@ -1446,11 +1495,24 @@
   bottom: 16px;
 }
 .bstage[data-lay='narrow'] .h-pill {
-  height: 44px;
-  padding: 0 20px;
+  gap: 14px;
+  height: 46px;
+  padding: 0 5px 0 16px;
 }
 .bstage[data-lay='narrow'] .h-pill-links {
-  gap: 18px;
+  gap: 14px;
+}
+.bstage[data-lay='narrow'] .h-cta {
+  gap: 8px;
+  height: 36px;
+  padding: 0 4px 0 13px;
+}
+.bstage[data-lay='narrow'] .h-cta-ar {
+  width: 28px;
+  height: 28px;
+}
+.bstage[data-lay='narrow'] .h-navlinks {
+  gap: 16px;
 }
 .bstage[data-lay='narrow'] .h-try {
   font-size: 11px;
