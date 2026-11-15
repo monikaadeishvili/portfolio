@@ -209,7 +209,19 @@ export const WORK: readonly WorkProject[] = [
       ['Platform', 'Mobile app'],
     ],
     media: [
-      m('phone', 640, 1374, ['roomistry-0', 'Roomistry: welcome'], ['roomistry-1', 'Roomistry: matched roommates'], ['roomistry-2', 'Roomistry: a roommate profile']),
+      // taps land where a finger would press: Get Started, an answer, View Profile, Message now
+      m(
+        'phone',
+        640,
+        1374,
+        ['roomistry-0', 'Roomistry: the splash screen'],
+        ['roomistry-1', 'Roomistry: welcome to Roomistry'],
+        ['roomistry-2', 'Roomistry: the questionnaire, cleanliness', [0.5, 0.899]],
+        ['roomistry-3', 'Roomistry: the questionnaire, passions', [0.25, 0.395]],
+        ['roomistry-4', 'Roomistry: four roommates that match'],
+        ['roomistry-5', 'Roomistry: a roommate profile', [0.59, 0.354]],
+        ['roomistry-6', 'Roomistry: messaging a roommate', [0.657, 0.306]],
+      ),
     ],
   },
   {

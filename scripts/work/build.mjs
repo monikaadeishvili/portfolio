@@ -41,9 +41,9 @@ const MEDIA = {
     ['phone', `${P}/Nota/Scores - With 5 icons 1.jpg`],
   ],
   roomistry: [
-    ['phone', `${P}/Roomistry/First Screen.svg`],
-    ['phone', `${P}/Roomistry/Main Page.svg`],
-    ['phone', `${P}/Roomistry/Individual Roommmate profile - General Information.jpg`],
+    // the phone, in the order of the flow: splash, welcome, questionnaire,
+    // passions, matches, a profile, then the chat
+    ...['1.svg', '2.svg', '3.svg', '4.svg', '5.svg', '6.jpg', '7.svg'].map((f) => ['phone', `${P}/Roomistry/${f}`]),
   ],
   'hello-audio': [
     ['web', `${P}/Hello Audio/List of Episodes - Episodessas 2.jpg`],
