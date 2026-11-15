@@ -604,6 +604,8 @@
 .pt-orbit {
   --R: 120px;
   position: absolute;
+  /* above the line that drops to the designer card: it starts under the tags */
+  z-index: 2;
   left: calc(50% - var(--R));
   top: calc(var(--fold-y) + 45px);
   width: calc(var(--R) * 2);
@@ -747,6 +749,7 @@
 /* one designer, all of the above */
 .pt-drop {
   position: absolute;
+  z-index: 1;
   left: 50%;
   top: calc(var(--fold-y) + 290px);
   width: 1px;
