@@ -235,7 +235,15 @@ export const WORK: readonly WorkProject[] = [
     ],
     media: [
       m('web', 1600, 921, ['studious-0', 'The Studious dashboard: daily questions and progress']),
-      m('phone', 640, 1386, ['studious-1', 'Studious on mobile: create an account']),
+      m(
+        'phone',
+        640,
+        1386,
+        ['studious-1', 'Studious on mobile: the splash screen'],
+        ['studious-2', 'Studious on mobile: welcome to Studious'],
+        // a tap on Next leads on to the account
+        ['studious-3', 'Studious on mobile: create an account', [0.5, 0.917]],
+      ),
     ],
   },
   {

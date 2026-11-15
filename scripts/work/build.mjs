@@ -3,7 +3,7 @@
  * designer's source files (Figma SVG exports, JPGs, website captures) into
  * public/work/<id>-<n>.webp.
  *
- *   node scripts/work/build.mjs            (from the website folder)
+ *   node scripts/work/build.mjs [id…]      (from the website folder; ids limit it)
  *
  * Sources: ../Projects/<Project>/… (the momo design folder). toeic.pal's frames
  * are screen recordings of toeicpal.com: ./video/record.cjs writes those videos
@@ -51,7 +51,10 @@ const MEDIA = {
   ],
   studious: [
     ['web', `${P}/Studious/Dashboard - with icons.svg`],
-    ['phone', `${P}/Studious/Create Account.svg`],
+    // the phone, in the order of the flow: splash, welcome, then create account
+    ['phone', `${P}/Studious/1.svg`],
+    ['phone', `${P}/Studious/Onboarding/Welcome Page.svg`],
+    ['phone', `${P}/Studious/3.svg`],
   ],
   growthoptix: [
     ['web', `${P}/GrowthOptix /Overview.svg`],
@@ -90,7 +93,9 @@ async function render(file, w, a, { trim = 0, bg = '#ffffff' } = {}) {
 }
 
 const report = []
+const only = process.argv.slice(2)
 for (const [id, list] of Object.entries(MEDIA)) {
+  if (only.length && !only.includes(id)) continue
   for (let k = 0; k < list.length; k++) {
     const [kind, file, opt] = list[k]
     const buf = await render(file, W[kind], A[kind], opt)
