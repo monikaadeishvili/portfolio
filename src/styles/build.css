@@ -861,13 +861,6 @@ html.is-deck-drag .cur-you .cur-hand {
   display: none;
 }
 
-/* phones: keep the canvas calm — one collaborator */
-.bstage[data-bp='mob'] .cur-pm,
-.bstage[data-bp='mob'] .cur-dev,
-.bstage[data-bp='mob'] .cur-bubble {
-  display: none;
-}
-
 /* ------------------------------------- reduced motion: static sections */
 .bstage.is-static {
   position: relative;
