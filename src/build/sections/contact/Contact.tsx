@@ -142,8 +142,9 @@ export function Contact({ lay, live }: SectionProps) {
             <Sticker ring="OPEN TO NEW WORK" tone="mint" glyph="arrow" size={120} />
           </Member>
           <Member k={1} look={1}>
-            <span className="cw-pass">
-              <b>TBS</b> → <b>ALC</b>
+            <span className="cw-hi">
+              <b>Hi!</b>
+              <span lang="ka">გამარჯობა</span>
             </span>
           </Member>
           {!narrow && (
@@ -159,7 +160,9 @@ export function Contact({ lay, live }: SectionProps) {
             </Member>
           )}
           <Member k={4} look={-1}>
-            <span className="cw-stamp">DAZN</span>
+            <span className="cw-ai">
+              AI<i>PRO</i>
+            </span>
           </Member>
           {!narrow && (
             <Member k={5} look={-1}>

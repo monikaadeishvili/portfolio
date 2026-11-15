@@ -366,7 +366,6 @@ export const segText = (segs: Seg[]) => segs.map((s) => (typeof s === 'string' ?
 
 /** 06 After hours: the trip below the contact section */
 export const AFTER = {
-  hint: 'psst… it keeps going',
   caps: [
     { text: 'Wait. You scrolled past the end?', at: [0.004, 0.105], pos: 'top' },
     { text: 'Nobody scrolls this far. Here’s a treat.', at: [0.11, 0.25], pos: 'bottom' },

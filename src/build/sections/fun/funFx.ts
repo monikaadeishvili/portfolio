@@ -22,7 +22,6 @@ export function mountFun(root: HTMLElement, narrow: boolean) {
   const stage = root.closest<HTMLElement>('.bstage')
   const spacer = document.querySelector<HTMLElement>('.fun-spacer')
   if (!canvas || !stage || !spacer) return () => {}
-  const hint = root.querySelector<HTMLElement>('.fun-hint')
   const poke = root.querySelector<HTMLElement>('.fun-poke')
   const end = root.querySelector<HTMLElement>('.fun-end')
   const caps = Array.from(root.querySelectorAll<HTMLElement>('.fun-cap[data-a]')).map((el) => ({ el, a: Number(el.dataset.a), b: Number(el.dataset.b), key: '' }))
@@ -49,7 +48,6 @@ export function mountFun(root: HTMLElement, narrow: boolean) {
   let inside = false
   let hideStage = false
   let endKey = ''
-  let hintOn = false
   let pokeOn = false
   const hole = { x: 0, y: 0, r: 40 }
   let holeFresh = false
@@ -134,13 +132,6 @@ export function mountFun(root: HTMLElement, narrow: boolean) {
     if ((p > 0.72 || fT > 0) && !loading) load()
     f += (fT - f) * (1 - Math.exp(-dt * 9))
     if (Math.abs(fT - f) < 1e-5) f = fT
-
-    // the nudge at the end of the story
-    const h = p > 0.985 && fT < 0.002
-    if (h !== hintOn) {
-      hintOn = h
-      hint?.classList.toggle('is-v', h)
-    }
 
     // the Figma panels wobble and slide off
     const e = smooth(0.0, 0.055, f)

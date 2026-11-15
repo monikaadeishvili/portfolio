@@ -50,9 +50,6 @@ export function Fun({ narrow }: { narrow: boolean }) {
   return (
     <div ref={ref} className="fun" id="after-hours">
       <canvas className="fun-cv" aria-hidden="true" />
-      <p className="fun-hint" aria-hidden="true">
-        {AFTER.hint} <span className="fun-hint-ar">↓</span>
-      </p>
       {AFTER.caps.map((c, k) => (
         <p key={k} className={`fun-cap is-${c.pos}`} data-a={c.at[0]} data-b={c.at[1]}>
           <span className="sr-only">{c.text}</span>
