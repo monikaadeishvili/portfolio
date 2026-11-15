@@ -352,17 +352,12 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
       {/* the floating pill */}
       <Piece id="h-pill" name="Nav / Pill" kind="hero" tone={HC.blue} travel="leap" order={2} at={0.9} dur={0.22} park="40,-236" parkN="176,-96" className="h-pillslot" eyes={{ x: 82, y: -8, s: 16 }}>
         <div className="h-swap">
-          <nav className="h-pill" aria-label="Sections">
-            <span className="h-pill-links">
-              <a href="#ch-proof" onClick={(e) => (e.preventDefault(), onNav('work'))}>
-                Work
-              </a>
-              <a href="#ch-craft" onClick={(e) => (e.preventDefault(), onNav('about'))}>
-                About
-              </a>
-              <a href="#ch-contact" onClick={(e) => (e.preventDefault(), onNav('contact'))}>
-                Contact
-              </a>
+          {/* the pill's labels are decoration: only Say hello is a link */}
+          <div className="h-pill">
+            <span className="h-pill-links" aria-hidden="true">
+              <span>Work</span>
+              <span>About</span>
+              <span>Contact</span>
             </span>
             <a className="h-cta" href={`mailto:${EMAIL}`}>
               {HELLO.ghost}
@@ -370,7 +365,7 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
                 <Arrow dir="right" />
               </span>
             </a>
-          </nav>
+          </div>
         </div>
       </Piece>
     </Region>

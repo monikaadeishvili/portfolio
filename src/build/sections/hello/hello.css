@@ -309,22 +309,9 @@
 .h-brand {
   font-weight: 600;
 }
-.h-navcta,
-.h-pill-links a {
+.h-navcta {
   position: relative;
   transition: color 160ms ease;
-}
-.h-pill-links a::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -3px;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: 100% 50%;
-  transition: transform 220ms var(--h-ease);
 }
 .h-navlinks {
   display: flex;
@@ -340,10 +327,6 @@
   transition: transform 220ms var(--h-ease);
 }
 @media (hover: hover) and (pointer: fine) {
-  .h-pill-links a:hover::after {
-    transform: scaleX(1);
-    transform-origin: 0 50%;
-  }
   .h-navcta:hover {
     color: var(--h-blue);
   }
@@ -855,6 +838,8 @@
 .h-pill-links {
   display: flex;
   gap: 22px;
+  color: var(--h-ink);
+  cursor: default;
 }
 .h-pill a {
   color: var(--h-ink);
