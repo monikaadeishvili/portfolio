@@ -7,8 +7,8 @@
  *   · a project's text column rises in when it arrives and trails the frames by
  *     a touch of parallax;
  *   · the screens lean with the strip's speed and straighten at rest;
- *   · phones change page like an app (a push forward, a pop back to the start),
- *     web and TV frames like a route change; recordings play only in view;
+ *   · phones change page like a tap on an app's tab bar, web and TV frames like
+ *     a route change; recordings play only in view;
  *   · the strip washes faintly in the colour of the project in view, and the
  *     timeline fills, pops its ticks and rolls the project's name.
  * Layout is read only in `measure`; `update` writes cached transforms.
@@ -17,7 +17,7 @@ import { WORK } from '../../../content/story'
 import { clamp01, registerFx } from '../../runtime'
 
 const pad = (n: number) => String(n).padStart(2, '0')
-const HOLD = 2.3 // seconds on each page
+const HOLD = 2.6 // seconds on each page
 
 export function mountWork(root: HTMLElement, region: number) {
   const q1 = <E extends Element = HTMLElement>(s: string) => root.querySelector<E>(s)
@@ -55,6 +55,9 @@ export function mountWork(root: HTMLElement, region: number) {
     // decks start out of step, so neighbours don't all change at once
     next: 1.4 + (k % 3) * 0.8,
   }))
+  // decode every page up front, so a page change never waits on (or stutters
+  // over) decoding the image that slides in
+  decks.forEach((d) => d.imgs.forEach((img) => img.decode?.().catch(() => {})))
   /** screen recordings: they play while their frame is in view */
   const vids = Array.from(track.querySelectorAll<HTMLVideoElement>('.pw-shot video')).map((v) => {
     v.muted = true // autoplay without a gesture needs the property, not just the attribute
@@ -210,8 +213,8 @@ export function mountWork(root: HTMLElement, region: number) {
         }
       })
 
-      // decks in view change page: phones push the next page in from the right
-      // (and pop back to the first), web and TV frames rise into the next view
+      // decks in view change page: phones like a tab-bar tap (the next page fades
+      // in, settling from a touch smaller), web and TV frames rise into the next view
       decks.forEach((d) => {
         const seen = Math.abs(d.mid + x - clipW / 2) < clipW / 2 - d.w * 0.15
         if (!seen) {
