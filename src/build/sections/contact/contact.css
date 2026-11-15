@@ -1,50 +1,265 @@
+/* ================================ 04 Say Hello — "The Daily Hello" (np-)
+   The back page of a one-issue newspaper: masthead, dateline, two columns of
+   small classifieds and her display ad in the middle, with a clip-out coupon
+   below. ./posterFx.ts prints it as you scroll and runs the interactions. */
+.bf-contact {
+  --np-paper: #f3ead3;
+  --np-panel: #faf4e4;
+  --np-ink: #1c1917;
+  --np-red: #e4352b;
+  --np-yellow: #ffd84d;
+  --np-old: 'Old Standard TT', 'Times New Roman', serif;
+  --np-play: 'Playfair Display', 'Times New Roman', serif;
+}
 .bf-contact .bf-bg {
-  background:
-    radial-gradient(90% 50% at 0% 0%, #ffc9ea 0%, transparent 60%),
-    radial-gradient(90% 60% at 100% 100%, #d9d2ff 0%, transparent 65%),
-    linear-gradient(160deg, #ffe4f4, #efeaff);
+  border-radius: 6px;
+  background-color: var(--np-paper);
+  background-image:
+    /* the fold, then newsprint grain, then the yellowing edges */
+    linear-gradient(90deg, transparent calc(50% - 1px), rgb(28 25 23 / 0.06) 50%, rgb(255 255 255 / 0.35) calc(50% + 1px), transparent calc(50% + 3px)),
+    radial-gradient(rgb(28 25 23 / 0.05) 0.8px, transparent 1.2px),
+    radial-gradient(rgb(28 25 23 / 0.035) 0.8px, transparent 1.2px);
+  background-size:
+    100% 100%,
+    7px 7px,
+    7px 7px;
+  background-position:
+    0 0,
+    0 0,
+    3.5px 3.5px;
+  box-shadow:
+    inset 0 0 90px rgb(176 128 40 / 0.16),
+    inset 0 0 18px rgb(176 128 40 / 0.14);
 }
 .bf-contact .bf-label {
   color: #fff;
 }
-/* ================================= 04 Say hello — "Try to ignore it" (k-)
-   One poster: the headline, one button, and an Ignore button that won't be
-   pressed (./posterFx.ts brings it to life). */
-.k-r0 {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  padding: 36px 0 20px;
-  text-align: center;
+.np {
+  color: var(--np-ink);
+  font-family: var(--np-old);
+}
+.np-r0 {
+  position: relative;
+  padding-top: 6px;
 }
 
-/* -- the headline: two sans lines, then "won't ignore." letter by letter */
-.k-title {
+/* -- masthead */
+.np-mast {
+  display: grid;
+  grid-template-columns: 170px 1fr 170px;
+  align-items: center;
+  gap: 16px;
+}
+.np-ear {
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 1px solid var(--np-ink);
+  font-size: 11px;
+  line-height: 1.25;
+  text-align: center;
+}
+.np-ear b {
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+}
+.np-ear i {
+  font-style: italic;
+}
+.np-title {
+  margin: 0;
+  font-family: 'UnifrakturCook', 'Old English Text MT', serif;
+  font-weight: 700;
+  font-size: 92px;
+  line-height: 1.02;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* -- dateline: a heavy rule above, a hairline below */
+.np-date {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 9px 2px 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.np-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--np-ink);
+  transform-origin: 0 50%;
+}
+.np-rule-t {
+  top: 0;
+  height: 4px;
+}
+.np-rule-b {
+  bottom: 0;
+  height: 1px;
+}
+
+/* -- the page: classifieds | her ad | classifieds */
+.np-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 232px 504px 232px;
+  gap: 20px;
+  align-items: start;
+  margin-top: 18px;
+}
+.np-vr {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--np-ink);
+  transform-origin: 50% 0;
+}
+.np-vr-l {
+  left: 242px;
+}
+.np-vr-r {
+  left: 765px;
+}
+.np-col h4 {
+  margin: 0 0 6px;
+  padding: 0 0 5px;
+  border-bottom: 3px double var(--np-ink);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-align: center;
+}
+.np-small {
+  position: relative;
+  padding: 7px 2px 8px;
+  border-bottom: 1px solid rgb(28 25 23 / 0.22);
+  cursor: pointer;
+  outline: none;
+}
+.np-small p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.35;
+  text-align: justify;
+  hyphens: auto;
+}
+.np-small b {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.np-small:focus-visible {
+  box-shadow: 0 0 0 2px var(--np-red);
+}
+
+/* the red pen: a hand-drawn loop, drawn by its dash */
+.np-circle {
+  position: absolute;
+  inset: -4px -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 8px);
+  overflow: visible;
+  pointer-events: none;
+}
+.np-circle path {
+  fill: none;
+  stroke: var(--np-red);
+  stroke-width: 2.4px;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  /* (non-scaling stroke: the dash is in screen px, longer than any loop) */
+  stroke-dasharray: var(--len, 650);
+  stroke-dashoffset: var(--len, 650);
+  transition: stroke-dashoffset 200ms ease;
+}
+.np-small.is-circled .np-circle path {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 600ms cubic-bezier(0.5, 0, 0.3, 1);
+}
+.np-small:nth-child(even) .np-circle {
+  rotate: 1.5deg;
+}
+.np-small:nth-child(odd) .np-circle {
+  rotate: -1deg;
+}
+
+/* -- her display ad */
+.np-ad {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0;
+  padding: 26px 28px 22px;
+  background: var(--np-panel);
+  text-align: center;
 }
-.k-title .k-sans {
+.np-ad-frame {
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--np-ink);
+  pointer-events: none;
+}
+.np-ad-frame::after {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--np-ink);
+}
+.np-ad.is-jolt {
+  animation: np-jolt 220ms cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+@keyframes np-jolt {
+  35% {
+    translate: 0 3px;
+  }
+}
+.np-badge {
+  display: flex;
+  justify-content: center;
+  min-height: 34px;
+}
+.np-over {
+  margin: 12px 0 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--np-red);
+}
+.np-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 8px 0 0;
+  font-family: var(--np-play);
+  font-weight: 900;
+  font-size: 46px;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+}
+.np-hl {
   display: block;
-  font-size: 104px;
-  line-height: 0.92;
   white-space: nowrap;
 }
-.k-em {
+.np-head .k-em {
   position: relative;
   display: inline-flex;
   align-items: baseline;
   margin-top: 4px;
-  padding: 0 12px;
-  font-family: var(--f-serif);
+  padding: 0 8px;
+  font-family: var(--np-play);
   font-style: italic;
-  font-size: 150px;
-  line-height: 0.95;
+  font-weight: 900;
+  font-size: 64px;
+  line-height: 1;
   letter-spacing: -0.02em;
-  color: #6a3cff;
-  cursor: default;
+  color: var(--np-ink);
 }
 .k-l {
   position: relative;
@@ -60,33 +275,17 @@
   display: inline-block;
   width: 0.24em;
 }
-/* the letters hop under the cursor (and a tap sends a wave through them) */
-.k-li.is-hop {
-  animation: k-hop 380ms cubic-bezier(0.3, 1.6, 0.5, 1);
-}
-.k-li.is-hop-s {
-  animation: k-hop-s 380ms cubic-bezier(0.3, 1.6, 0.5, 1);
-}
-@keyframes k-hop {
-  40% {
-    transform: translateY(-18px) rotate(var(--r));
-  }
-}
-@keyframes k-hop-s {
-  40% {
-    transform: translateY(-9px) rotate(calc(var(--r) * -0.6));
-  }
-}
-/* the marker stroke under "won't ignore." */
+/* the yellow overprint, a little off-register like cheap newsprint */
 .k-mark {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 16px;
-  height: 32px;
-  border-radius: 8px;
-  background: #ffd84d;
-  rotate: -1.5deg;
+  bottom: 6px;
+  height: 26px;
+  background: var(--np-yellow);
+  mix-blend-mode: multiply;
+  translate: 3px 3px;
+  rotate: -1deg;
   transform: scaleX(0);
   transform-origin: 0 50%;
   transition: transform 220ms cubic-bezier(0.4, 0, 1, 1);
@@ -95,20 +294,28 @@
   transform: none;
   transition: transform 420ms cubic-bezier(0.2, 0.9, 0.25, 1);
 }
-.k-para {
-  max-width: 520px;
-  font-size: 22px;
-  margin-inline: auto;
+.np-body {
+  max-width: 400px;
+  margin: 14px auto 0;
+  font-size: 16px;
+  line-height: 1.45;
+}
+.np-by {
+  margin: 14px 0 0;
+  padding: 6px 4px;
+  border-block: 1px solid var(--np-ink);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
 }
 
-/* -- the pen: one big Say hello button (it crawls in from the canvas) */
+/* the Say hello button (it crawls in from the canvas) */
 .k-pen {
   position: relative;
   display: flex;
   justify-content: center;
   width: 100%;
-  height: 150px;
-  margin-top: 12px;
+  height: 112px;
   padding-top: 18px;
   transform: translateZ(1px);
 }
@@ -116,16 +323,16 @@
   position: relative;
 }
 .k-cta-btn.u-btn-xl {
-  --bh: 88px;
-  --sh: 8px;
-  padding: 0 46px;
-  border-radius: 24px;
-  font-size: 34px;
-  gap: 16px;
+  --bh: 72px;
+  --sh: 6px;
+  padding: 0 36px;
+  border-radius: 20px;
+  font-size: 28px;
+  gap: 14px;
 }
 .k-cta-btn.u-btn-xl .u-ico {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 @media (hover: hover) and (pointer: fine) {
@@ -133,6 +340,303 @@
     transform: translateX(6px);
   }
 }
+.np-apply {
+  margin: 0;
+  font-style: italic;
+  font-size: 14px;
+}
+
+/* googly eyes on newsprint: they watch the reader */
+.np-eyes {
+  --lx: 0px;
+  --ly: 0px;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 4px;
+  width: 84px;
+  rotate: 6deg;
+  pointer-events: none;
+}
+.np-eyes::before {
+  content: '';
+  position: absolute;
+  inset: -10px -12px;
+  border-radius: 50%;
+  background: radial-gradient(rgb(28 25 23 / 0.28) 1px, transparent 1.6px) 0 0 / 5px 5px;
+  mask: radial-gradient(closest-side, #000 40%, transparent);
+}
+.np-eyes i {
+  position: relative;
+  flex: 1;
+  aspect-ratio: 0.9;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 2.5px var(--np-ink),
+    0 2px 0 rgb(28 25 23 / 0.35);
+  transform-origin: 50% 50%;
+}
+.np-eyes i::after {
+  content: '';
+  position: absolute;
+  left: calc(50% - 9px);
+  top: calc(50% - 9px);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--np-ink);
+  translate: var(--lx) var(--ly);
+  transition: translate 120ms ease-out;
+}
+.np-eyes.is-blink i {
+  animation: np-blink 260ms ease;
+}
+@keyframes np-blink {
+  45% {
+    transform: scaleY(0.1);
+  }
+}
+.np-eyes.is-glance i::after {
+  animation: np-glance 1500ms ease-in-out;
+}
+@keyframes np-glance {
+  20%,
+  75% {
+    translate: -7px 9px;
+  }
+}
+
+/* someone has already found this ad: the red pen and the stamp */
+.np-adcircle {
+  inset: -16px -18px;
+  width: calc(100% + 36px);
+  height: calc(100% + 32px);
+  rotate: -1.5deg;
+}
+.np-adcircle path {
+  stroke-width: 3.2px;
+  --len: 2300;
+}
+.np-ad.is-circle .np-adcircle path {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 700ms cubic-bezier(0.5, 0, 0.3, 1);
+}
+.np-ad.is-redraw .np-adcircle path {
+  animation: np-redraw 900ms cubic-bezier(0.5, 0, 0.3, 1);
+}
+@keyframes np-redraw {
+  0% {
+    stroke-dashoffset: var(--len, 650);
+  }
+}
+.np-note {
+  position: absolute;
+  top: -26px;
+  right: 120px;
+  font-family: 'Caveat', cursive;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--np-red);
+  rotate: -8deg;
+  opacity: 0;
+  translate: 0 4px;
+  transition:
+    opacity 200ms ease,
+    translate 200ms ease;
+  pointer-events: none;
+}
+.np-ad.is-circle .np-note {
+  opacity: 1;
+  translate: 0 0;
+  transition-delay: 550ms;
+}
+.np-stamp {
+  --sa: -12deg;
+  position: absolute;
+  z-index: 3;
+  /* above the pen (which sits 1px up off the paper) */
+  transform: translateZ(3px);
+  left: -26px;
+  bottom: 70px;
+  padding: 0;
+  border: 0;
+  background: none;
+  rotate: var(--sa);
+  opacity: 0;
+  scale: 2.2;
+  pointer-events: none;
+  cursor: pointer;
+  transition:
+    opacity 120ms ease,
+    scale 160ms cubic-bezier(0.5, 0, 0.75, 0);
+}
+.np-stamp span {
+  display: block;
+  padding: 5px 12px 4px;
+  border: 3px solid var(--np-red);
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 2px var(--np-panel), inset 0 0 0 3px var(--np-red);
+  font-family: var(--np-old);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  color: var(--np-red);
+  white-space: nowrap;
+  /* a worn rubber stamp: ink missing here and there */
+  mask: radial-gradient(rgb(0 0 0 / 0.55) 0.8px, #000 1.6px) 0 0 / 6px 5px;
+}
+.np-ad.is-stamp .np-stamp {
+  opacity: 0.85;
+  scale: 1;
+  pointer-events: auto;
+}
+.np-stamp.is-hit {
+  animation: np-hit 200ms cubic-bezier(0.5, 0, 0.75, 0);
+}
+@keyframes np-hit {
+  0% {
+    scale: 1.7;
+    opacity: 0;
+  }
+}
+.np-stamp:focus-visible {
+  outline: 2px solid var(--np-red);
+  outline-offset: 4px;
+}
+
+/* the ink roller that prints the page as it passes */
+.np-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translateZ(2px);
+}
+.np-roller {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 36px;
+  background: linear-gradient(90deg, transparent, rgb(28 25 23 / 0.12) 30%, rgb(28 25 23 / 0.3) 50%, rgb(28 25 23 / 0.12) 70%, transparent);
+  opacity: 0;
+}
+
+/* -- clip the coupon, then elsewhere and the imprint */
+.np-r1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 34px 0 26px;
+  text-align: center;
+}
+.np-coupon {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: 504px;
+  padding: 18px 24px 16px;
+  border: 2px dashed var(--np-ink);
+  border-radius: 0;
+  background: var(--np-panel);
+  font-family: var(--np-old);
+  color: var(--np-ink);
+  cursor: pointer;
+}
+.np-scissors {
+  position: absolute;
+  top: -15px;
+  left: 18px;
+  padding: 0 4px;
+  background: var(--np-paper);
+  font-size: 22px;
+  line-height: 1;
+}
+.np-coupon.is-clip .np-scissors {
+  animation: np-snip 800ms cubic-bezier(0.4, 0, 0.3, 1);
+}
+@keyframes np-snip {
+  100% {
+    translate: 440px 0;
+  }
+}
+.np-chead {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+.np-cmail {
+  font-weight: 700;
+  font-size: 22px;
+}
+.np-cact {
+  display: grid;
+  overflow: hidden;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--np-red);
+}
+.np-cact > span {
+  grid-area: 1 / 1;
+  transition: translate 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.np-cact-b {
+  translate: 0 110%;
+}
+.np-coupon.is-ok .np-cact-a {
+  translate: 0 -110%;
+}
+.np-coupon.is-ok .np-cact-b {
+  translate: 0 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .np-coupon:hover {
+    background: #fff9e8;
+  }
+}
+.np-coupon:focus-visible {
+  outline: 2px solid var(--np-red);
+  outline-offset: 4px;
+}
+.np-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.np-else {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+.k-links {
+  display: flex;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-links .u-link {
+  font-size: 19px;
+}
+.np-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--np-ink);
+  font-style: italic;
+  font-size: 13px;
+}
+
 /* confetti from the CTA */
 .k-confetti {
   position: absolute;
@@ -159,97 +663,6 @@
   height: 5px;
 }
 
-/* -- the sign-off: copy the email, the links, the footer */
-.k-r1 {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 22px;
-  padding: 8px 0 30px;
-  text-align: center;
-}
-.k-mail {
-  display: inline-flex;
-  align-items: stretch;
-  height: 48px;
-  padding: 0;
-  border: 0;
-  border-radius: 999px;
-  overflow: hidden;
-  background: rgb(255 255 255 / 0.7);
-  box-shadow:
-    inset 0 0 0 2px var(--ink),
-    0 4px 0 var(--ink);
-  font-family: var(--f-mono);
-  font-size: 17px;
-  color: var(--ink);
-  cursor: pointer;
-}
-.k-mail.is-squash {
-  animation: k-squash 220ms ease;
-}
-@keyframes k-squash {
-  50% {
-    transform: scale(0.96);
-  }
-}
-.k-mail-a {
-  display: flex;
-  align-items: center;
-  padding: 0 18px 0 22px;
-}
-.k-mail-b {
-  position: relative;
-  display: grid;
-  min-width: 108px;
-  overflow: hidden;
-  background: #6a3cff;
-  box-shadow: inset 2px 0 0 var(--ink);
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-}
-.k-mail-t {
-  grid-area: 1 / 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 16px;
-  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.k-mail-ok {
-  transform: translateY(100%);
-  background: #2fbf71;
-}
-.k-mail.is-ok .k-mail-t:not(.k-mail-ok) {
-  transform: translateY(-100%);
-}
-.k-mail.is-ok .k-mail-ok {
-  transform: none;
-}
-.k-links {
-  display: flex;
-  gap: 26px;
-}
-.k-links .u-link {
-  font-size: 22px;
-}
-.k-footslot {
-  width: 100%;
-  margin-top: 14px;
-}
-.k-foot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding-top: 22px;
-  border-top: 2px dashed rgb(22 19 29 / 0.25);
-  font-family: var(--f-mono);
-  font-size: 15px;
-  color: var(--ink-2);
-}
 
 /* the crowd — a family photo along the bottom edge */
 .crowd {
@@ -449,58 +862,149 @@
   }
 }
 
-/* -- narrow */
-.bstage[data-lay='narrow'] .k-r0 {
-  gap: 18px;
-  padding: 18px 0 14px;
+/* -- narrow: one column, her ad first, the phone's share of classifieds */
+.bstage[data-lay='narrow'] .np-mast {
+  grid-template-columns: 1fr;
 }
-.bstage[data-lay='narrow'] .k-title .k-sans {
+.bstage[data-lay='narrow'] .np-ear {
+  display: none;
+}
+.bstage[data-lay='narrow'] .np-title {
   font-size: 46px;
+}
+.bstage[data-lay='narrow'] .np-date {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px 10px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+.bstage[data-lay='narrow'] .np-date span:nth-of-type(2) {
+  order: 3;
+  width: 100%;
+}
+.bstage[data-lay='narrow'] .np-grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 14px;
+  margin-top: 14px;
+}
+.bstage[data-lay='narrow'] .np-vr {
+  display: none;
+}
+.bstage[data-lay='narrow'] .np-ad {
+  grid-column: 1 / -1;
+  order: -1;
+  padding: 20px 16px 18px;
+}
+.bstage[data-lay='narrow'] .np-small:not([data-phone]) {
+  display: none;
+}
+.bstage[data-lay='narrow'] .np-col h4 {
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+}
+.bstage[data-lay='narrow'] .np-small p {
+  font-size: 12px;
+  text-align: left;
+}
+.bstage[data-lay='narrow'] .np-over {
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+}
+.bstage[data-lay='narrow'] .np-head {
+  font-size: 30px;
+}
+.bstage[data-lay='narrow'] .np-hl {
   white-space: normal;
 }
-.bstage[data-lay='narrow'] .k-em {
-  font-size: 60px;
-  padding: 0 6px;
+.bstage[data-lay='narrow'] .np-head .k-em {
+  font-size: 42px;
+  padding: 0 4px;
 }
 .bstage[data-lay='narrow'] .k-mark {
-  bottom: 7px;
+  bottom: 4px;
   height: 16px;
+  translate: 2px 2px;
 }
-.bstage[data-lay='narrow'] .k-para {
-  font-size: 16px;
+.bstage[data-lay='narrow'] .np-body {
+  font-size: 14.5px;
+}
+.bstage[data-lay='narrow'] .np-by {
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+}
+.bstage[data-lay='narrow'] .np-eyes {
+  top: 12px;
+  right: 10px;
+  width: 56px;
+  gap: 3px;
+}
+.bstage[data-lay='narrow'] .np-eyes i::after {
+  left: calc(50% - 6px);
+  top: calc(50% - 6px);
+  width: 12px;
+  height: 12px;
 }
 .bstage[data-lay='narrow'] .k-pen {
-  height: 116px;
-  margin-top: 6px;
-  padding-top: 12px;
+  height: 92px;
+  padding-top: 14px;
+}
+.bstage[data-lay='narrow'] .k-cta,
+.bstage[data-lay='narrow'] .k-cta-btn.u-btn-xl {
+  width: 100%;
 }
 .bstage[data-lay='narrow'] .k-cta-btn.u-btn-xl {
-  --bh: 66px;
+  --bh: 60px;
+  justify-content: center;
+  font-size: 23px;
+  padding: 0 20px;
+}
+.bstage[data-lay='narrow'] .np-adcircle {
+  inset: -8px -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
+}
+.bstage[data-lay='narrow'] .np-note {
+  top: -26px;
+  right: 2px;
   font-size: 24px;
-  padding: 0 30px;
 }
-.bstage[data-lay='narrow'] .k-mail {
-  max-width: 100%;
-  font-size: 12.5px;
+.bstage[data-lay='narrow'] .np-stamp {
+  left: -6px;
+  bottom: 58px;
 }
-.bstage[data-lay='narrow'] .k-mail-a {
-  min-width: 0;
-  padding: 0 10px 0 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.bstage[data-lay='narrow'] .np-stamp span {
+  font-size: 16px;
 }
-.bstage[data-lay='narrow'] .k-mail-b {
-  min-width: 84px;
-  font-size: 11px;
-}
-.bstage[data-lay='narrow'] .k-links {
+.bstage[data-lay='narrow'] .np-r1 {
   gap: 16px;
+  padding: 24px 0 20px;
+}
+.bstage[data-lay='narrow'] .np-coupon {
+  width: 100%;
+  padding: 16px 12px 14px;
+}
+.bstage[data-lay='narrow'] .np-cmail {
+  font-size: 16px;
+}
+.bstage[data-lay='narrow'] .np-coupon.is-clip .np-scissors {
+  animation-name: np-snip-n;
+}
+@keyframes np-snip-n {
+  100% {
+    translate: 250px 0;
+  }
+}
+.bstage[data-lay='narrow'] .np-links {
+  flex-direction: column;
+  gap: 8px;
 }
 .bstage[data-lay='narrow'] .k-links .u-link {
   font-size: 16px;
 }
-.bstage[data-lay='narrow'] .k-foot {
+.bstage[data-lay='narrow'] .np-foot {
+  gap: 4px 8px;
   font-size: 11px;
 }
 .bstage[data-lay='narrow'] .crowd {
@@ -510,7 +1014,7 @@
   scale: 0.6;
 }
 
-/* -- reduced motion / static: the finished poster; Ignore still talks back */
+/* -- reduced motion / static: the finished page, circled and stamped */
 .bstage.is-static .k-l {
   opacity: 1 !important;
   transform: none !important;
@@ -518,4 +1022,16 @@
 .bstage.is-static .k-mark {
   transform: none;
   transition: none;
+}
+.bstage.is-static .np-adcircle path {
+  stroke-dashoffset: 0;
+}
+.bstage.is-static .np-note {
+  opacity: 1;
+  translate: 0 0;
+}
+.bstage.is-static .np-stamp {
+  opacity: 0.85;
+  scale: 1;
+  pointer-events: auto;
 }

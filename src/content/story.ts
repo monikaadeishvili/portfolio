@@ -355,6 +355,44 @@ export const TALLY = {
   flank: ['From a blank Figma file,', 'to a product people use.'],
 } as const
 
+/** 04 Say Hello: the back page of a one-issue newspaper, The Daily Hello.
+ *  Every small ad is a true fact about her; the display ad in the middle is hers. */
+export const PAPER = {
+  title: 'The Daily Hello',
+  earL: ['FORECAST', 'Open to new work, all week.'],
+  earR: ['LATE EDITION', 'Price: one email'],
+  vol: 'VOL. 7+ · No. 04',
+  place: 'ALICANTE, SPAIN',
+  section: 'CLASSIFIED ADVERTISEMENTS',
+  left: {
+    head: 'SITUATIONS WANTED',
+    ads: [
+      ['FOR HIRE.', 'One (1) Product Designer. 7+ years on the job. Starts from a blank Figma file, ends at a product people use. Enquire at centre ad.'],
+      ['REFERENCES.', 'Has worked with DAZN, Nota by M&T Bank, toeic.pal, Roomistry, Studious, Hello Audio, GrowthOptix & WeDo. 32 client products, 10 industries. See page 03.'],
+      ['LANGUAGES.', 'English and Georgian spoken. გამარჯობა to those who know.'],
+    ],
+  },
+  right: {
+    head: 'NOTICES & PERSONALS',
+    ads: [
+      ['LESSONS.', 'UX taught properly. Lecturer at Qwerty. Seven Google UX certificates on file.'],
+      ['MACHINERY.', 'Designs with AI like a pro. The taste remains her own.'],
+      ['PERSONALS.', 'Product designer, Alicante, seeks teams that care. Must love design systems.'],
+      ['LOST & FOUND.', 'LOST: one blue bubble, last seen popping just above this page. No reward.'],
+    ],
+  },
+  /** small ads kept on phones (by head) */
+  phone: ['FOR HIRE.', 'REFERENCES.', 'LESSONS.', 'LOST & FOUND.'],
+  overline: 'NOTICE TO TEAMS THAT CARE',
+  byline: 'MONIKA ADEISHVILI · PRODUCT DESIGNER · ALICANTE, SPAIN',
+  apply: 'Apply within. Replies by email.',
+  note: 'this one!',
+  stamps: ['HIRED?', 'BY YOU?', 'APPLY WITHIN'],
+  coupon: { head: '✂ CLIP THIS COUPON', act: 'Clip (copy)', done: 'Clipped ✓ it’s on your clipboard' },
+  elsewhere: 'ELSEWHERE:',
+  printed: 'Printed in Alicante on recycled pixels.',
+} as const
+
 export const EMAIL = 'monikaadeishvili@gmail.com'
 export const LINKS = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/monika-adeishvili/' },
