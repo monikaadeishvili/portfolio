@@ -641,7 +641,7 @@ export function mountTaste(board: HTMLElement) {
             t.target.style.transform = `translate3d(${(-dx * rem).toFixed(1)}px, ${(-dy * rem).toFixed(1)}px, 0) scale(${dS.toFixed(3)})`
           }
         }
-        // "7+ years" gets its marker stroke once the line has landed
+        // "8+ years" gets its marker stroke once the line has landed
         if (t.mark) {
           const md = outCubic(range(0.55, 1, qt))
           const mk = md.toFixed(3)

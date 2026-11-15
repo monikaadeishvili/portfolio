@@ -582,7 +582,7 @@ export function Hello({ lay, live, onNav }: SectionProps) {
                 </span>
                 <Piece id="h-n0" name="Numeral / Years" kind="hero" tone={HC.ink} travel="leap" order={1} at={0.3} dur={0.2} park="150,b-236" eyes={{ x: 50, y: -6, s: 18 }} className="h-numslot">
                   <span className="h-num">
-                    <Odo value="7" suffix="+" />
+                    <Odo value="8" suffix="+" />
                   </span>
                 </Piece>
                 <Reveal id="h-c0" mode="type" segs={['Years of taste']} className="h-cell-l" label="Label / Years" />

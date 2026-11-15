@@ -21,7 +21,7 @@ export const CHAPTERS: Chapter[] = [
     frame: 'Hello',
     ruler: 'HELLO',
     headline: ['Everyone has the same tools now. ', { em: 'Not the same taste.' }],
-    body: 'Taste comes with experience. I have 7+ years of it.',
+    body: 'Taste comes with experience. I have 8+ years of it.',
   },
   {
     id: 'craft',
@@ -36,7 +36,7 @@ export const CHAPTERS: Chapter[] = [
     num: '03',
     frame: 'Proof',
     ruler: 'PROOF',
-    headline: ['Seven years of work ', { em: 'adds up.' }],
+    headline: ['Eight years of work ', { em: 'adds up.' }],
     body: 'Thirty-two client products across ten industries, and one designer on every one of them.',
   },
   {
@@ -54,7 +54,7 @@ export const HELLO = {
   badge: 'Open to new work',
   line1: 'Everyone has the same tools now.',
   line2: 'Not the same taste.',
-  support: ['Taste comes with experience.', 'I have ', '7+ years', ' of it.'] as const,
+  support: ['Taste comes with experience.', 'I have ', '8+ years', ' of it.'] as const,
   intro: "Hi, I'm Monika, a product designer.",
   /** the annotation on her shoulder, set on two lines */
   introLines: [["Hi, I'm ", 'Monika', ','], ['a product designer.']] as const,
@@ -89,7 +89,7 @@ export const RULES = [
 ] as const
 
 export const STATS = [
-  { n: 7, suf: '+', label: 'years designing', tone: 'yellow' },
+  { n: 8, suf: '+', label: 'years designing', tone: 'yellow' },
   { n: 32, suf: '', label: 'client products', tone: 'lime' },
   { n: 9, suf: '', label: 'industries', tone: 'sky' },
 ] as const
@@ -313,7 +313,7 @@ export const TALLY = {
     { kind: 'me', id: 'certs', at: [1, 0], big: '7', name: 'Google UX certificates', line: 'via Coursera', bg: '#ffffff', fg: '#141413', mk: '#1a73e8' },
     { kind: 'work', id: 'nota', at: [3, 0], name: 'Nota by M&T Bank', line: 'Banking for law firms', tag: 'Banking', shape: 'safe', bg: '#0e6f78', fg: '#ffffff', mk: '#ffd84d' },
     { kind: 'work', id: 'toeic', at: [1, 1], name: 'toeic.pal', line: 'AI English speaking tutor', tag: 'EdTech', shape: 'bubble', bg: '#b9f23a', fg: '#141413', mk: '#0f7a3d' },
-    { kind: 'me', id: 'years', at: [2, 1], big: '7+', name: 'years designing products', line: 'web, mobile and TV', bg: '#141413', fg: '#ffffff', mk: '#c6f135' },
+    { kind: 'me', id: 'years', at: [2, 1], big: '8+', name: 'years designing products', line: 'web, mobile and TV', bg: '#141413', fg: '#ffffff', mk: '#c6f135' },
     { kind: 'work', id: 'pronto', at: [3, 1], name: 'Pronto', line: 'Nurse staffing', tag: 'Healthcare', shape: 'cross', bg: '#ff8fd8', fg: '#141413', mk: '#c4006f' },
     { kind: 'work', id: 'realoffer', at: [0, 2], name: 'Realoffer.ge', line: 'Real estate listings', tag: 'PropTech', shape: 'house', bg: '#5cc8ff', fg: '#141413', mk: '#0b3d91' },
     { kind: 'work', id: 'moneymarket', at: [2, 2], name: 'Moneymarket.ge', line: 'Loan marketplace', tag: 'Loans', shape: 'coin', bg: '#ff7a3d', fg: '#141413', mk: '#ffe14d' },
@@ -363,13 +363,13 @@ export const PAPER = {
   title: 'The Daily Hello',
   earL: ['FORECAST', 'Open to new work, all week.'],
   earR: ['LATE EDITION', 'Price: one email'],
-  vol: 'VOL. 7+ · No. 04',
+  vol: 'VOL. 8+ · No. 04',
   place: 'ALICANTE, SPAIN',
   section: 'CLASSIFIED ADVERTISEMENTS',
   left: {
     head: 'SITUATIONS WANTED',
     ads: [
-      ['FOR HIRE.', 'One (1) Product Designer. 7+ years on the job. Starts from a blank Figma file, ends at a product people use. Enquire at centre ad.'],
+      ['FOR HIRE.', 'One (1) Product Designer. 8+ years on the job. Starts from a blank Figma file, ends at a product people use. Enquire at centre ad.'],
       ['REFERENCES.', 'Has worked with DAZN, Nota by M&T Bank, toeic.pal, Roomistry, Studious, Hello Audio, GrowthOptix & WeDo. 32 client products, 10 industries. See page 03.'],
       ['LANGUAGES.', 'English and Georgian spoken. გამარჯობა to those who know.'],
     ],

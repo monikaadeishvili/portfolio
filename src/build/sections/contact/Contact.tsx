@@ -255,7 +255,7 @@ export function Contact({ lay, live }: SectionProps) {
           )}
           {!narrow && (
             <Member k={3} look={-1}>
-              <span className="cw-stat">7+</span>
+              <span className="cw-stat">8+</span>
             </Member>
           )}
           <Member k={4} look={-1}>
