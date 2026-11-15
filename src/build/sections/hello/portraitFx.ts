@@ -136,13 +136,17 @@ export function mountPortrait(board: HTMLElement) {
     box[1] = o.y
     box[2] = Math.max(1, o.w)
     box[3] = Math.max(1, o.h)
-    // the canvas covers the hero's full width and height above her feet: the
-    // particles roam the whole stage, she stays where the layout puts her
+    // the canvas reaches past the board on both sides and below her feet: the
+    // dust flies freely across the whole width (it fades out softly long before
+    // any canvas edge, so it never reads as a rectangle); she stays where the
+    // layout puts her
     const bw = g.boards[0].w
-    cbox[0] = 0
-    cbox[1] = 0
-    cbox[2] = Math.max(box[2], bw)
-    cbox[3] = box[1] + box[3]
+    const ex = g.narrow ? bw * 0.45 : 320
+    const ey = box[3] * 0.2
+    cbox[0] = -ex
+    cbox[1] = -ey * 0.5
+    cbox[2] = Math.max(box[2], bw) + ex * 2
+    cbox[3] = box[1] + box[3] + ey * 1.5
     host.style.left = `${cbox[0] - box[0]}px`
     host.style.top = `${cbox[1] - box[1]}px`
     host.style.width = `${cbox[2]}px`
@@ -162,7 +166,7 @@ export function mountPortrait(board: HTMLElement) {
     let sMax = 0.5
     g.keys[0].forEach((k) => (sMax = Math.max(sMax, k.c.s)))
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
-    const k = Math.min(1, 2048 / Math.max(cbox[2], cbox[3]) / (sMax * dpr))
+    const k = Math.min(1, 2400 / Math.max(cbox[2], cbox[3]) / (sMax * dpr))
     sized[0] = cbox[2] * sMax * dpr * k
     sized[1] = cbox[3] * sMax * dpr * k
     gl.size(sized[0], sized[1])

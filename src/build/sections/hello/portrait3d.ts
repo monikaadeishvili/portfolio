@@ -202,6 +202,9 @@ void main() {
   // only feel it while they are still scattered (arrival), never once gathered
   vec2 ov = (px / uRes - 0.5) * 2.0;
   float oval = 1.0 - smoothstep(0.55, 1.0, length(ov));
+  // and every grain fades to nothing before the canvas edge, half-formed or not
+  vec2 sp = px / uRes;
+  float edge = smoothstep(0.0, 0.14, min(min(sp.x, 1.0 - sp.x), min(sp.y, 1.0 - sp.y)));
   if (mote < 0.5 && amb < 0.5) vA *= mix(oval, 1.0, f);
   if (mote > 0.5) {
     vA *= sin(3.14159 * life) * 0.8 * oval;
@@ -213,6 +216,7 @@ void main() {
     gl_PointSize = uPx * mix(0.9, 1.6, r.w);
     vSoft = r.x;
   }
+  vA *= edge;
 }
 `
 
