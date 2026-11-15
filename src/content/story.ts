@@ -357,11 +357,10 @@ export const TALLY = {
 
 export const EMAIL = 'monikaadeishvili@gmail.com'
 export const LINKS = [
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/monika-adeishvili-5a84b11b6' },
-  { label: 'Behance', href: 'https://www.behance.net/monikaadeishv' },
-  { label: 'Dribbble', href: 'https://dribbble.com/monikaadeishvili' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/monika-adeishvili/' },
+  { label: 'Instagram', href: 'https://www.instagram.com/monikaadeishvili/' },
 ]
-export const FOOTER = 'Designed in momo. Built from components. Alicante, 2026.'
+export const FOOTER = '© 2026 Monika Adeishvili'
 
 export const segText = (segs: Seg[]) => segs.map((s) => (typeof s === 'string' ? s : s.em)).join('')
 
