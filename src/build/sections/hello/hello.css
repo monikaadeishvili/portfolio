@@ -1489,8 +1489,14 @@
 }
 
 /* ================================================================ narrow */
+/* no board padding on phones either: the bands and the dark close run edge to
+   edge, like on desktop; the content keeps the same inset as before through
+   --h-px (it used to be 18px of board padding + 18px) */
+.bstage[data-lay='narrow'] .bf-hello .bf-body {
+  padding: 0;
+}
 .bstage[data-lay='narrow'] .bf-hello {
-  --h-px: 18px;
+  --h-px: 36px;
   --h-fs: calc(var(--FW) * 0.134);
   --h-cap: 12px;
   --h-rad: 22px;

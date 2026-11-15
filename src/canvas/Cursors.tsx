@@ -65,6 +65,30 @@ function sayBubble(key: Bot['key'], text: string, t: number, dur = 2.6) {
   measureExtent(b)
 }
 
+/* One speaker at a time, and long enough to read: a line stays up for its
+   reading time (about 3.5 s for a full one); a line that comes up meanwhile
+   waits its turn. At most two lines wait (the oldest is dropped) and a line
+   that has waited too long (or whose moment has scrolled away) is skipped, so
+   a fast scroll never builds a backlog of stale chat. */
+const readTime = (text: string) => Math.max(2.8, 1.5 + text.length * 0.07)
+const GAP = 0.25
+const talk = {
+  cur: null as null | { key: Bot['key']; until: number },
+  queue: [] as { key: Bot['key']; text: string; at: number; p: number }[],
+}
+function speak(key: Bot['key'], text: string, t: number) {
+  const dur = readTime(text)
+  sayBubble(key, text, t, dur)
+  talk.cur = { key, until: t + dur }
+}
+function requestSay(key: Bot['key'], text: string, t: number) {
+  if (!talk.cur || t >= talk.cur.until + GAP) speak(key, text, t)
+  else {
+    talk.queue.push({ key, text, at: t, p: scene.p })
+    if (talk.queue.length > 2) talk.queue.shift()
+  }
+}
+
 /** right/bottom extent of arrow + tag (+ bubble when shown), for viewport clamping */
 function measureExtent(b: Bot) {
   if (!b.el) return
@@ -184,6 +208,15 @@ export function updateCursors(t: number, dt: number) {
   const p = scene.p
   const intro = !scene.introDone
 
+  // the one speaker: when the current line is done, the next waiting one (if still fresh) gets its turn
+  if (talk.cur && t >= talk.cur.until + GAP) {
+    talk.cur = null
+    // skip lines that waited too long, or whose moment has scrolled away
+    while (talk.queue.length && (t - talk.queue[0].at > 7 || Math.abs(scene.p - talk.queue[0].p) > 0.025)) talk.queue.shift()
+    const n = talk.queue.shift()
+    if (n) speak(n.key, n.text, t)
+  }
+
   for (const b of Object.values(bots)) {
     if (!b.el) continue
     let tx: number
@@ -197,7 +230,7 @@ export function updateCursors(t: number, dt: number) {
       const r = story ? (story.rect ? story.rect() : rectOf(story.id)) : null
       if (story && r && r.width > 0) {
         ;[tx, ty] = story.at(r)
-        if (story.line && b.story?.split(':')[1] !== story.line) sayBubble(b.key, story.line, t)
+        if (story.line && b.story?.split(':')[1] !== story.line) requestSay(b.key, story.line, t)
         b.story = storyKey
         b.t0 = t
         b.fromX = b.x
@@ -217,7 +250,7 @@ export function updateCursors(t: number, dt: number) {
         ty = b.fromY + dy * e + dx * s
         if (!intro && t > b.nextBubble && cursorConfig.idleWindow(p)) {
           const lines = (cursorConfig.lines ?? IDLE_LINES)[b.key]
-          sayBubble(b.key, lines[Math.floor(Math.random() * lines.length)], t)
+          requestSay(b.key, lines[Math.floor(Math.random() * lines.length)], t)
           b.nextBubble = t + 9 + Math.random() * 9
         }
       }

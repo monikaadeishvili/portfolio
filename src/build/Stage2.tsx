@@ -21,34 +21,34 @@ import { taste } from './sections/hello/taste'
 
 /* -------------------------------------------------------- cursor story */
 
-const LINES: { sec: number; key: BotKey; u0: number; u1: number; line: string }[] = [
-  { sec: 0, key: 'pm', u0: 0.004, u1: 0.1, line: 'looks… fine?' },
-  { sec: 0, key: 'dev', u0: 0.06, u1: 0.17, line: 'is that switch… alive?' },
-  { sec: 0, key: 'pm', u0: 0.22, u1: 0.38, line: 'oh. OH.' },
-  { sec: 0, key: 'monika', u0: 0.47, u1: 0.535, line: 'hey, that’s me!' },
-  { sec: 0, key: 'dev', u0: 0.535, u1: 0.6, line: 'hover her. trust me 👀' },
-  { sec: 0, key: 'pm', u0: 0.89, u1: 1.01, line: 'golden hour, nice' },
-  { sec: 1, key: 'dev', u0: 0.08, u1: 0.26, line: 'lights off' },
-  { sec: 1, key: 'monika', u0: 0.5, u1: 0.7, line: 'my whole route' },
-  { sec: 1, key: 'pm', u0: 0.74, u1: 0.95, line: '3,900 km ✈︎' },
-  { sec: 2, key: 'dev', u0: 0.36, u1: 0.62, line: 'wait, real 3-D?' },
-  { sec: 2, key: 'monika', u0: 0.66, u1: 0.86, line: 'flip them all on' },
-  { sec: 3, key: 'pm', u0: 0.2, u1: 0.42, line: 'love a Gantt' },
-  { sec: 3, key: 'dev', u0: 0.66, u1: 0.92, line: 'ship the dashboard' },
-  { sec: 4, key: 'pm', u0: 0.2, u1: 0.44, line: 'she replied!' },
-  { sec: 4, key: 'monika', u0: 0.86, u1: 1.01, line: 'say hi! 👋' },
-  { sec: 4, key: 'dev', u0: 0.9, u1: 1.01, line: 'ship it' },
+/** the collaborators' chat (Fable 5.2's script): jokes from the trade and, for
+ *  about half the lines, a hint at something the visitor can actually do
+ *  right then. `touch` replaces a hint that names a mouse-only gesture or a
+ *  dock tool phones don't have. */
+const LINES: { sec: number; key: BotKey; u0: number; u1: number; line: string; touch?: string }[] = [
+  // 01 Hello
+  { sec: 0, key: 'pm', u0: 0.004, u1: 0.06, line: 'can we make the logo bigger' },
+  { sec: 0, key: 'dev', u0: 0.34, u1: 0.45, line: 'hover the headline. it slims', touch: 'drag across the headline' },
+  { sec: 0, key: 'pm', u0: 0.66, u1: 0.8, line: '32 products. 0 bigger logos' },
+  { sec: 0, key: 'pm', u0: 0.9, u1: 1.01, line: 'so we hire her. noted' },
+  // 02 How I think
+  { sec: 1, key: 'monika', u0: 0.14, u1: 0.23, line: 'try to catch ‘ignores’', touch: 'tap ‘ignores’. watch it hop' },
+  { sec: 1, key: 'pm', u0: 0.22, u1: 0.31, line: 'it’s ignoring me. like devs' },
+  { sec: 1, key: 'monika', u0: 0.42, u1: 0.52, line: 'press and hold the model', touch: 'tap the model. it unpacks' },
+  // 03 Proof
+  { sec: 2, key: 'dev', u0: 0.2, u1: 0.29, line: 'color picker. click. copied', touch: '#5B4BFF. you’re welcome' },
+  { sec: 2, key: 'pm', u0: 0.8, u1: 0.9, line: 'one tiny change' },
+  { sec: 2, key: 'dev', u0: 0.89, u1: 1.01, line: 'no.' },
+  // 04 Say Hello
+  { sec: 3, key: 'dev', u0: 0.66, u1: 0.74, line: 'clip the coupon. copies email' },
 ]
+/** no mouse to hover with: hints say press / tap instead */
+const touchOnly = () => typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches
 
 function storyFor(getGeo: () => Geo | null) {
   return (key: BotKey, p: number): Story => {
     const g = getGeo()
     if (!g || transitionAt(p) >= 0) {
-      if (key === 'pm' && transitionAt(p) >= 0 && live.bubScreen.r > 4) {
-        const tr = transitionAt(p)
-        const lines = ['bye, sunshine', 'boing!', 'there are three now??', 'pop!']
-        return { id: `tr-${tr}`, at: (r) => [r.left + r.width * 1.1, r.top - 10], line: lines[tr], rect: () => new DOMRect(live.bubScreen.x - live.bubScreen.r, live.bubScreen.y - live.bubScreen.r, live.bubScreen.r * 2, live.bubScreen.r * 2) }
-      }
       return null
     }
     const i = sectionAt(p)
@@ -58,7 +58,7 @@ function storyFor(getGeo: () => Geo | null) {
       return {
         id: '0-dev-dare',
         at: (r) => [r.left + r.width * 0.3, r.top + r.height * 0.4],
-        line: 'turn it off, I dare you',
+        line: 'switch it off. see my version',
         rect: () => {
           const r = freeSpots(g.view)[key]
           return new DOMRect(r.x0, r.y0, Math.max(1, r.x1 - r.x0), Math.max(1, r.y1 - r.y0))
@@ -70,7 +70,7 @@ function storyFor(getGeo: () => Geo | null) {
     return {
       id: `${i}-${key}-${hit.line}`,
       at: (r) => [r.left + r.width * 0.3, r.top + r.height * 0.4],
-      line: hit.line,
+      line: hit.touch && touchOnly() ? hit.touch : hit.line,
       rect: () => {
         const r = freeSpots(g.view)[key]
         return new DOMRect(r.x0, r.y0, Math.max(1, r.x1 - r.x0), Math.max(1, r.y1 - r.y0))
