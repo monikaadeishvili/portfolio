@@ -1,7 +1,8 @@
 /**
  * 03 Proof, part one — the running total. Thirteen alive stickers (six client
- * products, seven facts about her) wait around the grid and walk or leap into
- * their cells as you scroll, the other 26 client products pop out of the bubble
+ * products, seven facts about her) fill the grid as you scroll: four wait in
+ * view and walk or leap in, the rest jump out of the bubble; the other 26 client
+ * products pop out of the bubble
  * as chips, and the counters roll up to 32 products and 10 industries. Then it
  * all folds into a slowly turning ring around "your product" (the bubble, hopping
  * in the middle), and a single card drops out below: one designer, all of the
@@ -13,27 +14,27 @@ import { Piece } from '../../parts'
 import type { Travel } from '../../runtime'
 
 /**
- * Where each sticker waits and how it comes in, in landing order (k). Desktop
- * parks: artboard px of the box's top-left, y from the tally region's top —
- * a ledge right of the headline, the canvas gutters under the side panels, and
- * the still-empty chips column. Phones have no gutters: the six client products
- * wait on a bench at the foot of the board and crawl up; the facts (no parkN)
- * come out of the bubble.
+ * How each sticker comes in, in landing order (k). Only four walk: two
+ * projects wait on the board in the still-empty chips column and two stickers
+ * wait on the canvas under the side panels (desktop parks: artboard px of the
+ * box's top-left, y from the tally region's top). The rest jump out of the
+ * bubble. Phones have no gutters: the three walking projects wait on a bench at
+ * the foot of the board and crawl up.
  */
-const WALK: Record<string, { k: number; park: string; parkN?: string; travel: Travel }> = {
-  dazn: { k: 0, park: '566,-160', parkN: '29,552', travel: 'crawl' },
-  certs: { k: 1, park: '-176,190', travel: 'crawl' },
-  pronto: { k: 2, park: '1150,300', parkN: '29,658', travel: 'leap' },
-  toeic: { k: 3, park: '690,-176', parkN: '245,552', travel: 'leap' },
-  hello: { k: 4, park: '-176,500', travel: 'crawl' },
-  years: { k: 5, park: '700,330', travel: 'crawl' },
-  nota: { k: 6, park: '814,-156', parkN: '137,552', travel: 'crawl' },
-  moneymarket: { k: 7, park: '1296,300', parkN: '245,658', travel: 'leap' },
-  tools: { k: 8, park: '-176,345', travel: 'crawl' },
-  ai: { k: 9, park: '676,150', travel: 'leap' },
-  realoffer: { k: 10, park: '938,-172', parkN: '137,658', travel: 'crawl' },
-  teach: { k: 11, park: '1150,452', travel: 'crawl' },
-  home: { k: 12, park: '1296,452', travel: 'leap' },
+const WALK: Record<string, { k: number; walk?: { park: string; parkN?: string; travel: Travel } }> = {
+  dazn: { k: 0, walk: { park: '676,150', parkN: '29,552', travel: 'crawl' } },
+  certs: { k: 1, walk: { park: '-176,190', travel: 'crawl' } },
+  pronto: { k: 2, walk: { park: '1150,300', parkN: '137,552', travel: 'leap' } },
+  nota: { k: 3, walk: { park: '700,330', parkN: '245,552', travel: 'crawl' } },
+  toeic: { k: 4 },
+  hello: { k: 5 },
+  years: { k: 6 },
+  moneymarket: { k: 7 },
+  tools: { k: 8 },
+  ai: { k: 9 },
+  realoffer: { k: 10 },
+  teach: { k: 11 },
+  home: { k: 12 },
 }
 
 /** a rolling number: each digit is a 0–9 column the driver slides into place */
@@ -141,14 +142,14 @@ export function Tally() {
               <Piece
                 id={`t-${c.id}`}
                 name={c.kind === 'work' ? `Card / ${c.name}` : `Card / ${c.id}`}
-                kind="hero"
-                travel={w.travel}
+                kind={w.walk ? 'hero' : 'bubble'}
+                travel={w.walk?.travel}
                 tone={c.mk}
                 order={w.k}
                 at={0.09 + w.k * 0.031}
-                dur={w.travel === 'crawl' ? 0.085 : 0.06}
-                park={w.park}
-                parkN={w.parkN}
+                dur={w.walk ? (w.walk.travel === 'crawl' ? 0.085 : 0.06) : undefined}
+                park={w.walk?.park}
+                parkN={w.walk?.parkN}
                 eyes={c.kind === 'work' || c.id === 'home' ? false : { x: 78, y: -9, s: 14 }}
                 className="fill"
               >
