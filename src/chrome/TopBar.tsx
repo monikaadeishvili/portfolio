@@ -6,16 +6,70 @@
  * (tablet: no Layers; phone / reduced motion: no panels) the same heads stand
  * alone as small cards.
  */
-import { useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { MomoMark } from './Icons'
 import { ui } from '../scene/store'
 import { EMAIL } from '../content/story'
 
 const PEOPLE = [
+  // the visitor first, in the same coral as their own "You" cursor on the canvas
+  { i: 'Y', c: 'var(--coral)', n: 'You (viewing)' },
   { i: 'M', c: 'var(--violet)', n: 'Monika (owner)' },
-  { i: 'P', c: 'var(--mint)', n: 'PM' },
-  { i: 'D', c: 'var(--sky)', n: 'Dev' },
+  { i: 'P', c: 'var(--mint)', n: 'PM', ink: true },
+  { i: 'D', c: 'var(--sky)', n: 'Dev', ink: true },
 ]
+const YOU = PEOPLE[0]
+const fg = (p: (typeof PEOPLE)[number]) => ('ink' in p ? 'var(--ink)' : '#fff')
+
+function Avatar({ p }: { p: (typeof PEOPLE)[number] }) {
+  return (
+    <span className="avatar" style={{ background: p.c, color: fg(p) }} aria-hidden="true">
+      {p.i}
+    </span>
+  )
+}
+
+/** phones: the visitor's own avatar and a chevron, like Figma's mobile app; it
+ *  opens the list of everyone in the file */
+function People() {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    window.addEventListener('pointerdown', onDown)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('pointerdown', onDown)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+  return (
+    <div className="ppl" ref={ref}>
+      <button type="button" className="ppl-btn" aria-expanded={open} aria-haspopup="true" aria-label={`${PEOPLE.length} people in this file`} onClick={() => setOpen((v) => !v)}>
+        <Avatar p={YOU} />
+        <span className="ppl-chev" aria-hidden="true">
+          <svg viewBox="0 0 12 12">
+            <path d="M3 4.5 6 7.5 9 4.5" />
+          </svg>
+        </span>
+      </button>
+      {open && (
+        <ul className="ppl-list chrome" aria-label="People in this file">
+          {PEOPLE.map((p) => (
+            <li key={p.i}>
+              <Avatar p={p} />
+              <span>{p.n}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
 
 /** the file: mark, name and project, like Figma's file menu */
 export function FileHead() {
@@ -51,15 +105,21 @@ export function Zoom() {
 }
 
 /** who is in the file, and the one button that matters */
-export function ShareHead({ people = true }: { people?: boolean }) {
+export function ShareHead({ compact = false }: { compact?: boolean }) {
   return (
     <div className="shead">
-      {people && (
+      {compact ? (
+        <People />
+      ) : (
         <ul className="avatars" aria-label="People in this file">
           {PEOPLE.map((p) => (
-            <li key={p.i} className="avatar" style={{ background: p.c }} title={p.n}>
+            <li key={p.i} className="avatar" style={{ background: p.c, color: fg(p) }}>
               <span aria-hidden="true">{p.i}</span>
               <span className="sr-only">{p.n}</span>
+              {/* our own tooltip: shows the moment you hover (the native one waits) */}
+              <span className="av-tip" aria-hidden="true">
+                {p.n}
+              </span>
             </li>
           ))}
         </ul>
@@ -84,7 +144,8 @@ export function FileCard() {
 export function ShareCard() {
   return (
     <div className="inspector chrome scard">
-      <ShareHead people={false} />
+      {/* who's in the file (your avatar + a chevron, like Figma's mobile app), then the button */}
+      <ShareHead compact />
     </div>
   )
 }

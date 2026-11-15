@@ -124,7 +124,13 @@
 
 .avatars {
   display: flex;
-  padding-left: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* the stack overlaps to the right; the first one sits fully inside its card */
+.avatar:first-child {
+  margin-left: 0 !important;
 }
 .avatar {
   width: 26px;
@@ -139,9 +145,45 @@
   border: 2px solid #fff;
   box-shadow: 0 1px 2px rgb(22 19 29 / 0.15);
 }
-.avatar:nth-child(2),
-.avatar:nth-child(3) {
-  color: var(--ink);
+.avatars .avatar {
+  position: relative;
+  cursor: default;
+}
+.av-tip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  z-index: 3;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  translate: -50% -2px;
+  transition:
+    opacity 90ms ease,
+    translate 90ms ease;
+}
+/* the first one starts at the card's edge: align its tip to the left */
+.avatar:first-child .av-tip {
+  left: -2px;
+  translate: 0 -2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .avatar:hover {
+    z-index: 2;
+  }
+  .avatar:hover .av-tip {
+    opacity: 1;
+    translate: -50% 0;
+  }
+  .avatar:first-child:hover .av-tip {
+    translate: 0 0;
+  }
 }
 .zoom {
   min-width: 48px;
@@ -764,5 +806,115 @@
   }
   .tool-tip {
     display: none;
+  }
+}
+/* phones: your avatar + a chevron (like Figma's mobile app); it lists everyone */
+.scard {
+  overflow: visible;
+}
+.ppl {
+  /* the list hangs from the card (its containing block), not from the button */
+  position: static;
+}
+.ppl-btn {
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 999px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 140ms ease;
+}
+.ppl-btn .avatar {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  font-size: 12px;
+}
+.ppl-chev {
+  display: grid;
+  place-items: center;
+  /* tucked under the avatar, like Figma's mobile app */
+  width: 28px;
+  height: 28px;
+  margin-left: -8px;
+  padding-left: 6px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: rgb(22 19 29 / 0.06);
+  color: var(--ink-2);
+  transition: background-color 140ms ease;
+}
+.ppl-chev svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 200ms var(--ease-out);
+}
+.ppl-btn[aria-expanded='true'] .ppl-chev {
+  background: rgb(22 19 29 / 0.1);
+}
+.ppl-btn[aria-expanded='true'] .ppl-chev svg {
+  transform: rotate(180deg);
+}
+.ppl-btn:active .ppl-chev {
+  background: rgb(22 19 29 / 0.12);
+}
+.ppl-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 2;
+  background: #fff;
+  display: grid;
+  gap: 2px;
+  min-width: 190px;
+  margin: 0;
+  padding: 6px;
+  border-radius: 14px;
+  list-style: none;
+  transform-origin: 100% 0;
+  animation: ppl-in 180ms var(--ease-out);
+}
+.ppl-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.ppl-list .avatar {
+  margin: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ppl-list {
+    animation: none;
+  }
+}
+@keyframes ppl-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+}
+/* narrow phones: both top cards side by side */
+@media (max-width: 400px) {
+  .fhead {
+    padding-right: 10px;
+  }
+  .fhead-name {
+    font-size: 12px;
+  }
+  .scard .shead {
+    gap: 6px;
   }
 }
