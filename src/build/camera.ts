@@ -143,13 +143,16 @@ export function hostAt(g: Geo, i: number, cam: CamPose, out: { x: number; y: num
     out.x = b.x + g.FW - 52
     out.y = clamp(cam.y - visH * 0.33, b.y + 90, b.y + b.h - 120)
     out.z = 150
-    // 01 Hello: low on the right, beside the CTA and clear of the portrait card
+    // 01 Hello: on the hero, wait on the right edge beside the role caption and
+    // the Open to new work badge (the nav pill sits at the hero's foot, so never
+    // rest there); below the hero, keep clear of the pill
     const r0 = i === 0 ? g.regs[0]?.[0] : undefined
     if (r0) {
       const r0b = b.y + r0.y + r0.h
       const k = 1 - smooth(r0b - 160, r0b + 200, cam.y)
-      out.y = lerp(out.y, r0b - 52, k)
-      out.x = lerp(out.x, b.x + g.FW - 26, k)
+      out.y = lerp(Math.max(out.y, r0b + 70), b.y + r0.y + 250, k)
+      // fully on screen (the board nearly fills a phone's width)
+      out.x = b.x + g.FW - 34
     }
   } else {
     // beside the artboard, but never under the inspector
