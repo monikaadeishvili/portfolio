@@ -26,7 +26,6 @@ export function mountFun(root: HTMLElement, narrow: boolean) {
   const end = root.querySelector<HTMLElement>('.fun-end')
   const caps = Array.from(root.querySelectorAll<HTMLElement>('.fun-cap[data-a]')).map((el) => ({ el, a: Number(el.dataset.a), b: Number(el.dataset.b), key: '' }))
   const chrome = [
-    { sel: '.topbar', x: 0, y: -420, r: 0, fade: true },
     { sel: '.layers', x: -135, y: 8, r: -13, fade: false },
     { sel: '.inspector', x: 135, y: 10, r: 12, fade: false },
     { sel: '.dock', x: 0, y: 260, r: 6, fade: false },

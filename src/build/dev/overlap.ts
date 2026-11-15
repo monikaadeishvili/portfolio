@@ -40,7 +40,7 @@ export function installOverlapCheck(getGeo: () => Geo | null) {
         parked.push({ c, b: box(c.alive.getBoundingClientRect(), 4) })
       }
       const obstacles: { name: string; b: Box }[] = []
-      document.querySelectorAll('.topbar, .layers, .inspector, .dock').forEach((el) => obstacles.push({ name: el.className.split(' ')[0], b: box(el.getBoundingClientRect()) }))
+      document.querySelectorAll('.layers, .inspector, .dock').forEach((el) => obstacles.push({ name: el.className.split(' ')[0], b: box(el.getBoundingClientRect()) }))
       pieces.forEach((c) => {
         if (c.section !== sec(p) || p < c.p1) return
         obstacles.push({ name: `placed ${c.id}`, b: box(c.slot.getBoundingClientRect()) })

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { TopBar } from '../chrome/TopBar'
+import { FileCard, ShareCard } from '../chrome/TopBar'
 import { breakpointFor } from '../scene/layout'
 import { scene, type Breakpoint } from '../scene/store'
 import { Stage2 } from './Stage2'
@@ -43,9 +43,10 @@ export default function BuildApp() {
       <a className="skip-link" href="#ch-contact">
         Skip to contact
       </a>
-      <TopBar />
-      {bp === 'desk' && !reduced && <LayersPanel2 key={`l-${key}`} />}
-      {bp !== 'mob' && !reduced && <Inspector2 />}
+      {/* the file and the Say hello button head the side panels (no top bar);
+          where a panel isn't shown, its head stands alone as a small card */}
+      {bp === 'desk' && !reduced ? <LayersPanel2 key={`l-${key}`} /> : <FileCard />}
+      {bp !== 'mob' && !reduced ? <Inspector2 /> : <ShareCard />}
       <Stage2 key={key} bp={bp} reduced={reduced} />
       {!reduced && <Dock bp={bp} />}
     </div>

@@ -204,11 +204,11 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
       live.intro = 0
       const o = { v: 0 }
       intro = gsap.timeline({ defaults: { ease: 'expo.out' }, onComplete: () => void (scene.introDone = true) })
-      const chrome = ['.topbar', '.layers', '.inspector', '.dock']
+      const chrome = ['.layers', '.inspector', '.dock']
       chrome.forEach((s, k) => {
         const el = document.querySelector(s)
         if (!el) return
-        const from = s === '.topbar' ? { y: -26 } : s === '.layers' ? { x: -30 } : s === '.inspector' ? { x: 30 } : { y: 30 }
+        const from = s === '.layers' ? { x: -30 } : s === '.inspector' ? { x: 30 } : { y: 30 }
         intro!.from(el, { ...from, opacity: 0, duration: 0.8, clearProps: 'transform,opacity' }, k * 0.06)
       })
       intro.to(o, { v: 1, duration: 1.8, ease: 'expo.inOut', onUpdate: () => void (live.intro = o.v) }, 0)

@@ -8,6 +8,7 @@ import { pieces, regions, texts, type Piece, type TextBlock } from './runtime'
 import { bsinks, chapterCh, helloName, helloTaste, inspSel, inspState, moodCh, placedVer, regionCh, rulerSubs } from './bstore'
 import { LAST, topOf, TRN } from './worlds'
 import { scene } from '../scene/store'
+import { FileHead, ShareHead, Zoom } from '../chrome/TopBar'
 
 function useChannels() {
   const [ch, setCh] = useState(chapterCh.get())
@@ -88,6 +89,7 @@ export function LayersPanel2() {
 
   return (
     <aside className="layers chrome layers2" aria-label="Layers">
+      <FileHead />
       <div className="panel-head">
         <span className="panel-tab is-active">Layers</span>
       </div>
@@ -243,8 +245,10 @@ export function Inspector2() {
   const mk = moodKey(mood)
   return (
     <aside className="inspector chrome inspector2" aria-label="Design inspector (live values)">
+      <ShareHead />
       <div className="panel-head">
         <span className="panel-tab is-active">Design</span>
+        <Zoom />
       </div>
       <div className="insp-sel">
         {isBub ? <span className="layer-ico i-organism">{LayerIcon.organism()}</span> : c ? <KindIcon kind={c.kind} /> : <span className="layer-ico i-frame">{LayerIcon.frame()}</span>}

@@ -1,3 +1,11 @@
+/**
+ * What used to be the top bar, split into the two side panels the way Figma
+ * does it: the file (mark, name, project) heads the Layers panel on the left;
+ * the people in the file and the Say hello button head the Design panel on the
+ * right, with the zoom level next to the Design tab. Where a panel isn't shown
+ * (tablet: no Layers; phone / reduced motion: no panels) the same heads stand
+ * alone as small cards.
+ */
 import { useLayoutEffect, useRef } from 'react'
 import { MomoMark } from './Icons'
 import { ui } from '../scene/store'
@@ -9,29 +17,44 @@ const PEOPLE = [
   { i: 'D', c: 'var(--sky)', n: 'Dev' },
 ]
 
-export function TopBar() {
-  const zoomRef = useRef<HTMLSpanElement>(null)
+/** the file: mark, name and project, like Figma's file menu */
+export function FileHead() {
+  return (
+    <div className="fhead">
+      <MomoMark />
+      <nav className="fhead-t" aria-label="File">
+        <span className="fhead-name">
+          Monika.Adeishvili
+        </span>
+        <span className="fhead-sub">
+          Portfolio <span className="fhead-badge">Open to work</span>
+        </span>
+      </nav>
+    </div>
+  )
+}
+
+/** the live zoom level (the scroll loop writes into it) */
+export function Zoom() {
+  const ref = useRef<HTMLSpanElement>(null)
   useLayoutEffect(() => {
-    ui.zoom = zoomRef.current
+    ui.zoom = ref.current
     return () => {
-      ui.zoom = null
+      if (ui.zoom === ref.current) ui.zoom = null
     }
   }, [])
-
   return (
-    <header className="topbar chrome">
-      <div className="tb-left">
-        <MomoMark />
-        <nav className="crumbs" aria-label="File">
-          <span className="crumb-dim">Portfolio</span>
-          <span className="crumb-sep" aria-hidden="true">
-            /
-          </span>
-          <span className="crumb-file">Monika.Adeishvili</span>
-        </nav>
-      </div>
+    <span className="zoom" aria-label="Zoom level">
+      <span ref={ref}>100%</span>
+    </span>
+  )
+}
 
-      <div className="tb-right">
+/** who is in the file, and the one button that matters */
+export function ShareHead({ people = true }: { people?: boolean }) {
+  return (
+    <div className="shead">
+      {people && (
         <ul className="avatars" aria-label="People in this file">
           {PEOPLE.map((p) => (
             <li key={p.i} className="avatar" style={{ background: p.c }} title={p.n}>
@@ -40,13 +63,28 @@ export function TopBar() {
             </li>
           ))}
         </ul>
-        <span className="zoom" aria-label="Zoom level">
-          <span ref={zoomRef}>100%</span>
-        </span>
-        <a className="btn-primary" href={`mailto:${EMAIL}`}>
-          Say hello
-        </a>
-      </div>
+      )}
+      <a className="btn-primary" href={`mailto:${EMAIL}`}>
+        Say hello
+      </a>
+    </div>
+  )
+}
+
+/** the file head on its own, where there is no Layers panel */
+export function FileCard() {
+  return (
+    <header className="layers chrome fcard">
+      <FileHead />
     </header>
+  )
+}
+
+/** the share head on its own, where there is no Design panel */
+export function ShareCard() {
+  return (
+    <div className="inspector chrome scard">
+      <ShareHead people={false} />
+    </div>
   )
 }

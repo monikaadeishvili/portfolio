@@ -244,7 +244,7 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   regs.forEach((l) => l.sort((a, b) => a.index - b.index))
 
   // tilted views: width-fit, but capped by height so on wide, short windows the
-  // heroes parked above the artboard stay clear of the top bar
+  // heroes parked above the artboard stay on screen
   const sTilt = narrow ? (view.w * 0.8) / FW : Math.min(view.w * 0.66, view.h * 1.0) / FW
   const sDesc = narrow ? (view.w * 0.86) / FW : Math.min(1.1, (view.w * 0.66) / FW)
   const tilt = narrow ? { rx: 30, rz: -4 } : { rx: 40, rz: -6 }
@@ -253,7 +253,7 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   // panels (16px margins), height permitting
   const vw0 = document.documentElement.clientWidth
   const vh0 = window.innerHeight
-  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - 62 - (bp === 'mob' ? 72 : 109) - 24 } // top bar · dock (two rows on desktop/tablet) · margins
+  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - (bp === 'mob' ? 62 : 12) - (bp === 'mob' ? 72 : 109) - 24 } // the phone's top cards (the panels sit beside the canvas elsewhere) · dock (two rows on desktop/tablet) · margins
   const fit0 = (h: number) => Math.min(1.25, free.w / FW, free.h / h)
 
   pieces.forEach((c) => {
