@@ -17,8 +17,6 @@ export interface RulerChapter {
 const sink = {
   head: null as HTMLElement | null,
   fill: null as HTMLElement | null,
-  time: null as HTMLElement | null,
-  now: null as HTMLElement | null,
   marks: [] as HTMLElement[],
   chapters: [] as RulerChapter[],
   last: -1,
@@ -59,9 +57,7 @@ export function updateRuler(p: number) {
       if (i === a) m.setAttribute('aria-current', 'step')
       else m.removeAttribute('aria-current')
     })
-    if (sink.now) sink.now.textContent = sink.chapters[a]?.label ?? ''
   }
-  if (sink.time) sink.time.textContent = `${String(a + 1).padStart(2, '0')}`
 }
 
 export function jumpTo(p: number, duration = 1.6) {
@@ -76,26 +72,19 @@ export function ChapterRuler({ chapters, variant = 'dock', label = 'Chapters', s
     if (!root) return
     sink.head = root.querySelector('.ruler-head')
     sink.fill = root.querySelector('.ruler-fill')
-    sink.time = root.querySelector('.ruler-time b')
-    sink.now = root.querySelector('.ruler-now')
     sink.marks = Array.from(root.querySelectorAll<HTMLElement>('.ruler-mark'))
     sink.chapters = chapters
     sink.last = -1
     sink.active = -1
     updateRuler(0)
     return () => {
-      sink.head = sink.fill = sink.time = sink.now = null
+      sink.head = sink.fill = null
       sink.marks = []
     }
   }, [chapters])
 
   return (
     <nav className={`ruler ruler-${variant}`} ref={rootRef} aria-label={label}>
-      <span className="ruler-time" aria-hidden="true">
-        <b>01</b>
-        <i>/{String(chapters.length).padStart(2, '0')}</i>
-        <span className="ruler-now" />
-      </span>
       <div className="ruler-track">
         <div className="ruler-ticks" aria-hidden="true" />
         {subs && subs.length > 0 && (

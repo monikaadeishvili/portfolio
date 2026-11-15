@@ -764,39 +764,6 @@
 
 /* ------------------------------------------------------------ responsive */
 @media (max-width: 767px) {
-  .layers,
-  .inspector {
-    top: 10px;
-  }
-  .fcard {
-    left: 10px;
-    border-radius: 14px;
-  }
-  .scard {
-    right: 10px;
-    border-radius: 14px;
-  }
-  .fhead {
-    gap: 8px;
-    padding: 6px 12px 6px 8px;
-  }
-  .fhead .momo-mark {
-    width: 28px;
-    height: 26px;
-  }
-  .fhead-sub {
-    display: none;
-  }
-  .fhead-name {
-    font-size: 12.5px;
-  }
-  .shead {
-    padding: 6px;
-  }
-  .btn-primary {
-    height: 30px;
-    padding: 0 12px;
-  }
   .toolbar-wrap {
     bottom: 12px;
   }
@@ -808,113 +775,137 @@
     display: none;
   }
 }
-/* phones: your avatar + a chevron (like Figma's mobile app); it lists everyone */
-.scard {
-  overflow: visible;
-}
-.ppl {
-  /* the list hangs from the card (its containing block), not from the button */
-  position: static;
-}
-.ppl-btn {
+
+/* -- phones: one floating file bar, the twin of the dock (same insets, radius,
+   padding and surface). The file (tap: back to the start), who's in it, and
+   Say hello. It stays put while you scroll. */
+.filebar {
+  position: fixed;
+  z-index: 30;
+  top: max(12px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  right: max(12px, env(safe-area-inset-right));
+  height: 52px;
   display: flex;
   align-items: center;
-  padding: 2px;
-  border-radius: 999px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background-color 140ms ease;
-}
-.ppl-btn .avatar {
-  position: relative;
-  z-index: 1;
-  width: 28px;
-  height: 28px;
-  margin: 0;
-  font-size: 12px;
-}
-.ppl-chev {
-  display: grid;
-  place-items: center;
-  /* tucked under the avatar, like Figma's mobile app */
-  width: 28px;
-  height: 28px;
-  margin-left: -8px;
-  padding-left: 6px;
-  box-sizing: border-box;
-  border-radius: 50%;
-  background: rgb(22 19 29 / 0.06);
-  color: var(--ink-2);
-  transition: background-color 140ms ease;
-}
-.ppl-chev svg {
-  width: 12px;
-  height: 12px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transition: transform 200ms var(--ease-out);
-}
-.ppl-btn[aria-expanded='true'] .ppl-chev {
-  background: rgb(22 19 29 / 0.1);
-}
-.ppl-btn[aria-expanded='true'] .ppl-chev svg {
-  transform: rotate(180deg);
-}
-.ppl-btn:active .ppl-chev {
-  background: rgb(22 19 29 / 0.12);
-}
-.ppl-list {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 2;
-  background: #fff;
-  display: grid;
-  gap: 2px;
-  min-width: 190px;
-  margin: 0;
+  gap: 8px;
   padding: 6px;
-  border-radius: 14px;
-  list-style: none;
-  transform-origin: 100% 0;
-  animation: ppl-in 180ms var(--ease-out);
+  border-radius: 18px;
 }
-.ppl-list li {
+.fb-home {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 8px;
-  border-radius: 9px;
+  gap: 8px;
+  height: 40px;
+  min-width: 0;
+  padding: 0 10px 0 4px;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 140ms var(--ease-out),
+    background-color 140ms ease;
+}
+.fb-home .momo-mark {
+  width: 30px;
+  height: 28px;
+}
+.fb-name {
+  font-family: var(--f-ui);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 650;
+  letter-spacing: -0.005em;
   white-space: nowrap;
 }
-.ppl-list .avatar {
-  margin: 0;
+.fb-badge {
+  display: none;
+}
+.fb-home:active {
+  background: rgb(22 19 29 / 0.06);
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .fb-home:hover {
+    background: rgb(22 19 29 / 0.06);
+  }
+}
+.fb-home:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: -2px;
+}
+.fb-ppl {
+  margin-left: auto;
+  pointer-events: none;
+}
+.fb-ppl .avatar {
+  width: 24px;
+  height: 24px;
+  margin-left: -6px;
+  font-size: 10.5px;
+  border-color: var(--chrome);
+}
+/* small phones: you, Monika and "+2"; from 480px all four */
+.fb-ppl :is(.fb-av-p, .fb-av-d) {
+  display: none;
+}
+.fb-more {
+  /* solid, so it sits over M instead of showing it through */
+  background: #efeef2;
+  color: var(--ink-2);
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 600;
+}
+.filebar .fb-cta {
+  flex: none;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (max-width: 374px) {
+  .fb-name {
+    font-size: 12.5px;
+  }
+  .fb-home .momo-mark {
+    width: 28px;
+    height: 26px;
+  }
+  .fb-home {
+    padding-right: 8px;
+  }
+  .filebar .fb-cta {
+    padding: 0 14px;
+  }
+}
+@media (max-width: 339px) {
+  .fb-ppl {
+    display: none;
+  }
+  .filebar .fb-cta {
+    margin-left: auto;
+  }
+}
+@media (min-width: 480px) {
+  .fb-ppl :is(.fb-av-p, .fb-av-d) {
+    display: grid;
+  }
+  .fb-more {
+    display: none;
+  }
+  .fb-badge {
+    display: inline-block;
+    margin-left: -2px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ppl-list {
-    animation: none;
-  }
-}
-@keyframes ppl-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px) scale(0.97);
-  }
-}
-/* narrow phones: both top cards side by side */
-@media (max-width: 400px) {
-  .fhead {
-    padding-right: 10px;
-  }
-  .fhead-name {
-    font-size: 12px;
-  }
-  .scard .shead {
-    gap: 6px;
+  .fb-home:active {
+    transform: none;
   }
 }

@@ -8,26 +8,6 @@
   padding: 0 14px 0 6px;
   font-family: var(--f-ui);
 }
-.ruler-time {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 1px;
-  flex: none;
-  padding: 4px 8px;
-  border-radius: 8px;
-  background: rgb(22 19 29 / 0.045);
-  font-family: var(--f-mono);
-  font-size: 11.5px;
-  font-variant-numeric: tabular-nums;
-}
-.ruler-time b {
-  font-weight: 600;
-  color: var(--ink);
-}
-.ruler-time i {
-  font-style: normal;
-  color: var(--ink-3);
-}
 .ruler-track {
   position: relative;
   flex: 1;
@@ -163,9 +143,6 @@
   box-shadow: 0 0 0 1.5px #fff;
   transform: rotate(45deg);
 }
-.ruler-now {
-  display: none;
-}
 
 /* ------------------------------------------------------------ dock */
 .dock {
@@ -211,15 +188,6 @@
 .dock.is-compact .ruler-mark {
   padding: 0;
 }
-.dock.is-compact .ruler-now {
-  display: inline;
-  margin-left: 8px;
-  color: var(--violet);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  font-size: 10.5px;
-  white-space: nowrap;
-}
 
 /* slim variant (Page 1, above the toolbar) */
 .ruler-slim-wrap {
@@ -237,10 +205,6 @@
 }
 .ruler-slim .ruler-track {
   height: 32px;
-}
-.ruler-slim .ruler-time {
-  padding: 3px 6px;
-  font-size: 10.5px;
 }
 .ruler-slim .ruler-mark {
   font-size: 9.5px;
@@ -324,14 +288,11 @@
 /* a slimmer ruler in the dock: shorter track, smaller labels and ticks */
 .dock .ruler {
   gap: 8px;
-  padding: 0 8px 0 4px;
+  /* room for the playhead's diamond at 0% (there's no chip before it now) */
+  padding: 0 10px 0 12px;
 }
 .dock .ruler-track {
   height: 30px;
-}
-.dock .ruler-time {
-  padding: 3px 6px;
-  font-size: 10.5px;
 }
 .dock .ruler-mark {
   padding: 2px 0 0 5px;
@@ -419,19 +380,10 @@
 }
 .dock.is-compact .ruler {
   gap: 8px;
-  padding: 0 6px 0 0;
+  padding: 0 10px 0 8px;
 }
 .dock.is-compact .ruler-track {
   height: 50px;
-}
-.dock.is-compact .ruler-time {
-  padding: 6px 9px;
-  border-radius: 10px;
-  font-size: 12.5px;
-}
-/* the chip keeps just 03/04: the ruler itself shows where you are */
-.dock.is-compact .ruler-now {
-  display: none;
 }
 .dock.is-compact .ruler-mark {
   padding: 5px 0 0 7px;

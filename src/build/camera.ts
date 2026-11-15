@@ -59,7 +59,7 @@ export function viewFor(bp: Breakpoint): { view: Rect; lay: Lay; fw: number } {
   let l: number, r: number, t: number, b: number
   if (bp === 'desk') [l, r, t, b] = [12 + 240 + 28, 12 + 248 + 28, 12 + 48 + 34, 100]
   else if (bp === 'tab') [l, r, t, b] = [24, 12 + 248 + 24, 12 + 48 + 30, 96]
-  else [l, r, t, b] = [12, 12, 10 + 44 + 26, 104] // the phone dock is 64px tall
+  else [l, r, t, b] = [12, 12, 12 + 52 + 26, 104] // the phone file bar (52px) and dock (64px)
   const view = { x: l, y: t, w: Math.max(240, vw - l - r), h: Math.max(320, vh - t - b) }
   const lay: Lay = view.w >= 640 ? 'wide' : 'narrow'
   const fw = lay === 'wide' ? 1120 : Math.round(clamp(view.w * 1.02, 360, 540))
@@ -256,7 +256,7 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   // panels (16px margins), height permitting
   const vw0 = document.documentElement.clientWidth
   const vh0 = window.innerHeight
-  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - (bp === 'mob' ? 62 : 12) - (bp === 'mob' ? 84 : 109) - 24 } // the phone's top cards (the panels sit beside the canvas elsewhere) · dock (two rows on desktop/tablet) · margins
+  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - (bp === 'mob' ? 72 : 12) - (bp === 'mob' ? 84 : 109) - 24 } // the phone's file bar (the panels sit beside the canvas elsewhere) · dock (two rows on desktop/tablet) · margins
   const fit0 = (h: number) => Math.min(1.25, free.w / FW, free.h / h)
 
   pieces.forEach((c) => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FileCard, ShareCard } from '../chrome/TopBar'
+import { FileBar, FileCard, ShareCard } from '../chrome/TopBar'
 import { breakpointFor } from '../scene/layout'
 import { scene, type Breakpoint } from '../scene/store'
 import { Stage2 } from './Stage2'
@@ -44,9 +44,16 @@ export default function BuildApp() {
         Skip to contact
       </a>
       {/* the file and the Say hello button head the side panels (no top bar);
-          where a panel isn't shown, its head stands alone as a small card */}
-      {bp === 'desk' && !reduced ? <LayersPanel2 key={`l-${key}`} /> : <FileCard />}
-      {bp !== 'mob' && !reduced ? <Inspector2 /> : <ShareCard />}
+          where a panel isn't shown, its head stands alone as a small card; on
+          phones one floating file bar, the twin of the dock */}
+      {bp === 'mob' ? (
+        <FileBar />
+      ) : (
+        <>
+          {bp === 'desk' && !reduced ? <LayersPanel2 key={`l-${key}`} /> : <FileCard />}
+          {!reduced ? <Inspector2 /> : <ShareCard />}
+        </>
+      )}
       <Stage2 key={key} bp={bp} reduced={reduced} />
       {!reduced && <Dock bp={bp} />}
     </div>

@@ -6,7 +6,7 @@
  * (tablet: no Layers; phone / reduced motion: no panels) the same heads stand
  * alone as small cards.
  */
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import { MomoMark } from './Icons'
 import { ui } from '../scene/store'
 import { EMAIL } from '../content/story'
@@ -18,58 +18,7 @@ const PEOPLE = [
   { i: 'P', c: 'var(--mint)', n: 'PM', ink: true },
   { i: 'D', c: 'var(--sky)', n: 'Dev', ink: true },
 ]
-const YOU = PEOPLE[0]
 const fg = (p: (typeof PEOPLE)[number]) => ('ink' in p ? 'var(--ink)' : '#fff')
-
-function Avatar({ p }: { p: (typeof PEOPLE)[number] }) {
-  return (
-    <span className="avatar" style={{ background: p.c, color: fg(p) }} aria-hidden="true">
-      {p.i}
-    </span>
-  )
-}
-
-/** phones: the visitor's own avatar and a chevron, like Figma's mobile app; it
- *  opens the list of everyone in the file */
-function People() {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (!open) return
-    const onDown = (e: PointerEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false)
-    }
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
-    window.addEventListener('pointerdown', onDown)
-    window.addEventListener('keydown', onKey)
-    return () => {
-      window.removeEventListener('pointerdown', onDown)
-      window.removeEventListener('keydown', onKey)
-    }
-  }, [open])
-  return (
-    <div className="ppl" ref={ref}>
-      <button type="button" className="ppl-btn" aria-expanded={open} aria-haspopup="true" aria-label={`${PEOPLE.length} people in this file`} onClick={() => setOpen((v) => !v)}>
-        <Avatar p={YOU} />
-        <span className="ppl-chev" aria-hidden="true">
-          <svg viewBox="0 0 12 12">
-            <path d="M3 4.5 6 7.5 9 4.5" />
-          </svg>
-        </span>
-      </button>
-      {open && (
-        <ul className="ppl-list chrome" aria-label="People in this file">
-          {PEOPLE.map((p) => (
-            <li key={p.i}>
-              <Avatar p={p} />
-              <span>{p.n}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-}
 
 /** the file: mark, name and project, like Figma's file menu */
 export function FileHead() {
@@ -105,13 +54,10 @@ export function Zoom() {
 }
 
 /** who is in the file, and the one button that matters */
-export function ShareHead({ compact = false }: { compact?: boolean }) {
+export function ShareHead() {
   return (
     <div className="shead">
-      {compact ? (
-        <People />
-      ) : (
-        <ul className="avatars" aria-label="People in this file">
+      <ul className="avatars" aria-label="People in this file">
           {PEOPLE.map((p) => (
             <li key={p.i} className="avatar" style={{ background: p.c, color: fg(p) }}>
               <span aria-hidden="true">{p.i}</span>
@@ -122,8 +68,7 @@ export function ShareHead({ compact = false }: { compact?: boolean }) {
               </span>
             </li>
           ))}
-        </ul>
-      )}
+      </ul>
       <a className="btn-primary" href={`mailto:${EMAIL}`}>
         Say hello
       </a>
@@ -144,8 +89,46 @@ export function FileCard() {
 export function ShareCard() {
   return (
     <div className="inspector chrome scard">
-      {/* who's in the file (your avatar + a chevron, like Figma's mobile app), then the button */}
-      <ShareHead compact />
+      <ShareHead />
     </div>
+  )
+}
+
+/**
+ * Phones: one floating file bar, the twin of the dock at the bottom (same
+ * insets, radius, padding and surface), so the canvas is framed like one
+ * product. The file (tap: back to the start), who's in it (at a glance, not a
+ * menu), and the one button that matters. It stays put while you scroll.
+ */
+export function FileBar() {
+  const home = () => {
+    if (ui.scrollTo) ui.scrollTo(0, 1.2)
+    else window.scrollTo({ top: 0, behavior: 'auto' })
+  }
+  return (
+    <header className="chrome filebar">
+      <button type="button" className="fb-home" onClick={home} aria-label="Monika Adeishvili — back to start">
+        <MomoMark />
+        <span className="fb-name" aria-hidden="true">
+          Monika.Adeishvili
+        </span>
+        <span className="fhead-badge fb-badge" aria-hidden="true">
+          Open to work
+        </span>
+      </button>
+      <ul className="avatars fb-ppl" aria-label={`${PEOPLE.length} people in this file: you, Monika, a PM and a developer`}>
+        {PEOPLE.map((p) => (
+          <li key={p.i} className={`avatar fb-av-${p.i.toLowerCase()}`} style={{ background: p.c, color: fg(p) }} aria-hidden="true">
+            {p.i}
+          </li>
+        ))}
+        <li className="avatar fb-more" aria-hidden="true">
+          +{PEOPLE.length - 2}
+        </li>
+      </ul>
+      <a className="btn-primary fb-cta" href={`mailto:${EMAIL}`}>
+        Say hello
+      </a>
+    </header>
   )
 }
