@@ -97,6 +97,17 @@ export function mountWork(root: HTMLElement, region: number) {
       d.w = d.el.offsetWidth
       d.mid = left(d.el) + d.w / 2
     })
+    // the strip stops with the last project centred in the frame (its text and
+    // screens), not slid on into the empty paper after it; when it is wider than
+    // the frame, it stops once its last screen is fully in
+    const last = projs[projs.length - 1]
+    const lastFrames = frames.filter((f) => last && last.el.contains(f.el))
+    if (last && lastFrames.length) {
+      const right = Math.max(...lastFrames.map((f) => f.mid + f.w / 2))
+      const span = right - last.start
+      const stop = span <= clipW - 48 ? last.start + span / 2 - clipW / 2 : right + 24 - clipW
+      travel = Math.max(0, Math.min(travel, stop))
+    }
     frames.forEach((f) => (f.key = '-'))
     lineW = line?.offsetWidth || 1
     // a tick where each project starts arriving in frame
