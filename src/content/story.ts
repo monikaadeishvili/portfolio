@@ -127,6 +127,10 @@ export interface WorkMedia {
   /** public/work/<video>.mp4: a screen recording that plays in the frame
    *  (the first file is its poster and the still for reduced motion) */
   video?: string
+  /** how the screens change: 'theme' reveals the next one as a circle growing
+   *  from `origin` (fractions of the screen), like flipping light/dark mode */
+  nav?: 'theme'
+  origin?: readonly [number, number]
 }
 export interface WorkProject {
   id: string
@@ -265,7 +269,8 @@ export const WORK: readonly WorkProject[] = [
     body: 'A growth dashboard: clicks, leads, sales and traffic sources at a glance, in light and in dark.',
     meta: [['Platform', 'Web app']],
     media: [
-      m('web', 1600, 1000, ['growthoptix-0', 'The GrowthOptix overview, light'], ['growthoptix-1', 'The GrowthOptix overview, dark']),
+      // light and dark: the theme flips from the sun/moon switch in the sidebar
+      { ...m('web', 1600, 1138, ['growthoptix-0', 'The GrowthOptix overview, light'], ['growthoptix-1', 'The GrowthOptix overview, dark']), nav: 'theme', origin: [0.021, 0.765] },
     ],
   },
   {

@@ -326,6 +326,18 @@
 .pw-shot[data-nav='rise'][data-dir] img[data-s='on'] {
   animation: pw-rise 480ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
+.pw-shot[data-nav='theme'][data-dir] img[data-s='on'] {
+  animation: pw-theme 900ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+/* light ↔ dark: the next theme spreads out from the switch that was flipped */
+@keyframes pw-theme {
+  from {
+    clip-path: circle(0% at var(--ox, 2%) var(--oy, 76%));
+  }
+  to {
+    clip-path: circle(150% at var(--ox, 2%) var(--oy, 76%));
+  }
+}
 @keyframes pw-push-in {
   from {
     transform: translateX(100%);

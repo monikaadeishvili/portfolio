@@ -57,8 +57,9 @@ const MEDIA = {
     ['phone', `${P}/Studious/3.svg`],
   ],
   growthoptix: [
-    ['web', `${P}/GrowthOptix /Overview.svg`],
-    ['web', `${P}/GrowthOptix /Overview Dark.svg`],
+    // the whole screen (1440×1024), not cropped to the usual 16:10
+    ['web', `${P}/GrowthOptix /Overview.svg`, { a: 1440 / 1024 }],
+    ['web', `${P}/GrowthOptix /Overview Dark.svg`, { a: 1440 / 1024 }],
   ],
   wedo: [
     // the phone, in the order of the flow: three onboarding pages, sign-in, no
@@ -69,8 +70,9 @@ const MEDIA = {
 
 /**
  * render any source to an RGB buffer exactly `w` wide, cropped from the top to
- * aspect `a`. `trim` cuts that fraction of the width off every side first (a
- * built-in bezel); `bg` fills any transparency (rounded corners) instead of white.
+ * aspect `a` (an entry's own `a` overrides its kind's). `trim` cuts that fraction
+ * of the width off every side first (a built-in bezel); `bg` fills any
+ * transparency (rounded corners) instead of white.
  */
 async function render(file, w, a, { trim = 0, bg = '#ffffff' } = {}) {
   let img
@@ -98,7 +100,7 @@ for (const [id, list] of Object.entries(MEDIA)) {
   if (only.length && !only.includes(id)) continue
   for (let k = 0; k < list.length; k++) {
     const [kind, file, opt] = list[k]
-    const buf = await render(file, W[kind], A[kind], opt)
+    const buf = await render(file, W[kind], opt?.a ?? A[kind], opt)
     const base = path.join(OUT, `${id}-${k}`)
     await sharp(buf).webp({ quality: 84, effort: 5 }).toFile(`${base}.webp`)
     const m = await sharp(`${base}.webp`).metadata()

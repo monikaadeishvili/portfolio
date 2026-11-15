@@ -33,7 +33,11 @@ function Screen({ m }: { m: WorkMedia }) {
             <i />
           </span>
         )}
-        <div className="pw-shot" data-nav={m.kind === 'phone' ? 'push' : 'rise'}>
+        <div
+          className="pw-shot"
+          data-nav={m.nav ?? (m.kind === 'phone' ? 'push' : 'rise')}
+          style={m.origin ? ({ '--ox': `${(m.origin[0] * 100).toFixed(1)}%`, '--oy': `${(m.origin[1] * 100).toFixed(1)}%` } as CSSProperties) : undefined}
+        >
           {m.video ? (
             <video
               src={`/work/${m.video}.mp4`}
