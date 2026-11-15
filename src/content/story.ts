@@ -42,7 +42,7 @@ export const CHAPTERS: Chapter[] = [
   {
     id: 'contact',
     num: '04',
-    frame: 'Contact',
+    frame: 'Say Hello',
     ruler: 'SAY HELLO',
     headline: ["Let's build something people ", { em: "won't ignore." }],
     body: 'Open to new work — product design, design systems, and teams that care.',
