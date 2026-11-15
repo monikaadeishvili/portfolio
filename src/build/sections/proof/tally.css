@@ -54,7 +54,15 @@
    about her, each in its own colour with an ink edge and a hard shadow */
 .pt-fly {
   display: block;
-  will-change: transform, opacity;
+}
+/* the stickers and chips are alive pieces: their hops and leaps need depth, so
+   the tally keeps the camera's 3-D context down to each piece */
+.bf-body .pt-stage,
+.bf-body .pt-board,
+.bf-body .pt-cardslot,
+.bf-body .pt-chips,
+.bf-body .pt-chipslot {
+  transform-style: preserve-3d;
 }
 .pt-cardslot {
   /* its cell: scattered on wide boards (--cw/--rw), packed on narrow ones */
@@ -66,71 +74,33 @@
   left: calc(var(--c) * var(--cell) + 6px);
   top: calc(var(--r) * var(--cell) + 5px);
 }
-/* spat out of the bubble: the x and y legs of the flight run on different
-   curves (x glides, y lobs up first), so each sticker flies in an arc */
-.pt-arc {
-  display: block;
-  height: 100%;
-  translate: var(--fx, 0) 0;
-  transition: translate 700ms cubic-bezier(0.3, 0.6, 0.35, 1);
-}
-.pt-cardslot.is-in .pt-arc {
-  translate: 0 0;
-}
 .pt-card {
   position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
-  translate: 0 var(--fy, 0);
   padding: 11px 12px 11px;
   border: 1.5px solid #141413;
   border-radius: 16px;
   background: var(--bg);
   color: var(--fg);
   box-shadow: 0 4px 0 #141413;
-  opacity: 0;
-  transform: scale(0.12) rotate(calc(var(--rest) * -9));
+  transform: rotate(var(--rest));
   transition:
-    opacity 160ms ease,
-    translate 700ms cubic-bezier(0.45, -0.5, 0.6, 1),
-    transform 700ms var(--spring),
+    transform 260ms var(--spring),
     box-shadow 220ms var(--out);
 }
-.pt-cardslot.is-in .pt-card {
-  opacity: 1;
-  translate: 0 0;
-  transform: rotate(var(--rest));
-}
-/* four projects wait on the board beside the headline, tilted and idling,
-   then jump into their cells (the same arc as a spat one, from where they lie) */
-.pt-cardslot[data-park] {
-  --fx: calc(var(--pkx) - var(--c) * var(--cell) - 6px);
-  --fy: calc(var(--pky) - var(--r) * var(--cell) - 5px);
-}
-.pt-cardslot[data-park]:not(.is-in) .pt-card {
-  opacity: 1;
-  transform: rotate(var(--pkr)) scale(0.9);
-  box-shadow: 0 6px 0 #141413;
-  animation: pt-idle 2.8s ease-in-out calc(var(--i) * -0.7s) infinite;
-}
-.pt-cardslot[data-park]:not(.is-in) .pt-mk {
-  animation: pt-bob 2.4s ease-in-out calc(var(--i) * -0.5s) infinite;
-}
-@keyframes pt-idle {
-  50% {
-    rotate: 2.5deg;
-    translate: 0 calc(var(--fy, 0px) - 5px);
-  }
+/* while it waits or walks it leans its own way; it straightens as it lands */
+.slot:not([data-st='placed']) > .alive .pt-card {
+  transform: rotate(var(--pkr));
 }
 @media (hover: hover) and (pointer: fine) {
-  .pt-cardslot.is-in:hover {
+  .pt-cardslot:has(.slot[data-st='placed']):hover {
     z-index: 2;
   }
-  .pt-cardslot.is-in:hover .pt-card {
+  .pt-cardslot:has(.slot[data-st='placed']):hover .pt-card {
     transform: translateY(-5px) rotate(calc(var(--rest) * -1.5)) scale(1.07);
     box-shadow: 0 9px 0 #141413;
-    transition-duration: 160ms, 700ms, 260ms, 220ms;
   }
 }
 .pt-top {
@@ -151,9 +121,12 @@
   height: 34px;
   background: var(--mk);
 }
-.pt-cardslot.is-in :is(.pt-mk, .pt-sun) {
+.pt-card :is(.pt-mk, .pt-sun) {
+  animation: pt-bob 3.2s ease-in-out calc(var(--i) * -0.55s) infinite;
+}
+.slot[data-st='placed'] .pt-card :is(.pt-mk, .pt-sun) {
   animation:
-    pt-hop 560ms var(--spring) 180ms both,
+    pt-hop 560ms var(--spring) 120ms both,
     pt-bob 3.2s ease-in-out calc(var(--i) * -0.55s) infinite;
 }
 @keyframes pt-hop {
@@ -291,7 +264,7 @@
   color: #fff;
   opacity: 0;
 }
-.pt-cardslot.is-in .pt-plus {
+.slot[data-st='placed'] .pt-plus {
   animation: pt-plus 700ms var(--out) 160ms both;
 }
 @keyframes pt-plus {
@@ -511,17 +484,6 @@
   font-size: 10.5px;
   line-height: 1.3;
   white-space: nowrap;
-  opacity: 0;
-  translate: var(--fx, 0) var(--fy, 0);
-  transform: scale(0.2) rotate(calc((var(--k) - 3) * 1deg));
-  transition:
-    opacity 140ms ease calc(var(--k) * 30ms),
-    translate 560ms cubic-bezier(0.25, 0.8, 0.3, 1) calc(var(--k) * 30ms),
-    transform 560ms var(--spring) calc(var(--k) * 30ms);
-}
-.pt-chipslot.is-in .pt-chip {
-  opacity: 1;
-  translate: 0 0;
   transform: rotate(calc((var(--k) - 3) * 1deg));
 }
 
@@ -533,18 +495,15 @@
   width: calc(1.5 * var(--cell));
   height: 100%;
   opacity: 0;
-  translate: var(--fx, 0) var(--fy, 0);
-  scale: 0.2;
+  translate: 0 14px;
   transition:
-    opacity 200ms ease,
-    translate 640ms cubic-bezier(0.25, 0.8, 0.3, 1),
-    scale 640ms var(--spring);
+    opacity 380ms ease 300ms,
+    translate 420ms cubic-bezier(0.2, 0.8, 0.2, 1) 300ms;
 }
-/* the counters pop out of the bubble with the first card */
+/* the counters rise in place once the grid has drawn, and wait at zero */
 .pt-stage.is-count .pt-counts {
   opacity: 1;
   translate: 0 0;
-  scale: 1;
 }
 .pt-count {
   position: absolute;
@@ -1068,14 +1027,6 @@
   top: calc(var(--fold-y) + 418px);
 }
 
-.bstage[data-lay='narrow'] .pt-cardslot[data-park] {
-  --fx: calc(var(--pkxn) - var(--c) * var(--cell) - 4px);
-  --fy: calc(var(--pkyn) - var(--r) * var(--cell) - 3px);
-}
-.bstage[data-lay='narrow'] .pt-cardslot[data-park]:not(.is-in) .pt-card {
-  transform: rotate(var(--pkr)) scale(0.58);
-}
-
 /* -- reduced motion / static: everything landed, the fold beneath the tally
    (the driver doesn't run on the still page, so this is CSS alone) */
 .bstage.is-static .pt-grid i,
@@ -1091,14 +1042,9 @@
 .bstage.is-static .pt-prod {
   opacity: 1;
 }
-.bstage.is-static :is(.pt-arc, .pt-card, .pt-chip) {
-  translate: none;
-}
+
 .bstage.is-static .pt-card {
   opacity: 1;
-  transform: rotate(var(--rest));
-}
-.bstage.is-static .pt-cardslot[data-park] .pt-card {
   transform: rotate(var(--rest));
 }
 .bstage.is-static .pt-chip {

@@ -94,10 +94,32 @@
   list-style: none;
 }
 .pw-proj {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 52px;
   padding-right: 150px;
+}
+.pw-ghost {
+  position: absolute;
+  z-index: 0;
+  left: -20px;
+  top: calc(50% - 352px);
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-variation-settings: 'wght' 850, 'wdth' 88;
+  font-size: 200px;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: rgb(20 20 19 / 0.05);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+.pw-txt,
+.pw-shots {
+  position: relative;
+  z-index: 1;
 }
 .pw-txt {
   flex: none;
@@ -449,14 +471,86 @@
 }
 .pw-dot {
   position: absolute;
-  left: -4.5px;
+  left: -11px;
+  top: -12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--tint, var(--pw-ink));
+  box-shadow:
+    0 0 0 2px var(--pw-ink),
+    0 3px 0 2px var(--pw-ink);
+  transition: background-color 400ms ease;
+}
+/* the walker: googly eyes that look where it's going, legs that step */
+.pw-dot-eyes {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.pw-dot-eyes i {
+  position: relative;
+  width: 7px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+}
+.pw-dot-eyes i::after {
+  content: '';
+  position: absolute;
+  left: 2px;
   top: 2.5px;
-  width: 9px;
-  height: 9px;
+  width: 3.5px;
+  height: 3.5px;
   border-radius: 50%;
   background: var(--pw-ink);
-  box-shadow: 0 0 0 3px var(--pw-paper), 0 0 0 4.5px var(--tint, var(--pw-ink));
-  transition: box-shadow 400ms ease;
+  transition: translate 200ms ease;
+}
+.pw-dot[data-walk='f'] .pw-dot-eyes i::after {
+  translate: 1.5px 0;
+}
+.pw-dot[data-walk='b'] .pw-dot-eyes i::after {
+  translate: -1.5px 0;
+}
+.pw-dot-legs {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 1px);
+  display: flex;
+  gap: 6px;
+  translate: -50% 0;
+}
+.pw-dot-legs i {
+  width: 2px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--pw-ink);
+  transform-origin: 50% 0;
+}
+.pw-dot[data-walk] .pw-dot-legs i {
+  animation: pw-step 0.26s ease-in-out infinite alternate;
+}
+.pw-dot[data-walk] .pw-dot-legs i:last-child {
+  animation-direction: alternate-reverse;
+}
+.pw-dot[data-walk] .pw-dot-eyes {
+  animation: pw-bob 0.26s ease-in-out infinite alternate;
+}
+@keyframes pw-step {
+  from {
+    rotate: -24deg;
+  }
+  to {
+    rotate: 24deg;
+  }
+}
+@keyframes pw-bob {
+  to {
+    translate: 0 -1.5px;
+  }
 }
 
 /* -- narrow */

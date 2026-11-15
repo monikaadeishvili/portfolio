@@ -36,6 +36,8 @@ export interface PieceMeta {
   dur?: number
   /** parking spot, artboard px of the hero box' top-left: "x,y" */
   park?: string
+  /** false: not listed as its own row in the Layers panel (crowds of tiny pieces) */
+  layer?: boolean
   slot: HTMLElement
   alive: HTMLElement
   inner: HTMLElement
@@ -389,8 +391,10 @@ export function evalPose(c: Piece, p: number, peak: number) {
     P.y = lerp(W.y, 0, e)
     const high = (stamp ? 260 : 220) * peak
     P.z = t < 0.78 ? lerp(W.z, high, outCubic(t / 0.78)) : high * (1 - inCubic((t - 0.78) / 0.22))
-    const spin = stamp ? 0 : (rnd(c.id, 5) > 0.5 ? 1 : -1) * 180
-    P.rot = lerp(spin, 0, outCubic(t)) + c.rest * e
+    // a slap spins a full turn in the air, starting from how it lay (a half
+    // turn that started at 180° used to flip it in a single frame at lift-off)
+    const spin = stamp ? 0 : (rnd(c.id, 5) > 0.5 ? 1 : -1) * 360
+    P.rot = spin * outCubic(t) + c.rest * e
     const grow = stamp ? 0.4 : 0.22
     const sc = 1 + grow * smooth(0.1, 0.7, t) * (1 - smooth(0.82, 1, t))
     P.sx = sc

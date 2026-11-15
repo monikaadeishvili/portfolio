@@ -43,7 +43,7 @@ export const SPLIT_PAL: [string, string, string] = ['#B6F03A', '#2DB8FF', '#FF7A
  * for the "same tools → taste" beat; everything is normalised so the other
  * sections keep exactly the same absolute scroll length (SCROLL_VH grows).
  */
-const RAW_W = [0.145, 0.34, 0.425, 0.098]
+const RAW_W = [0.145, 0.34, 0.47, 0.098]
 const RAW_TR = 0.068
 const RAW_SUM = RAW_W.reduce((a, b) => a + b, 0) + RAW_TR * (RAW_W.length - 1)
 export const TR_LEN = RAW_TR / RAW_SUM
@@ -101,7 +101,8 @@ export const PH3: Phases = {
   topEnd: 0.07,
   flat: 0.09,
   descStart: 0.1,
-  descEnd: 0.92,
+  // the strip runs on until the bubble starts charging (no long still hold)
+  descEnd: 0.955,
 }
 export const phOf = (i: number): Phases => (i === 0 ? PH0 : i === 1 ? PH2 : i === 2 ? PH3 : PH)
 

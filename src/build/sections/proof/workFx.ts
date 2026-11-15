@@ -33,6 +33,8 @@ export function mountWork(root: HTMLElement, region: number) {
   if (!clip || !track) return () => {}
   const projs = Array.from(track.querySelectorAll<HTMLElement>('.pw-proj')).map((el) => ({
     el,
+    ghost: el.querySelector<HTMLElement>('.pw-ghost'),
+    kg: '',
     txt: el.querySelector<HTMLElement>('.pw-txt'),
     shots: el.querySelector<HTMLElement>('.pw-shots'),
     start: 0,
@@ -79,7 +81,7 @@ export function mountWork(root: HTMLElement, region: number) {
   let lastX = 0
   let lastT = -1
   let vel = 0
-  const cache = { track: '', dot: '', fill: '', fade: '' }
+  const cache = { track: '', dot: '', fill: '', fade: '', walk: '' }
 
   const measure = () => {
     clipW = clip.offsetWidth || 1
@@ -94,7 +96,7 @@ export function mountWork(root: HTMLElement, region: number) {
     projs.forEach((p) => {
       p.start = left(p.el)
       p.tw = p.txt?.offsetWidth ?? 0
-      p.kt = p.ks = '-'
+      p.kt = p.ks = p.kg = '-'
     })
     ;[...decks, ...vids, ...frames].forEach((d) => {
       d.w = d.el.offsetWidth
@@ -207,6 +209,14 @@ export function mountWork(root: HTMLElement, region: number) {
             p.txt.style.transform = `translate3d(${kt}px, 0, 0)`
           }
         }
+        // its ghost name drifts at about half the strip's speed
+        if (p.ghost) {
+          const kg = (-0.55 * (pos - clipW * 0.3)).toFixed(1)
+          if (kg !== p.kg) {
+            p.kg = kg
+            p.ghost.style.transform = `translate3d(${kg}px, 0, 0)`
+          }
+        }
         if (p.shots && leanK !== p.ks) {
           p.ks = leanK
           p.shots.style.transform = leanK ? `skewX(${leanK}deg)` : ''
@@ -244,6 +254,14 @@ export function mountWork(root: HTMLElement, region: number) {
           cache.dot = dk
           dot.style.transform = dk
         }
+        // the walker's legs move while the strip does, and it faces its way
+        const walking = Math.abs(vel) > 40
+        const wk = walking ? (vel < 0 ? 'f' : 'b') : ''
+        if (wk !== cache.walk) {
+          cache.walk = wk
+          if (wk) dot.dataset.walk = wk
+          else delete dot.dataset.walk
+        }
       }
       if (fill) {
         const fk = `scaleX(${T.toFixed(4)})`
@@ -273,6 +291,7 @@ export function mountWork(root: HTMLElement, region: number) {
     frames.forEach((f) => (f.el.style.transform = f.el.style.opacity = ''))
     projs.forEach((p) => {
       p.el.classList.remove('is-in')
+      if (p.ghost) p.ghost.style.transform = ''
       if (p.txt) p.txt.style.transform = ''
       if (p.shots) p.shots.style.transform = ''
     })

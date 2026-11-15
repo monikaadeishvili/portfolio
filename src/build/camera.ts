@@ -434,11 +434,19 @@ function schedule(g: Geo) {
         if (i === 0 && r === 0) {
           c.in0 = -1
           c.in1 = -1
+        } else if (i === 2 && r === 1) {
+          // Proof's running total: its stickers drop onto their waiting spots
+          // one by one while the headline is up (once the draft has swept away),
+          // so they stand ready before the grid fills
+          const w0 = g.wins[2]?.[0]
+          const base = w0 ? w0[0] + (w0[1] - w0[0]) * 0.6 : A - L * 0.3
+          c.in0 = base + j * 0.0022
+          c.in1 = c.in0 + 0.012
         } else if (i === LAST) {
-          // Say hello: the balloon has just popped; every piece is thrown out of
-          // it onto the canvas at once, whichever region it will crawl to
-          c.in0 = SEC[i][0] - 0.004 + j * 0.0012 + r * 0.0025
-          c.in1 = c.in0 + 0.01
+          // Say hello: every piece is already waiting on the canvas when the
+          // visitor arrives (no drop-in, no fade), whichever region it crawls to
+          c.in0 = -1
+          c.in1 = -1
         } else {
           // drop in as the camera arrives, settle before the first one leaves
           c.in0 = r === 0 ? SEC[i][0] - 0.006 + j * 0.0015 : A - L * 0.3 + j * 0.002

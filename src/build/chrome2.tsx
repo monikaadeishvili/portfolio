@@ -106,7 +106,7 @@ export function LayersPanel2() {
           {regs.map((r) => {
             const rows: Row[] = [
               ...[...texts.values()].filter((t) => t.section === ch && t.region === r.index).map((t) => ({ kind: 'text' as const, t })),
-              ...all.filter((c) => c.region === r.index).map((c) => ({ kind: 'piece' as const, c })),
+              ...all.filter((c) => c.region === r.index && c.layer !== false).map((c) => ({ kind: 'piece' as const, c })),
             ].sort((a, b) => (a.kind === 'piece' ? a.c.p1 : a.t.p0) - (b.kind === 'piece' ? b.c.p1 : b.t.p0))
             const done = rows.filter((x) => (x.kind === 'piece' ? x.c.pose.state === 'placed' : p >= x.t.p1)).length
             return (

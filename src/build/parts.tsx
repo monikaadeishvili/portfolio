@@ -60,12 +60,14 @@ interface PieceProps {
   parkN?: string
   eyes?: { x: number; y: number; s?: number } | false
   legs?: boolean
+  /** false: no row of its own in the Layers panel (for crowds of tiny pieces) */
+  layer?: boolean
   className?: string
   style?: CSSProperties
   children: ReactNode
 }
 
-export function Piece({ id, name, kind, tone = '#5B4BFF', travel, order, at, dur, park, parkN, eyes = { x: 50, y: 0, s: 16 }, legs = true, className = '', style, children }: PieceProps) {
+export function Piece({ id, name, kind, tone = '#5B4BFF', travel, order, at, dur, park, parkN, eyes = { x: 50, y: 0, s: 16 }, legs = true, layer = true, className = '', style, children }: PieceProps) {
   const ctx = useSection()
   const region = useContext(RegionCtx)
   const ref = useRef<HTMLDivElement>(null)
@@ -90,13 +92,14 @@ export function Piece({ id, name, kind, tone = '#5B4BFF', travel, order, at, dur
       at,
       dur,
       park: ctx.narrow ? parkN : park,
+      layer,
       slot,
       alive,
       inner: alive.querySelector('.alive-in') as HTMLElement,
       shadow: slot.querySelector(':scope > .alive-shadow') as HTMLElement,
       trail: Array.from(slot.querySelectorAll<HTMLElement>(':scope > .trail > i')),
     })
-  }, [ctx.live, ctx.section, ctx.narrow, id, name, k, tone, region, order, tr, at, dur, park, parkN])
+  }, [ctx.live, ctx.section, ctx.narrow, id, name, k, tone, region, order, tr, at, dur, park, parkN, layer])
 
   if (!ctx.live)
     return (

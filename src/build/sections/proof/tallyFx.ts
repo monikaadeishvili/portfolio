@@ -1,22 +1,27 @@
 /**
- * 03 Proof, part one — drives the running total (./Tally.tsx) from its
- * region's progress q (the camera holds flat on it):
- *   0.08–0.44  the stickers land one by one; the counters roll up with the
- *              client products among them
- *   0.44–0.62  the other 26 products arrive in four waves; the count runs to 32
- *   0.70–0.86  everything folds into the orbit around "your product" (scrubbed)
- *   0.86       one card drops out below it: one designer, all of the above
- *   0.90–1     the bubble jumps back out of the orbit (bubble/choreo.ts)
- * Landings are class toggles (CSS does the springs and they reverse on the way
- * back); only the fold is scrubbed. Layout is read only in `measure`.
+ * 03 Proof, part one — drives the running total (./Tally.tsx). The stickers
+ * and chips are alive pieces (they wait, walk, leap and pop on their own, see
+ * the Piece scheduler); this counts what has landed and runs the fold, from the
+ * tally region's progress q (the camera holds flat on it):
+ *   headline     the grid draws itself while the stickers stand waiting
+ *   0.09–0.46    the thirteen stickers walk / leap into their cells; the
+ *                counters roll with every client product that lands
+ *   0.48–0.62    the 26 chips pop out of the bubble; the count runs to 32
+ *   0.70–0.86    everything folds onto a slowly turning ring around "your
+ *                product" (scrubbed): the cards on an inner ring, the chips as
+ *                dots on an outer one
+ *   0.86         one card drops out below: one designer, all of the above
+ *   0.90–1       the bubble jumps back out (bubble/choreo.ts)
+ * Layout is read only in `measure`.
  */
 import { TALLY } from '../../../content/story'
-import { live } from '../../loop'
 import { clamp01, registerFx } from '../../runtime'
 
 const easeIO = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
 /** how much of the fold the farthest piece waits before it sets off */
 const SPREAD = 0.3
+/** the rings turn this many radians per second once folded (about 90 s a turn) */
+const SPIN = (Math.PI * 2) / 90
 
 export function mountTally(root: HTMLElement, region: number) {
   const stage = root.querySelector<HTMLElement>('.pt-stage')
@@ -30,22 +35,17 @@ export function mountTally(root: HTMLElement, region: number) {
   const blob = q1('.pt-blob')
   const labs = Array.from(board.querySelectorAll<HTMLElement>('.pt-lab'))
   const rolls = Array.from(board.querySelectorAll<HTMLElement>('.pt-count')).map((el) => Array.from(el.querySelectorAll<HTMLElement>('.pt-col')))
-  const flys = [...cards, ...chips].map((el) => ({ el, dx: 0, dy: 0, s: 0, key: '' }))
-  /** where each thing lands (board px), so it can be spat out of the bubble */
-  const spits = [...cards, ...chips, ...(counts ? [counts] : [])].map((el) => ({ el, x: 0, y: 0, key: '' }))
-  /** the board's top-left in world px: the bubble lives in world space */
-  const bw = { x: 0, y: 0 }
-  let gulps = 0
-  const waves = [0, 1, 2, 3].map((w) => chips.filter((c) => c.dataset.w === String(w)))
-  const nCards = TALLY.cards.length
-  /** landing order: the four waiting on the board jump in first, then the bubble's */
-  const order = TALLY.cards.map((c, i) => ({ c, i })).sort((a, b) => Number('park' in b.c) - Number('park' in a.c))
-  const rank = new Array<number>(nCards)
-  order.forEach((o, k) => (rank[o.i] = k))
-  /** how many client products have landed once the first n stickers are down */
-  const workBy = order.reduce<number[]>((acc, o) => [...acc, acc[acc.length - 1] + (o.c.kind === 'work' ? 1 : 0)], [0])
-  const nWork = workBy[nCards]
-  const total = nWork + TALLY.chips.length
+  /** everything that folds: the cards onto the inner ring, the chips onto the outer */
+  const flys = [...cards.map((el, i) => ({ el, i, n: cards.length, chip: false })), ...chips.map((el, i) => ({ el, i, n: chips.length, chip: true }))].map((f) => ({
+    ...f,
+    x: 0,
+    y: 0,
+    s: 0,
+    key: '',
+  }))
+  const workIds = TALLY.cards.filter((c) => c.kind === 'work').map((c) => `t-${c.id}`)
+  const chipIds = TALLY.chips.map((_, i) => `t-chip-${i}`)
+  const total = workIds.length + chipIds.length
 
   const shown = [-1, -1]
   const setRoll = (k: number, v: number) => {
@@ -64,15 +64,18 @@ export function mountTally(root: HTMLElement, region: number) {
   setRoll(0, 0)
   setRoll(1, 0)
 
+  // the ring the fold lands on: its centre (where the bubble perches) and radii
+  const ring = { x: 0, y: 0, rx: 300, ry: 150, ox: 380, oy: 190 }
   const cache = { counts: '', orbit: '' }
   const on = (el: Element | null, c: string, v: boolean) => el?.classList.toggle(c, v)
 
   const measure = (g: { perch?: { x: number; y: number; s: number; hop: number }; R: number; narrow: boolean }) => {
     // the board's place in the world: offsets up to and including the artboard
-    bw.x = bw.y = 0
+    let bx = 0
+    let by = 0
     for (let n: HTMLElement | null = board; n; n = n.offsetParent as HTMLElement | null) {
-      bw.x += n.offsetLeft
-      bw.y += n.offsetTop
+      bx += n.offsetLeft
+      by += n.offsetTop
       if (n.classList.contains('bf')) break
     }
     // layout offsets inside the board (transforms don't count)
@@ -86,22 +89,20 @@ export function mountTally(root: HTMLElement, region: number) {
       return [x, y]
     }
     const [tx, ty] = blob ? at(blob) : [board.offsetWidth / 2, board.offsetHeight / 3]
-    // the bubble perches here once everything has folded into the orbit
-    g.perch = { x: bw.x + tx, y: bw.y + ty, s: g.narrow ? 0.55 : 0.5, hop: g.narrow ? 16 : 22 }
-    spits.forEach((sp) => {
-      ;[sp.x, sp.y] = at(sp.el)
-      sp.key = '-'
-    })
+    ring.x = tx
+    ring.y = ty
+    // a flat ellipse: it clears the designer card that drops in below
+    Object.assign(ring, g.narrow ? { rx: 140, ry: 96, ox: 162, oy: 122 } : { rx: 300, ry: 150, ox: 380, oy: 190 })
+    // the bubble perches in the middle once everything has folded
+    g.perch = { x: bx + tx, y: by + ty, s: g.narrow ? 0.55 : 0.5, hop: g.narrow ? 16 : 22 }
     let far = 1
     flys.forEach((f) => {
-      const [x, y] = at(f.el)
-      f.dx = tx - x
-      f.dy = ty - y
-      far = Math.max(far, Math.hypot(f.dx, f.dy))
+      ;[f.x, f.y] = at(f.el)
+      far = Math.max(far, Math.hypot(tx - f.x, ty - f.y))
     })
-    // the farthest pieces set off last, so the fold reads as a pull to the centre
+    // the farthest pieces set off last, so the fold reads as a pull inward
     flys.forEach((f) => {
-      f.s = (Math.hypot(f.dx, f.dy) / far) * SPREAD
+      f.s = (Math.hypot(tx - f.x, ty - f.y) / far) * SPREAD
       f.key = '-'
     })
     cache.counts = cache.orbit = '-'
@@ -116,7 +117,7 @@ export function mountTally(root: HTMLElement, region: number) {
       if (e.reduced) {
         // one still page: everything landed, the counts final, nothing folds
         if (!stage.classList.contains('is-full')) {
-          ;[...cards, ...chips, ...labs].forEach((el) => el.classList.add('is-in', 'is-on'))
+          labs.forEach((el) => el.classList.add('is-on'))
           stage.classList.add('is-grid', 'is-count', 'is-full', 'is-blob', 'is-me')
           setRoll(0, total)
           setRoll(1, TALLY.industries)
@@ -125,55 +126,44 @@ export function mountTally(root: HTMLElement, region: number) {
       }
       const q = e.reg[region] ?? 0
 
-      on(stage, 'is-grid', q > 0.005)
-      // everything is spat out of the bubble: until it lands, each thing waits
-      // (as a vector) at the bubble's current spot, so that's where it flies from
-      const b = live.state?.cores[0]
-      if (b && q < 0.7) {
-        spits.forEach((sp) => {
-          // (the parked ones fly from where they wait, set in CSS)
-          if (sp.el.hasAttribute('data-park') || sp.el.classList.contains('is-in') || (sp.el === counts && stage.classList.contains('is-count'))) return
-          const k = `${Math.round(b.x - bw.x - sp.x)},${Math.round(b.y - bw.y - sp.y)}`
-          if (k === sp.key) return
-          sp.key = k
-          const [x, y] = k.split(',')
-          sp.el.style.setProperty('--fx', `${x}px`)
-          sp.el.style.setProperty('--fy', `${y}px`)
-        })
+      // the grid draws itself while the headline is still up: the empty board
+      // fills with lines as the stickers stand waiting
+      on(stage, 'is-grid', (e.reg[0] ?? 0) > 0.6 || q > 0.005)
+      on(stage, 'is-count', (e.reg[0] ?? 0) > 0.8 || q > 0.005)
+
+      // the counts follow what has actually landed
+      const down = (id: string) => {
+        const c = e.piece(id)
+        return !!c && e.p >= c.p1
       }
-      const landed = q < 0.08 ? 0 : Math.min(nCards, Math.floor((q - 0.08) / (0.36 / nCards)) + 1)
-      cards.forEach((c, i) => on(c, 'is-in', rank[i] < landed))
-      on(stage, 'is-count', landed > 0)
-      let started = 0
-      waves.forEach((w, k) => {
-        const inn = q >= 0.44 + k * 0.045
-        if (inn) started++
-        w.forEach((c) => on(c, 'is-in', inn))
-      })
-      // the bubble gulps each time it spits something out
-      const spat = landed + started
-      if (spat > gulps) live.gulp++
-      gulps = spat
-      const products = q < 0.44 ? workBy[landed] : Math.min(total, nWork + Math.round(clamp01((q - 0.44) / 0.18) * (total - nWork)))
+      const work = workIds.filter(down).length
+      const chipsIn = chipIds.filter(down).length
+      const products = work + chipsIn
       setRoll(0, products)
-      setRoll(1, Math.min(TALLY.industries, workBy[landed] + started))
+      setRoll(1, Math.min(TALLY.industries, work + Math.floor((chipsIn * (TALLY.industries - workIds.length)) / chipIds.length)))
       on(stage, 'is-full', products >= total)
 
-      // the fold
+      // the fold: onto a slowly turning ring around "your product"
       const c = easeIO(clamp01((q - 0.7) / 0.16))
+      const turn = e.t * SPIN
       flys.forEach((f) => {
         const t = clamp01((c - f.s) / (1 - SPREAD))
-        const k = t <= 0 ? '' : `${(f.dx * t).toFixed(1)},${(f.dy * t).toFixed(1)},${(1 - 0.75 * t).toFixed(3)},${t < 0.7 ? 1 : (1 - (t - 0.7) / 0.3).toFixed(3)}`
+        let k = ''
+        if (t > 0) {
+          const a = (f.i / f.n) * Math.PI * 2 - Math.PI / 2 + (f.chip ? -turn * 0.6 : turn)
+          const tx = ring.x + Math.cos(a) * (f.chip ? ring.ox : ring.rx)
+          const ty = ring.y + Math.sin(a) * (f.chip ? ring.oy : ring.ry)
+          const sc = 1 - (1 - (f.chip ? 0.08 : 0.3)) * t
+          k = `${((tx - f.x) * t).toFixed(1)},${((ty - f.y) * t).toFixed(1)},${sc.toFixed(3)}`
+        }
         if (k === f.key) return
         f.key = k
         if (!k) {
           f.el.style.transform = ''
-          f.el.style.opacity = ''
           return
         }
-        const [x, y, s, o] = k.split(',')
+        const [x, y, s] = k.split(',')
         f.el.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${s})`
-        f.el.style.opacity = o
       })
       const ck = c.toFixed(3)
       if (counts && ck !== cache.counts) {
@@ -186,7 +176,7 @@ export function mountTally(root: HTMLElement, region: number) {
         orbit.style.opacity = c > 0 ? c.toFixed(3) : '0'
         orbit.style.transform = `scale(${(0.6 + 0.4 * c).toFixed(3)})`
       }
-      // a skill pops onto the ring as each wave of pieces arrives
+      // a skill pops onto the ring as the pieces arrive
       labs.forEach((l, i) => on(l, 'is-on', c >= (i + 1.5) / (labs.length + 1)))
       on(stage, 'is-blob', c > 0.3)
       on(stage, 'is-me', q >= 0.86)
@@ -195,12 +185,9 @@ export function mountTally(root: HTMLElement, region: number) {
 
   return () => {
     off()
-    flys.forEach((f) => {
-      f.el.style.transform = ''
-      f.el.style.opacity = ''
-    })
+    flys.forEach((f) => (f.el.style.transform = ''))
     for (const el of [counts, orbit]) if (el) el.style.transform = el.style.opacity = ''
     stage.classList.remove('is-grid', 'is-count', 'is-full', 'is-blob', 'is-me')
-    ;[...cards, ...chips, ...labs].forEach((el) => el.classList.remove('is-in', 'is-on'))
+    labs.forEach((el) => el.classList.remove('is-on'))
   }
 }

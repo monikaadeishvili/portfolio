@@ -83,11 +83,11 @@ export function Proof({ lay, live }: SectionProps) {
           <Reveal id="p-title" as="h2" hid="h-proof" segs={CHAPTERS[2].headline} className="rv-title pw-title" />
         </Region>
 
-        <Region index={1} label="Running total" className="pt-r" weight={4} pan>
+        <Region index={1} label="Running total" className="pt-r" weight={6} pan>
           <Tally />
         </Region>
 
-        <Region index={2} label="Work" className="pw-r1" weight={9} pan hold="0.64,0.36,0.93">
+        <Region index={2} label="Work" className="pw-r1" weight={9} pan hold="0.70,0.45,0.95">
           <div className="pw-pin">
             <div className="pw-clip">
               <div className="pw-wash" aria-hidden="true">
@@ -98,6 +98,10 @@ export function Proof({ lay, live }: SectionProps) {
               <ol className="pw-track" aria-label="Selected work">
                 {WORK.map((p, i) => (
                   <li key={p.id} className="pw-proj" data-k={i}>
+                    {/* the project's name, huge and faint behind it, drifting slower than the strip */}
+                    <span className="pw-ghost" aria-hidden="true">
+                      {p.name}
+                    </span>
                     <div className="pw-txt">
                       <span className="pw-idx" aria-hidden="true">
                         {pad(i + 1)} <i>/ {pad(WORK.length)}</i>
@@ -142,7 +146,17 @@ export function Proof({ lay, live }: SectionProps) {
                 {WORK.map((p) => (
                   <i key={p.id} className="pw-tick" />
                 ))}
-                <b className="pw-dot" />
+                {/* the timeline's marker: a little walker that hikes along with the strip */}
+                <b className="pw-dot">
+                  <span className="pw-dot-eyes">
+                    <i />
+                    <i />
+                  </span>
+                  <span className="pw-dot-legs">
+                    <i />
+                    <i />
+                  </span>
+                </b>
               </span>
             </div>
           </div>
