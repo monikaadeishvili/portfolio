@@ -9,7 +9,9 @@
   --pw-dev: #101010;
 }
 .bf-proof .bf-bg {
-  background: var(--pw-paper);
+  /* while the strip runs, the whole board takes a faint wash of the project in view */
+  background-color: color-mix(in srgb, var(--pw-tint, var(--pw-paper)) 11%, var(--pw-paper));
+  transition: background-color 700ms ease;
   box-shadow:
     0 0 0 2px var(--ink),
     0 8px 0 var(--ink),
@@ -69,19 +71,6 @@
 .pw-rule {
   transform: translateZ(4px);
 }
-.pw-wash,
-.pw-wash i {
-  position: absolute;
-  inset: 0;
-}
-.pw-wash i {
-  background: radial-gradient(120% 90% at 50% 45%, var(--t), transparent 75%);
-  opacity: 0;
-  transition: opacity 600ms ease;
-}
-.pw-wash i.is-on {
-  opacity: 0.13;
-}
 .pw-track {
   position: relative;
   display: flex;
@@ -103,18 +92,25 @@
 .pw-ghost {
   position: absolute;
   z-index: 0;
-  left: -20px;
-  top: calc(50% - 352px);
+  left: -12px;
+  top: calc(50% - 300px);
   font-family: var(--f-display);
   font-weight: 400;
   font-variation-settings: 'wght' 850, 'wdth' 88;
-  font-size: 200px;
+  font-size: 136px;
   line-height: 1;
-  letter-spacing: -0.05em;
-  color: rgb(20 20 19 / 0.05);
+  letter-spacing: -0.04em;
+  /* solid ink, faded as one layer: a see-through colour darkened every spot
+     where two tight letters overlap (it read as seams cutting the word) */
+  color: var(--pw-ink);
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+.pw-proj.is-now .pw-ghost {
+  opacity: 0.055;
 }
 .pw-txt,
 .pw-shots {
@@ -634,7 +630,7 @@
 .bstage.is-static .pw-shots {
   flex-wrap: wrap;
 }
-.bstage.is-static :is(.pw-rule, .pw-wash) {
+.bstage.is-static .pw-rule {
   display: none;
 }
 .bstage.is-static .pw-txt > *,

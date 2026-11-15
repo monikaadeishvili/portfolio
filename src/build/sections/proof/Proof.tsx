@@ -5,7 +5,7 @@
  * ./workFx.ts slides the track with the scroll). Each project is a text column
  * (name, what it is, year / role / platforms, a link) followed by its screens in
  * a browser window, a TV or phones; a thin timeline along the bottom keeps your
- * place and the strip washes faintly in each project's colour.
+ * place and the whole board washes faintly in each project's colour.
  */
 import { useLayoutEffect, useRef, type CSSProperties } from 'react'
 import { CHAPTERS, TALLY, WORK, type WorkMedia } from '../../../content/story'
@@ -90,11 +90,6 @@ export function Proof({ lay, live }: SectionProps) {
         <Region index={2} label="Work" className="pw-r1" weight={9} pan hold="0.70,0.45,0.95">
           <div className="pw-pin">
             <div className="pw-clip">
-              <div className="pw-wash" aria-hidden="true">
-                {WORK.map((p) => (
-                  <i key={p.id} style={{ '--t': p.tint } as CSSProperties} />
-                ))}
-              </div>
               <ol className="pw-track" aria-label="Selected work">
                 {WORK.map((p, i) => (
                   <li key={p.id} className="pw-proj" data-k={i}>

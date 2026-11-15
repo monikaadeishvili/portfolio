@@ -9,8 +9,9 @@
  *   · the screens lean with the strip's speed and straighten at rest;
  *   · phones change page like a tap on an app's tab bar, web and TV frames like
  *     a route change; recordings play only in view;
- *   · the strip washes faintly in the colour of the project in view, and the
- *     timeline fills, pops its ticks and rolls the project's name.
+ *   · the whole board washes faintly in the colour of the project in view, only
+ *     that project's big faint name shows, and the timeline fills, pops its
+ *     ticks and rolls the project's name.
  * Layout is read only in `measure`; `update` writes cached transforms.
  */
 import { WORK } from '../../../content/story'
@@ -29,7 +30,9 @@ export function mountWork(root: HTMLElement, region: number) {
   const fill = q1('.pw-fill')
   const nowN = q1('.pw-now b')
   const names = Array.from(root.querySelectorAll<HTMLElement>('.pw-now em span'))
-  const washes = Array.from(root.querySelectorAll<HTMLElement>('.pw-wash i'))
+  /** the whole board takes the colour of the project in view while the strip runs */
+  const boardEl = root.closest<HTMLElement>('.bf')
+  let tintOn = false
   if (!clip || !track) return () => {}
   const projs = Array.from(track.querySelectorAll<HTMLElement>('.pw-proj')).map((el) => ({
     el,
@@ -138,8 +141,10 @@ export function mountWork(root: HTMLElement, region: number) {
       out.className = 'is-out'
     }
     ticks.forEach((t, k) => t.classList.toggle('is-past', k <= i))
-    washes.forEach((w, k) => w.classList.toggle('is-on', k === i))
+    // only the project in view shows its big faint name: no two overlap
+    projs.forEach((p, k) => p.el.classList.toggle('is-now', k === i))
     rule?.style.setProperty('--tint', WORK[i].tint)
+    if (tintOn) boardEl?.style.setProperty('--pw-tint', WORK[i].tint)
   }
   setNow(0)
 
@@ -279,11 +284,19 @@ export function mountWork(root: HTMLElement, region: number) {
         cache.fade = fd
         rule.style.opacity = fd
       }
+      // the board's colour wash follows the strip in and out
+      const tint = pre > 0.5 && q < 0.995
+      if (tint !== tintOn) {
+        tintOn = tint
+        if (tint && shown >= 0) boardEl?.style.setProperty('--pw-tint', WORK[shown].tint)
+        else boardEl?.style.removeProperty('--pw-tint')
+      }
     },
   })
 
   return () => {
     off()
+    boardEl?.style.removeProperty('--pw-tint')
     track.style.transform = ''
     if (dot) dot.style.transform = ''
     if (fill) fill.style.transform = ''
