@@ -61,9 +61,9 @@ const MEDIA = {
     ['web', `${P}/GrowthOptix /Overview Dark.svg`],
   ],
   wedo: [
-    ['phone', `${P}/Wedo/Onboarding Screen - 1.svg`],
-    ['phone', `${P}/Wedo/Main Page.svg`],
-    ['phone', `${P}/Wedo/Onboarding Screen - 3.svg`],
+    // the phone, in the order of the flow: three onboarding pages, sign-in, no
+    // list yet, a new list, then the shared lists (corners filled like the frame)
+    ...['1', '2', '3', '4', '5', '6', '7'].map((n) => ['phone', `${P}/Wedo/${n}.svg`, { bg: '#101010' }]),
   ],
 }
 

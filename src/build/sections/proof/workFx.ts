@@ -2,7 +2,7 @@
  * 03 Proof — the work strip's driver. Region 1's build progress slides the
  * track sideways (the camera holds still on the region, like How I think's
  * pan). Frames with several screens change page while in view, like
- * tapping through an app; screen recordings play only while their frame is in
+ * changing pages in an app; screen recordings play only while their frame is in
  * view. The bottom timeline's dot follows the strip and names the project in view.
  * Layout is read only in `measure`; `update` writes cached transforms.
  */
@@ -24,25 +24,15 @@ export function mountWork(root: HTMLElement) {
   const projs = Array.from(track.querySelectorAll<HTMLElement>('.pw-proj'))
   const ticks = Array.from(root.querySelectorAll<HTMLElement>('.pw-tick'))
   /** frames with several screens: they change page while in view, like an app */
-  const decks = Array.from(track.querySelectorAll<HTMLElement>('.pw-m.is-deck')).map((el, k) => {
-    const id = el.closest<HTMLElement>('.pw-proj')?.dataset.k
-    const media = WORK[Number(id)]?.media.find((m) => m.files.length > 1)
-    return {
-      el,
-      imgs: Array.from(el.querySelectorAll<HTMLImageElement>('.pw-shot img')),
-      tap: el.querySelector<HTMLElement>('.pw-tap'),
-      taps: media?.taps ?? [],
-      i: 0,
-      /** the page coming next, and when it takes over (after the tap lands) */
-      j: -1,
-      at: 0,
-      flip: false,
-      mid: 0,
-      w: 0,
-      // decks start out of step, so neighbours don't all change at once
-      next: 1.4 + (k % 3) * 0.8,
-    }
-  })
+  const decks = Array.from(track.querySelectorAll<HTMLElement>('.pw-m.is-deck')).map((el, k) => ({
+    el,
+    imgs: Array.from(el.querySelectorAll<HTMLImageElement>('.pw-shot img')),
+    i: 0,
+    mid: 0,
+    w: 0,
+    // decks start out of step, so neighbours don't all change at once
+    next: 1.4 + (k % 3) * 0.8,
+  }))
   /** screen recordings: they play while their frame is in view */
   const vids = Array.from(track.querySelectorAll<HTMLVideoElement>('.pw-shot video')).map((v) => {
     v.muted = true // autoplay without a gesture needs the property, not just the attribute
@@ -55,7 +45,6 @@ export function mountWork(root: HTMLElement) {
     else o.v.pause()
   }
   const HOLD = 2.3 // seconds on each page
-  const TAP = 0.3 // the tap lands this long before the page changes
 
   let clipW = 1
   let travel = 0
@@ -116,17 +105,8 @@ export function mountWork(root: HTMLElement) {
         track.style.transform = tk
       }
 
-      // decks in view change page: a tap lands where the finger would press,
-      // then the next page fades in over the current one (an app's page change)
+      // decks in view change page: the next page fades in over the current one
       decks.forEach((d) => {
-        if (d.j >= 0) {
-          if (e.t < d.at) return
-          const j = d.j
-          d.j = -1
-          d.imgs.forEach((img, n) => (img.dataset.s = n === j ? 'on' : n === d.i ? 'prev' : 'park'))
-          d.i = j
-          return
-        }
         const seen = Math.abs(d.mid + x - clipW / 2) < clipW / 2 - d.w * 0.15
         if (!seen) {
           d.next = Math.max(d.next, e.t + 0.6)
@@ -135,16 +115,8 @@ export function mountWork(root: HTMLElement) {
         if (e.t < d.next) return
         d.next = e.t + HOLD
         const j = (d.i + 1) % d.imgs.length
-        const tap = d.taps[j]
-        d.j = j
-        d.at = e.t + (tap && d.tap ? TAP : 0)
-        if (tap && d.tap) {
-          d.tap.style.left = `${(tap[0] * 100).toFixed(1)}%`
-          d.tap.style.top = `${(tap[1] * 100).toFixed(1)}%`
-          // two identical animations, swapped, so the ripple restarts every time
-          d.flip = !d.flip
-          d.tap.dataset.p = d.flip ? 'a' : 'b'
-        }
+        d.imgs.forEach((img, n) => (img.dataset.s = n === j ? 'on' : n === d.i ? 'prev' : 'park'))
+        d.i = j
       })
 
       // a recording plays while any of its frame is on screen

@@ -18,7 +18,6 @@ const pad = (n: number) => String(n).padStart(2, '0')
  *  recording it plays while in view (./workFx.ts) */
 function Screen({ m }: { m: WorkMedia }) {
   const many = m.files.length > 1
-  const taps = m.taps.some(Boolean)
   return (
     <figure className={`pw-m pw-${m.kind}${many ? ' is-deck' : ''}`} style={{ '--r': (m.w / m.h).toFixed(4) } as CSSProperties}>
       <div className="pw-frame">
@@ -47,7 +46,6 @@ function Screen({ m }: { m: WorkMedia }) {
               <img key={i} src={`/work/${f}.webp`} alt={m.alts[i]} width={m.w} height={m.h} decoding="async" fetchPriority="low" data-s={i === 0 ? 'on' : 'park'} />
             ))
           )}
-          {taps && <span className="pw-tap" aria-hidden="true" />}
         </div>
       </div>
     </figure>

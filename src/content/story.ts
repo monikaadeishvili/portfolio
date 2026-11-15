@@ -121,8 +121,6 @@ export interface WorkMedia {
   /** public/work/<file>.webp, one per screen (a file may come back later in the loop) */
   files: readonly string[]
   alts: readonly string[]
-  /** where a finger taps to reach each screen (fractions of the screen), or null */
-  taps: readonly (readonly [number, number] | null)[]
   /** intrinsic size of the first screen */
   w: number
   h: number
@@ -138,17 +136,13 @@ export interface WorkProject {
   link?: { label: string; href: string }
   media: readonly WorkMedia[]
 }
-type Tap = readonly [x: number, y: number]
-const m = (kind: WorkKind, w: number, h: number, ...screens: [file: string, alt: string, tap?: Tap][]): WorkMedia => ({
+const m = (kind: WorkKind, w: number, h: number, ...screens: [file: string, alt: string][]): WorkMedia => ({
   kind,
   w,
   h,
   files: screens.map((x) => x[0]),
   alts: screens.map((x) => x[1]),
-  taps: screens.map((x) => x[2] ?? null),
 })
-/** DAZN's tab bar and header, as fractions of the phone screen */
-const DZ = { home: [0.115, 0.915], scores: [0.305, 0.915], schedule: [0.69, 0.915], search: [0.88, 0.915], avatar: [0.903, 0.087], back: [0.07, 0.087] } as const
 export const WORK: readonly WorkProject[] = [
   {
     id: 'dazn',
@@ -166,12 +160,12 @@ export const WORK: readonly WorkProject[] = [
         'phone',
         640,
         1382,
-        ['dazn-1', 'DAZN on mobile: home', DZ.home],
-        ['dazn-5', 'DAZN on mobile: profile', DZ.avatar],
-        ['dazn-1', 'DAZN on mobile: home', DZ.back],
-        ['dazn-2', 'DAZN on mobile: football scores', DZ.scores],
-        ['dazn-3', 'DAZN on mobile: schedule', DZ.schedule],
-        ['dazn-4', 'DAZN on mobile: search', DZ.search],
+        ['dazn-1', 'DAZN on mobile: home'],
+        ['dazn-5', 'DAZN on mobile: profile'],
+        ['dazn-1', 'DAZN on mobile: home'],
+        ['dazn-2', 'DAZN on mobile: football scores'],
+        ['dazn-3', 'DAZN on mobile: schedule'],
+        ['dazn-4', 'DAZN on mobile: search'],
       ),
     ],
   },
@@ -209,18 +203,17 @@ export const WORK: readonly WorkProject[] = [
       ['Platform', 'Mobile app'],
     ],
     media: [
-      // taps land where a finger would press: Get Started, an answer, View Profile, Message now
       m(
         'phone',
         640,
         1374,
         ['roomistry-0', 'Roomistry: the splash screen'],
         ['roomistry-1', 'Roomistry: welcome to Roomistry'],
-        ['roomistry-2', 'Roomistry: the questionnaire, cleanliness', [0.5, 0.899]],
-        ['roomistry-3', 'Roomistry: the questionnaire, passions', [0.25, 0.395]],
+        ['roomistry-2', 'Roomistry: the questionnaire, cleanliness'],
+        ['roomistry-3', 'Roomistry: the questionnaire, passions'],
         ['roomistry-4', 'Roomistry: four roommates that match'],
-        ['roomistry-5', 'Roomistry: a roommate profile', [0.59, 0.354]],
-        ['roomistry-6', 'Roomistry: messaging a roommate', [0.657, 0.306]],
+        ['roomistry-5', 'Roomistry: a roommate profile'],
+        ['roomistry-6', 'Roomistry: messaging a roommate'],
       ),
     ],
   },
@@ -253,8 +246,7 @@ export const WORK: readonly WorkProject[] = [
         1386,
         ['studious-1', 'Studious on mobile: the splash screen'],
         ['studious-2', 'Studious on mobile: welcome to Studious'],
-        // a tap on Next leads on to the account
-        ['studious-3', 'Studious on mobile: create an account', [0.5, 0.917]],
+        ['studious-3', 'Studious on mobile: create an account'],
       ),
     ],
   },
@@ -273,7 +265,18 @@ export const WORK: readonly WorkProject[] = [
     body: 'Shared lists for groceries, trips and baby gear, kept in one clean spot.',
     meta: [['Platform', 'Mobile app']],
     media: [
-      m('phone', 640, 1387, ['wedo-0', 'WeDo: We do together'], ['wedo-1', 'WeDo: a shared grocery list'], ['wedo-2', 'WeDo: for everything']),
+      m(
+        'phone',
+        640,
+        1387,
+        ['wedo-0', 'WeDo onboarding: We do together'],
+        ['wedo-1', 'WeDo onboarding: always in sync'],
+        ['wedo-2', 'WeDo onboarding: for everything'],
+        ['wedo-3', 'WeDo: one step away from shared lists, sign in'],
+        ['wedo-4', 'WeDo: no list yet'],
+        ['wedo-5', 'WeDo: a new list'],
+        ['wedo-6', 'WeDo: Grocery and Baby items lists, shared'],
+      ),
     ],
   },
 ]

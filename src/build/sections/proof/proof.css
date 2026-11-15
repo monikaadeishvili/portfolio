@@ -264,7 +264,7 @@
 }
 
 /* a frame with several screens changes page like an app: the next page fades
-   in over the current one; on DAZN a finger tap lands on the tab first */
+   in over the current one */
 .pw-shot img[data-s] {
   will-change: opacity;
 }
@@ -281,53 +281,6 @@
   z-index: 0;
   opacity: 0;
 }
-.pw-tap {
-  position: absolute;
-  z-index: 3;
-  width: 15%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: rgb(255 255 255 / 0.55);
-  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.4);
-  opacity: 0;
-  translate: -50% -50%;
-  pointer-events: none;
-}
-.pw-tap[data-p='a'] {
-  animation: pw-tap-a 620ms cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-.pw-tap[data-p='b'] {
-  animation: pw-tap-b 620ms cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-@keyframes pw-tap-a {
-  0% {
-    opacity: 0;
-    scale: 0.35;
-  }
-  25% {
-    opacity: 0.9;
-    scale: 0.7;
-  }
-  100% {
-    opacity: 0;
-    scale: 1.6;
-  }
-}
-@keyframes pw-tap-b {
-  0% {
-    opacity: 0;
-    scale: 0.35;
-  }
-  25% {
-    opacity: 0.9;
-    scale: 0.7;
-  }
-  100% {
-    opacity: 0;
-    scale: 1.6;
-  }
-}
-
 /* the timeline */
 .pw-rule {
   position: absolute;
