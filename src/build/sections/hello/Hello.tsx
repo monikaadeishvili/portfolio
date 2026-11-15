@@ -603,7 +603,7 @@ export function Hello({ lay, live, onNav }: SectionProps) {
                 </span>
                 <Piece id="h-n1" name="Numeral / Products" kind="hero" tone={HC.ink} travel="leap" order={2} at={0.42} dur={0.2} park="420,b-214" eyes={{ x: 50, y: -6, s: 18 }} className="h-numslot">
                   <span className="h-num">
-                    <Odo value="18" />
+                    <Odo value="32" />
                   </span>
                 </Piece>
                 <Reveal id="h-c1" mode="type" segs={['Client products']} className="h-cell-l" label="Label / Products" />

@@ -37,7 +37,7 @@ export const CHAPTERS: Chapter[] = [
     frame: 'Proof',
     ruler: 'PROOF',
     headline: ['Seven years, one question: ', { em: 'who is this for?' }],
-    body: 'Sports streaming across TV, phone and desktop at DAZN. Business banking for law firms at NOTA by M&T Bank. Eighteen client products at Forcoda. And classrooms, too — I teach UX, because explaining design makes you better at it.',
+    body: 'Sports streaming across TV, phone and desktop at DAZN. Business banking for law firms at NOTA by M&T Bank. Thirty-two client products in all. And classrooms, too — I teach UX, because explaining design makes you better at it.',
   },
   {
     id: 'contact',
@@ -61,7 +61,7 @@ export const HELLO = {
   marquee: { lead: 'FROM A ', empty: 'BLANK FIGMA FILE', mid: ' TO ', full: 'A PRODUCT PEOPLE USE', tail: ' — ' },
   /** companies and named client products from the resume (the Worked with marquee) */
   workedWith: ['DAZN', 'Nota by M&T Bank', 'Contrast', 'Forcoda', 'Studious', 'Hello Audio', 'Roomistry', 'Startup Mentor AI', '4twiggers', 'Realoffer', 'Moneymarket', 'Xpresso', 'Refresh Miami', 'Graft', 'Bizzy', 'Burq', 'Dinespace'],
-  clients: '18 client products',
+  clients: '32 client products',
   hint: ['This page builds itself.', "Your product won't."] as const,
   primary: 'See how I work',
   ghost: 'Say hello',
@@ -90,7 +90,7 @@ export const RULES = [
 
 export const STATS = [
   { n: 7, suf: '+', label: 'years designing', tone: 'yellow' },
-  { n: 18, suf: '', label: 'client products at one agency', tone: 'lime' },
+  { n: 32, suf: '', label: 'client products', tone: 'lime' },
   { n: 9, suf: '', label: 'industries', tone: 'sky' },
 ] as const
 
