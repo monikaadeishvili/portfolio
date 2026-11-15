@@ -85,8 +85,6 @@ export function Contact({ lay, live }: SectionProps) {
           <div className="k-pen">
             <div className="k-row">
               <span className="k-ig-home">
-                {/* the mascot perches here, and stays put while the button runs */}
-                <span className="f5-mascot-spot" aria-hidden="true" />
                 <span className="k-ig-halo">
                   <button type="button" className="k-ig" data-step="0">
                     <span className="k-ig-in">Ignore</span>

@@ -106,8 +106,7 @@
   position: relative;
   width: 100%;
   height: 260px;
-  /* room above the button for the mascot that perches on its corner */
-  margin-top: 40px;
+  margin-top: 12px;
   transform: translateZ(1px);
 }
 .k-row {
@@ -116,15 +115,6 @@
   justify-content: center;
   gap: 36px;
   padding-top: 22px;
-}
-.f5-mascot-spot {
-  position: absolute;
-  z-index: 2;
-  left: calc(100% - 52px);
-  top: -62px;
-  width: 80px;
-  height: 80px;
-  pointer-events: none;
 }
 .k-ig-home {
   position: relative;
@@ -584,19 +574,12 @@
 }
 .bstage[data-lay='narrow'] .k-pen {
   height: 250px;
-  /* room above the button for the mascot that perches on its corner */
-  margin-top: 30px;
+  margin-top: 8px;
 }
 .bstage[data-lay='narrow'] .k-row {
   flex-direction: column;
   gap: 22px;
   padding-top: 14px;
-}
-.bstage[data-lay='narrow'] .f5-mascot-spot {
-  left: calc(100% - 40px);
-  top: -46px;
-  width: 56px;
-  height: 56px;
 }
 .bstage[data-lay='narrow'] .k-ig {
   height: 64px;

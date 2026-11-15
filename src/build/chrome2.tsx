@@ -157,12 +157,15 @@ export function LayersPanel2() {
             )
           })}
         </div>
-        <div className="layer-row d1 l2-row l2-bubble" role="treeitem" aria-level={2}>
-          <span className="chev-pad" />
-          <span className="layer-ico i-organism">{LayerIcon.organism()}</span>
-          <span className="layer-name">{ch === LAST ? 'momo (mascot)' : 'Bubble'}</span>
-          <span className="layer-tag">{ch === LAST ? 'home' : `${all.filter((c) => c.kind === 'bubble' && c.pose.state === 'inside').length} inside`}</span>
-        </div>
+        {/* after the balloon pops in the last section there is no bubble left to list */}
+        {ch !== LAST && (
+          <div className="layer-row d1 l2-row l2-bubble" role="treeitem" aria-level={2}>
+            <span className="chev-pad" />
+            <span className="layer-ico i-organism">{LayerIcon.organism()}</span>
+            <span className="layer-name">Bubble</span>
+            <span className="layer-tag">{`${all.filter((c) => c.kind === 'bubble' && c.pose.state === 'inside').length} inside`}</span>
+          </div>
+        )}
       </div>
       <div className="panel-foot">
         <span className="dot-live" aria-hidden="true" /> 3 people editing

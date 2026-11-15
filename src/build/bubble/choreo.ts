@@ -6,7 +6,7 @@
  * (tremble phase, wobble springs, blinking).
  */
 import { camAt, hostAt, type CamPose, type Geo } from '../camera'
-import { clamp01, inOut, inOutQuad, lerp, outBack, outCubic, outExpo, pieces, range, smooth, springOut } from '../runtime'
+import { clamp01, inOut, inOutQuad, lerp, outExpo, pieces, range, smooth, springOut } from '../runtime'
 import { hex, LAST, mixRGB, NS, NT, phOf, SEC, secP, SPLIT_PAL, TR_STYLE, TRN, WORLDS, type RGB } from '../worlds'
 
 export type EyeMood = 'normal' | 'wide' | 'squint' | 'dizzy'
@@ -200,17 +200,9 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
       }
     }
     if (i === LAST) {
-      // after the pop only the little mascot is left; it walks to the CTA
+      // after the pop nothing is left of the bubble but the confetti
       S.vis = 0
       S.mood = 'home'
-      const u = (p - SEC[LAST][0]) / (SEC[LAST][1] - SEC[LAST][0])
-      const go = smooth(0.8, 0.9, u)
-      const m = S.mascot
-      m.vis = 1
-      m.x = lerp(hA.x, g.mascot.x, inOut(go))
-      m.y = lerp(hA.y + 40, g.mascot.y, inOut(go))
-      m.z = lerp(hA.z, 0, go) + Math.sin(Math.PI * go) * 160
-      m.s = 1
       // confetti still settling just after the pop
       const pu = range(TRN[NT - 1][1] - TR3_POP_TAIL, secP(LAST, 0.05), p)
       if (pu < 1) {
@@ -379,17 +371,9 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
     c0.eyes = u < 0.8 ? 'wide' : 'squint'
     S.mood = u < 0.88 ? 'floating' : 'popped'
     if (pop >= 1) {
+      // it pops for good: only the confetti is left
       S.vis = 0
       S.pop = range(0.88, 1, u) * 0.72
-      const m = S.mascot
-      const mu = range(0.89, 1, u)
-      m.vis = 1
-      camAt(g, t1, cam)
-      hostAt(g, LAST, cam, hB)
-      m.x = lerp(P.x, hB.x, outCubic(mu))
-      m.y = lerp(P.y, hB.y + 40, outCubic(mu))
-      m.z = lerp(P.z, hB.z, mu)
-      m.s = clamp01(outBack(clamp01(mu * 3), 2.4))
     }
     const w = smooth(0.3, 0.8, u)
     S.world[tr] = 1 - w
