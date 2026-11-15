@@ -38,7 +38,6 @@ const HC = {
 
 const TITLE = `${HELLO.line1} ${HELLO.line2}`
 const LINKEDIN = LINKS.find((l) => l.label === 'LinkedIn')!.href
-const RESUME = '/Monika-Adeishvili-Resume-2026.pdf'
 const INSTAGRAM = 'https://www.instagram.com/monikaadeishvili/'
 const LIST = ['Research', 'Flows', 'Design systems', 'Handoff', 'Launch']
 const STATEMENT = 'From a blank Figma file to a product people use.'
@@ -175,10 +174,6 @@ function Nav({ onNav }: { onNav: SectionProps['onNav'] }) {
         <a className="h-navcta" href={LINKEDIN} target="_blank" rel="noopener noreferrer">
           LinkedIn <span className="h-navcta-ar" aria-hidden="true">↗</span>
           <span className="sr-only"> (opens in a new tab)</span>
-        </a>
-        <a className="h-navcta" href={RESUME} target="_blank" rel="noopener">
-          Resume <span className="h-navcta-ar" aria-hidden="true">↗</span>
-          <span className="sr-only"> (PDF, opens in a new tab)</span>
         </a>
         <a className="h-navcta" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
           Instagram <span className="h-navcta-ar" aria-hidden="true">↗</span>
