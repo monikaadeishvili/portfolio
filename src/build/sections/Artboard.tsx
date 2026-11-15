@@ -4,6 +4,7 @@ import { FrameIcon } from '../../chrome/Icons'
 import { SectionCtx, type BuildCtx } from '../parts'
 import { registerFx, smooth } from '../runtime'
 import { phOf } from '../worlds'
+import { DraftBg, DraftDef, mountDraft } from './Draft'
 
 export type Lay = 'wide' | 'narrow'
 export interface SectionProps {
@@ -40,6 +41,14 @@ export function Artboard({
   const ctx = useMemo<BuildCtx>(() => ({ section: idx, live, narrow: lay === 'narrow' }), [idx, live, lay])
   const ch = CHAPTERS[idx]
   const ref = useRef<HTMLElement>(null)
+  // every section after Hello arrives as a bland draft (Hello has its own, with the switch)
+  const draft = live && idx > 0
+
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!draft || !el) return
+    return mountDraft(el, idx)
+  }, [draft, idx, lay])
 
   useLayoutEffect(() => {
     const el = ref.current
@@ -84,8 +93,9 @@ export function Artboard({
         <div className="bf-world" aria-hidden="true" />
         {under}
         <div className="bf-bg" aria-hidden="true" />
+        {draft && <DraftBg idx={idx} />}
         <div className="bf-label" aria-hidden="true">
-          <FrameIcon /> {label ?? `${ch.num} ${ch.frame}`} <i>·</i> <b className="bf-size">—</b>
+          <FrameIcon /> {label ?? <span className="bf-lbl-t">{`${ch.num} ${ch.frame}`}</span>} <i>·</i> <b className="bf-size">—</b>
         </div>
         {live && (
           <div className="bf-sheets" aria-hidden="true">
@@ -106,6 +116,7 @@ export function Artboard({
           </div>
         )}
         <div className="bf-body">{children}</div>
+        {draft && <DraftDef idx={idx} />}
       </section>
     </SectionCtx.Provider>
   )
