@@ -45,6 +45,9 @@ export interface Geo {
   R: number
   /** 01 Hello: where the bubble waits beside the scroll hint (world px) */
   hint0?: { x: number; y: number }
+  /** 03 Proof: the centre of the running total's orbit, where the bubble comes
+   *  to hop once everything has folded (world px; set by its fx in measure) */
+  perch?: { x: number; y: number; s: number; hop: number }
   peak: number
 }
 

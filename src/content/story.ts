@@ -36,8 +36,8 @@ export const CHAPTERS: Chapter[] = [
     num: '03',
     frame: 'Proof',
     ruler: 'PROOF',
-    headline: ['Seven years, one question: ', { em: 'who is this for?' }],
-    body: 'Sports streaming across TV, phone and desktop at DAZN. Business banking for law firms at NOTA by M&T Bank. Thirty-two client products in all. And classrooms, too — I teach UX, because explaining design makes you better at it.',
+    headline: ['Seven years of work ', { em: 'adds up.' }],
+    body: 'Thirty-two client products across ten industries, and one designer on every one of them.',
   },
   {
     id: 'contact',
@@ -131,6 +131,8 @@ export interface WorkMedia {
 export interface WorkProject {
   id: string
   name: string
+  /** the project's own colour: the strip washes faintly in it while it's in view */
+  tint: string
   body: string
   meta: readonly (readonly [string, string])[]
   link?: { label: string; href: string }
@@ -146,6 +148,7 @@ const m = (kind: WorkKind, w: number, h: number, ...screens: [file: string, alt:
 export const WORK: readonly WorkProject[] = [
   {
     id: 'dazn',
+    tint: '#f4c400',
     name: 'DAZN',
     body: 'A global sports-streaming platform, live and on demand in over 200 countries. I designed for TV, mobile and desktop: wireframes, prototypes, a competitor audit and one consistent experience.',
     meta: [
@@ -171,6 +174,7 @@ export const WORK: readonly WorkProject[] = [
   },
   {
     id: 'toeic',
+    tint: '#8ed11a',
     name: 'toeic.pal',
     body: 'Spoken-English practice with a personal AI tutor: everyday conversations, or official ETS preparation for the TOEIC® Speaking test, with instant feedback.',
     meta: [['Platforms', 'Website, mobile app']],
@@ -182,6 +186,7 @@ export const WORK: readonly WorkProject[] = [
   },
   {
     id: 'nota',
+    tint: '#0e8a96',
     name: 'Nota',
     body: 'Cloud business banking for solo and small law firms, by M&T Bank: checking, trust accounts and 3-way reconciliation, built into the way a firm already works.',
     meta: [
@@ -196,6 +201,7 @@ export const WORK: readonly WorkProject[] = [
   },
   {
     id: 'roomistry',
+    tint: '#20b07a',
     name: 'Roomistry',
     body: 'An AI roommate-matching app for students and young adults. Calm, friendly and illustrated, so finding someone to live with feels safe.',
     meta: [
@@ -219,6 +225,7 @@ export const WORK: readonly WorkProject[] = [
   },
   {
     id: 'hello-audio',
+    tint: '#ff4d4d',
     name: 'Hello Audio',
     body: 'A home for podcast and audio creators: upload episodes, organise and publish feeds, add listeners. Designed step by step, from empathy to testing.',
     meta: [
@@ -232,6 +239,7 @@ export const WORK: readonly WorkProject[] = [
   },
   {
     id: 'studious',
+    tint: '#ff9b2f',
     name: 'Studious',
     body: 'Study preparation with AI coaching: daily questions, lessons and progress, on the web and on the phone.',
     meta: [
@@ -252,6 +260,7 @@ export const WORK: readonly WorkProject[] = [
   },
   {
     id: 'growthoptix',
+    tint: '#7b5cff',
     name: 'GrowthOptix',
     body: 'A growth dashboard: clicks, leads, sales and traffic sources at a glance, in light and in dark.',
     meta: [['Platform', 'Web app']],
@@ -261,6 +270,7 @@ export const WORK: readonly WorkProject[] = [
   },
   {
     id: 'wedo',
+    tint: '#ff6fcf',
     name: 'WeDo',
     body: 'Shared lists for groceries, trips and baby gear, kept in one clean spot.',
     meta: [['Platform', 'Mobile app']],
@@ -280,6 +290,63 @@ export const WORK: readonly WorkProject[] = [
     ],
   },
 ]
+
+/** 03 Proof, first part: the running total. Every one of the 32 client products
+ *  lands on the grid (six as cards, the rest as chips), the counters add up, then
+ *  it all folds into one orbit around "your product", with one designer below. */
+export const TALLY = {
+  kicker: 'the running total',
+  /** twelve stickers: six client products (they count) and six facts about her.
+   *  `at` is the grid cell on wide boards; narrow boards pack them 3 across. */
+  cards: [
+    { kind: 'work', id: 'dazn', at: [0, 0], name: 'DAZN', line: 'Sport streaming in 200+ countries', tag: 'Media', shape: 'ball', bg: '#f7e733', fg: '#141413', mk: '#141413' },
+    { kind: 'me', id: 'certs', at: [1, 0], big: '7', name: 'Google UX certificates', line: 'via Coursera', bg: '#ffffff', fg: '#141413', mk: '#1a73e8' },
+    { kind: 'work', id: 'nota', at: [3, 0], name: 'Nota by M&T Bank', line: 'Banking for law firms', tag: 'Banking', shape: 'safe', bg: '#0e6f78', fg: '#ffffff', mk: '#ffd84d' },
+    { kind: 'work', id: 'toeic', at: [1, 1], name: 'toeic.pal', line: 'AI English speaking tutor', tag: 'EdTech', shape: 'bubble', bg: '#b9f23a', fg: '#141413', mk: '#0f7a3d' },
+    { kind: 'me', id: 'years', at: [2, 1], big: '7+', name: 'years designing products', line: 'web, mobile and TV', bg: '#141413', fg: '#ffffff', mk: '#c6f135' },
+    { kind: 'work', id: 'pronto', at: [3, 1], name: 'Pronto', line: 'Nurse staffing', tag: 'Healthcare', shape: 'cross', bg: '#ff8fd8', fg: '#141413', mk: '#c4006f' },
+    { kind: 'work', id: 'realoffer', at: [0, 2], name: 'Realoffer.ge', line: 'Real estate listings', tag: 'PropTech', shape: 'house', bg: '#5cc8ff', fg: '#141413', mk: '#0b3d91' },
+    { kind: 'work', id: 'moneymarket', at: [2, 2], name: 'Moneymarket.ge', line: 'Loan marketplace', tag: 'Loans', shape: 'coin', bg: '#ff7a3d', fg: '#141413', mk: '#ffe14d' },
+    { kind: 'me', id: 'teach', at: [3, 2], big: 'UX', name: 'I teach it, too', line: 'Lecturer at Qwerty and Forcoda', bg: '#c9b8ff', fg: '#141413', mk: '#141413' },
+    { kind: 'me', id: 'hello', at: [0, 3], big: 'Hi!', name: 'English and Georgian', line: 'გამარჯობა means hello', bg: '#5b4bff', fg: '#ffffff', mk: '#ffffff' },
+    { kind: 'me', id: 'tools', at: [1, 3], big: '', name: 'Figma, Illustrator, XD', line: 'the tools I think in', bg: '#fff3d6', fg: '#141413', mk: '#141413' },
+    { kind: 'me', id: 'home', at: [2, 3], big: '', name: 'Based in Alicante', line: 'Spain', bg: '#ff6b5a', fg: '#141413', mk: '#ffd23f' },
+  ],
+  chips: [
+    'NFT Marketplace',
+    'Startup Mentor AI',
+    'Avocados and Coconuts',
+    'Collect',
+    'Hello Audio',
+    'Founder Corner',
+    'Refresh Miami',
+    'Graft',
+    'Studious',
+    'Bizzy Planners',
+    'CPS Visit Service',
+    'Build Wise',
+    'Xpresso Labs',
+    'Sonispark',
+    'Roomistry',
+    'Qwerty',
+    'Burq',
+    'NadaPay',
+    'Visit Planner',
+    'Trusted Managed Services',
+    'Driving License',
+    'Covid Pass',
+    'AntiJarima',
+    'Dinespace',
+    'GrowthOptix',
+    'WeDo',
+  ],
+  industries: 10,
+  typed: 'one designer on every one',
+  orbit: ['Research', 'Flows', 'Wireframes', 'Prototype', 'UI', 'Design system'],
+  centre: 'Your product',
+  me: { name: 'Monika Adeishvili', line: 'All of the above', big: '1', unit: '/designer' },
+  flank: ['From a blank Figma file,', 'to a product people use.'],
+} as const
 
 export const EMAIL = 'monikaadeishvili@gmail.com'
 export const LINKS = [

@@ -52,6 +52,8 @@ export interface BubState {
   pop: number
   popAt: { x: number; y: number; z: number }
   mascot: { vis: number; x: number; y: number; z: number; s: number }
+  /** time-based hop height while perched (world px; 0 = none) */
+  hop: number
   /** transition index or −1 */
   tr: number
   tu: number
@@ -91,6 +93,7 @@ export function makeState(): BubState {
     tr: -1,
     tu: 0,
     shadow: 0.22,
+    hop: 0,
   }
 }
 
@@ -117,6 +120,33 @@ function helloWait(g: Geo, k: number, out: { x: number; y: number }) {
   out.y = lerp(out.y, g.hint0.y, k)
 }
 
+/** 03 Proof: once the running total folds, the bubble leaps into the middle of
+ *  the orbit, shrinks and hops there; at the end of the part it jumps back out
+ *  of the frame, growing again, before the camera moves on to the work strip */
+function proofPerch(g: Geo, p: number, S: BubState) {
+  const P = g.perch
+  const w = g.wins[2]?.[1]
+  if (!P || !w) return
+  const q = (p - w[0]) / Math.max(1e-6, w[1] - w[0])
+  const kIn = smooth(0.66, 0.8, q)
+  const kOut = smooth(0.9, 1, q)
+  const k = kIn * (1 - kOut)
+  if (k <= 0) return
+  const c0 = S.cores[0]
+  const e = inOut(k)
+  const out = kOut > 0
+  c0.x = lerp(c0.x, P.x, e)
+  // the way out is a real jump: a big hop up and over the frame's edge
+  const arc = Math.sin(Math.PI * e)
+  c0.y = lerp(c0.y, P.y, e) - (out ? arc * 120 : 0)
+  c0.z = lerp(c0.z, 4, e) + arc * (out ? 190 : 140)
+  c0.R *= lerp(1, P.s, e)
+  // it crouches before take-off and stretches in the air
+  if (out) c0.st = kOut < 0.12 ? -0.16 * Math.sin((Math.PI * kOut) / 0.12) : 0.1 * arc
+  S.hop = out ? 0 : P.hop * smooth(0.82, 1, k)
+  S.mood = out ? 'spitting' : 'curious'
+}
+
 export function bubbleAt(g: Geo, p: number, S: BubState) {
   S.balls.length = 0
   S.flash = 0
@@ -130,6 +160,7 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
   S.tr = -1
   S.tu = 0
   S.impact = 0
+  S.hop = 0
   for (let k = 0; k < NS; k++) S.world[k] = 0
   const R = g.R
   const c0 = S.cores[0]
@@ -156,6 +187,7 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
     c0.col = PALS[i][0]
     S.mood = 'spitting'
     if (i === 0 && p < SEC[0][0] + 0.012) S.mood = 'curious'
+    if (i === 2) proofPerch(g, p, S)
     if (i === 0 && g.hint0) {
       const u = (p - SEC[0][0]) / (SEC[0][1] - SEC[0][0])
       const ph = phOf(0)

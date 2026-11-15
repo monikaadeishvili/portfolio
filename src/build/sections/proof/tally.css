@@ -1,0 +1,1105 @@
+/* ================================ 03 Proof, part one — the running total (pt-)
+   Grid paper with client cards and chips, counters adding up, then the fold into
+   one orbit and one designer (./tallyFx.ts toggles the states). */
+.pt-r {
+  margin-top: 120px;
+}
+.pt-stage {
+  --cell: 144px;
+  --cols: 7;
+  --rows: 4;
+  --line: rgb(20 20 19 / 0.12);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* in the still page the fold sits under the tally instead of over it */
+  --fold-y: 34px;
+  position: relative;
+  transform: translateZ(2px);
+  color: var(--pw-ink);
+}
+.pt-board {
+  position: relative;
+  width: calc(var(--cols) * var(--cell));
+  height: calc(var(--rows) * var(--cell));
+  margin: 0 auto;
+}
+
+/* grid paper: the lines draw themselves in */
+.pt-grid i {
+  position: absolute;
+  background: var(--line);
+  transition: transform 520ms var(--out) calc(var(--i) * 30ms);
+}
+.pt-v {
+  top: 0;
+  bottom: 0;
+  left: calc(var(--i) * var(--cell));
+  width: 1px;
+  transform: scaleY(0);
+  transform-origin: top;
+}
+.pt-h {
+  left: 0;
+  right: 0;
+  top: calc(var(--i) * var(--cell));
+  height: 1px;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.pt-stage.is-grid .pt-grid i {
+  transform: none;
+}
+
+/* twelve stickers scattered over the grid: six client products and six facts
+   about her, each in its own colour with an ink edge and a hard shadow */
+.pt-fly {
+  display: block;
+  will-change: transform, opacity;
+}
+.pt-cardslot {
+  /* its cell: scattered on wide boards (--cw/--rw), packed on narrow ones */
+  --c: var(--cw);
+  --r: var(--rw);
+  position: absolute;
+  width: calc(var(--cell) - 12px);
+  height: calc(var(--cell) - 12px);
+  left: calc(var(--c) * var(--cell) + 6px);
+  top: calc(var(--r) * var(--cell) + 5px);
+}
+/* spat out of the bubble: the x and y legs of the flight run on different
+   curves (x glides, y lobs up first), so each sticker flies in an arc */
+.pt-arc {
+  display: block;
+  height: 100%;
+  translate: var(--fx, 0) 0;
+  transition: translate 700ms cubic-bezier(0.3, 0.6, 0.35, 1);
+}
+.pt-cardslot.is-in .pt-arc {
+  translate: 0 0;
+}
+.pt-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  translate: 0 var(--fy, 0);
+  padding: 11px 12px 11px;
+  border: 1.5px solid #141413;
+  border-radius: 16px;
+  background: var(--bg);
+  color: var(--fg);
+  box-shadow: 0 4px 0 #141413;
+  opacity: 0;
+  transform: scale(0.12) rotate(calc(var(--rest) * -9));
+  transition:
+    opacity 160ms ease,
+    translate 700ms cubic-bezier(0.45, -0.5, 0.6, 1),
+    transform 700ms var(--spring),
+    box-shadow 220ms var(--out);
+}
+.pt-cardslot.is-in .pt-card {
+  opacity: 1;
+  translate: 0 0;
+  transform: rotate(var(--rest));
+}
+@media (hover: hover) and (pointer: fine) {
+  .pt-cardslot.is-in:hover {
+    z-index: 2;
+  }
+  .pt-cardslot.is-in:hover .pt-card {
+    transform: translateY(-5px) rotate(calc(var(--rest) * -1.5)) scale(1.07);
+    box-shadow: 0 9px 0 #141413;
+    transition-duration: 160ms, 700ms, 260ms, 220ms;
+  }
+}
+.pt-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4px;
+  min-height: 38px;
+  margin-bottom: auto;
+}
+
+/* a client product's mascot: a small shape with eyes that hops in and bobs */
+.pt-mk {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  background: var(--mk);
+}
+.pt-cardslot.is-in :is(.pt-mk, .pt-sun) {
+  animation:
+    pt-hop 560ms var(--spring) 180ms both,
+    pt-bob 3.2s ease-in-out calc(var(--i) * -0.55s) infinite;
+}
+@keyframes pt-hop {
+  0% {
+    scale: 0.3;
+  }
+  60% {
+    scale: 1.18;
+  }
+}
+@keyframes pt-bob {
+  50% {
+    translate: 0 -2.5px;
+  }
+}
+.pt-mk-ball {
+  border-radius: 50%;
+}
+.pt-mk-safe {
+  border-radius: 8px;
+}
+.pt-mk-bubble {
+  border-radius: 15px 15px 15px 3px;
+}
+.pt-mk-cross {
+  clip-path: polygon(31% 0, 69% 0, 69% 31%, 100% 31%, 100% 69%, 69% 69%, 69% 100%, 31% 100%, 31% 69%, 0 69%, 0 31%, 31% 31%);
+}
+.pt-mk-house {
+  clip-path: polygon(50% 0, 100% 40%, 100% 100%, 0 100%, 0 40%);
+}
+.pt-mk-house .pt-eyes {
+  top: 8px;
+}
+.pt-mk-coin {
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 3px rgb(20 20 19 / 0.22);
+}
+.pt-eyes {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.pt-eyes i {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  animation: pt-blink 4.6s ease-in-out calc(var(--i, 0) * -0.9s) infinite;
+}
+.pt-eyes i::after {
+  content: '';
+  position: absolute;
+  left: 2.5px;
+  top: 2.5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #141413;
+  animation: pt-look-s 5s ease-in-out calc(var(--i, 0) * -0.7s) infinite;
+  transition: translate 300ms var(--out);
+}
+/* once the count is full, every sticker glances over at it */
+.pt-stage.is-full .pt-cardslot .pt-eyes i::after {
+  animation: none;
+  translate: 2px -1px;
+}
+@keyframes pt-look-s {
+  0%,
+  40%,
+  100% {
+    transform: none;
+  }
+  50%,
+  65% {
+    transform: translate(-1.5px, -0.5px);
+  }
+  75%,
+  90% {
+    transform: translate(1.5px, 0.5px);
+  }
+}
+@keyframes pt-blink {
+  0%,
+  92%,
+  100% {
+    transform: none;
+  }
+  96% {
+    transform: scaleY(0.1);
+  }
+}
+.pt-tag {
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  border-radius: 99px;
+  font-family: var(--f-mono);
+  font-size: 8.5px;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.pt-cname {
+  font-family: var(--f-ui);
+  font-size: 15.5px;
+  font-weight: 750;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+.pt-cname.is-long {
+  font-size: 13.5px;
+  letter-spacing: -0.035em;
+}
+.pt-cline {
+  margin-top: 3px;
+  font-family: var(--f-ui);
+  font-size: 10.5px;
+  line-height: 1.25;
+  opacity: 0.8;
+}
+.pt-plus {
+  position: absolute;
+  top: -8px;
+  right: 6px;
+  padding: 1px 6px;
+  border-radius: 99px;
+  background: #141413;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  opacity: 0;
+}
+.pt-cardslot.is-in .pt-plus {
+  animation: pt-plus 700ms var(--out) 160ms both;
+}
+@keyframes pt-plus {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.6);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-26px) scale(1);
+  }
+}
+
+/* the cards about her: a big word or number, and a small doodle */
+.pt-big {
+  font-family: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
+  font-size: 46px;
+  line-height: 0.95;
+  color: var(--mk);
+}
+.pt-card[data-id='teach'] .pt-big,
+.pt-card[data-id='hello'] .pt-big {
+  font-size: 40px;
+}
+.pt-dd {
+  flex: none;
+}
+/* four dots that take turns jumping */
+.pt-dd-g {
+  display: flex;
+  gap: 3px;
+  padding-top: 5px;
+}
+.pt-dd-g i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4285f4;
+  animation: pt-jump 1.6s ease-in-out infinite;
+}
+.pt-dd-g i:nth-child(2) {
+  background: #ea4335;
+  animation-delay: 0.12s;
+}
+.pt-dd-g i:nth-child(3) {
+  background: #fbbc04;
+  animation-delay: 0.24s;
+}
+.pt-dd-g i:nth-child(4) {
+  background: #34a853;
+  animation-delay: 0.36s;
+}
+@keyframes pt-jump {
+  0%,
+  40%,
+  100% {
+    transform: none;
+  }
+  20% {
+    transform: translateY(-5px);
+  }
+}
+.pt-dd-spark {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--mk);
+  animation: pt-spin 7s linear infinite;
+}
+.pt-dd-pill,
+.pt-dd-wave {
+  padding: 2px 6px;
+  border-radius: 99px;
+  background: var(--mk);
+  font-family: var(--f-mono);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--bg);
+  rotate: 8deg;
+}
+.pt-dd-wave {
+  border-radius: 9px 9px 9px 2px;
+  font-family: var(--f-ui);
+  animation: pt-wave 2.4s ease-in-out infinite;
+  transform-origin: 0 100%;
+}
+@keyframes pt-wave {
+  0%,
+  60%,
+  100% {
+    transform: none;
+  }
+  70%,
+  90% {
+    transform: rotate(-10deg);
+  }
+  80% {
+    transform: rotate(6deg);
+  }
+}
+/* three little app tiles, fanned */
+.pt-tools {
+  display: flex;
+  padding: 2px 0 0 2px;
+}
+.pt-tools i {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-left: -5px;
+  border: 1.5px solid #141413;
+  border-radius: 8px;
+  background: #5b4bff;
+  font-family: var(--f-ui);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 750;
+  color: #fff;
+  rotate: -8deg;
+  transition: rotate 300ms var(--spring);
+}
+.pt-tools i:first-child {
+  margin-left: 0;
+}
+.pt-tools i:nth-child(2) {
+  background: #ff9a00;
+  color: #141413;
+  rotate: 0deg;
+  translate: 0 -3px;
+}
+.pt-tools i:nth-child(3) {
+  background: #ff61f6;
+  color: #141413;
+  rotate: 8deg;
+}
+.pt-card:hover .pt-tools i:first-child {
+  rotate: -16deg;
+}
+.pt-card:hover .pt-tools i:nth-child(3) {
+  rotate: 16deg;
+}
+/* Alicante: a sun with eyes, its rays turning */
+.pt-sun {
+  position: relative;
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin: 6px 0 0 6px;
+  border-radius: 50%;
+  background: var(--mk);
+}
+.pt-sun::before {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border: 3px dashed var(--mk);
+  border-radius: 50%;
+  animation: pt-spin 14s linear infinite;
+}
+.pt-sun .pt-eyes i {
+  width: 7px;
+  height: 7px;
+}
+.pt-sun .pt-eyes i::after {
+  left: 2px;
+  top: 2px;
+}
+/* nothing idles while the section is off screen */
+.bf:not([data-near='1']) .pt-stage *,
+.bf:not([data-near='1']) .pt-stage *::before,
+.bf:not([data-near='1']) .pt-stage *::after {
+  animation-play-state: paused !important;
+}
+
+/* the other 26 products, as a column of chips */
+.pt-chips {
+  position: absolute;
+  left: calc(4 * var(--cell) + 8px);
+  top: 12px;
+  width: calc(1.5 * var(--cell) - 14px);
+  height: calc(var(--rows) * var(--cell) - 24px);
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
+  justify-content: center;
+  gap: 6px 5px;
+}
+.pt-chipslot {
+  display: inline-block;
+}
+.pt-chip {
+  display: inline-block;
+  padding: 4px 9px;
+  border: 1px solid rgb(20 20 19 / 0.16);
+  border-radius: 99px;
+  background: #fff;
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  line-height: 1.3;
+  white-space: nowrap;
+  opacity: 0;
+  translate: var(--fx, 0) var(--fy, 0);
+  transform: scale(0.2) rotate(calc((var(--k) - 3) * 1deg));
+  transition:
+    opacity 140ms ease calc(var(--k) * 30ms),
+    translate 560ms cubic-bezier(0.25, 0.8, 0.3, 1) calc(var(--k) * 30ms),
+    transform 560ms var(--spring) calc(var(--k) * 30ms);
+}
+.pt-chipslot.is-in .pt-chip {
+  opacity: 1;
+  translate: 0 0;
+  transform: rotate(calc((var(--k) - 3) * 1deg));
+}
+
+/* the counters */
+.pt-counts {
+  position: absolute;
+  left: calc(5.5 * var(--cell));
+  top: 0;
+  width: calc(1.5 * var(--cell));
+  height: 100%;
+  opacity: 0;
+  translate: var(--fx, 0) var(--fy, 0);
+  scale: 0.2;
+  transition:
+    opacity 200ms ease,
+    translate 640ms cubic-bezier(0.25, 0.8, 0.3, 1),
+    scale 640ms var(--spring);
+}
+/* the counters pop out of the bubble with the first card */
+.pt-stage.is-count .pt-counts {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+}
+.pt-count {
+  position: absolute;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+.pt-c0 {
+  left: 14px;
+  top: calc(var(--cell) * 1.3);
+}
+.pt-c1 {
+  left: 14px;
+  top: calc(var(--cell) * 2.18);
+}
+.pt-roll {
+  display: inline-flex;
+  font-family: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
+  font-size: 78px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  transition: color 260ms ease;
+}
+.pt-c1 .pt-roll {
+  font-size: 52px;
+}
+.pt-col {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  transition: width 200ms var(--out);
+}
+.pt-col.is-off {
+  width: 0;
+}
+.pt-strip {
+  display: block;
+  transition: transform 300ms var(--out);
+}
+.pt-strip span {
+  display: block;
+  height: 1em;
+}
+.pt-clab {
+  padding-bottom: 8px;
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pw-mute);
+}
+.pt-stage.is-full .pt-c0 .pt-roll {
+  color: #0a7fd1;
+  animation: pt-pop 360ms var(--spring);
+}
+@keyframes pt-pop {
+  50% {
+    transform: scale(1.14);
+  }
+}
+.pt-typed {
+  position: absolute;
+  left: 14px;
+  right: 6px;
+  top: calc(var(--cell) * 3.12);
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: 21px;
+  white-space: nowrap;
+  line-height: 1.15;
+}
+.pt-typed span {
+  display: inline-block;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 760ms steps(25) 0ms;
+}
+.pt-stage.is-full .pt-typed span {
+  clip-path: inset(0 0 0 0);
+  transition-delay: 380ms;
+}
+.pt-pin-dot {
+  position: absolute;
+  left: calc((var(--x) + 0.5) * var(--cell) - 3px);
+  top: calc((2 + var(--y)) * var(--cell) - 3px);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pw-ink);
+}
+
+/* the fold: an orbit of skills around your product */
+.pt-orbit {
+  --R: 120px;
+  position: absolute;
+  left: calc(50% - var(--R));
+  top: calc(var(--fold-y) + 45px);
+  width: calc(var(--R) * 2);
+  height: calc(var(--R) * 2);
+  opacity: 0;
+  pointer-events: none;
+}
+.pt-ring {
+  position: absolute;
+  inset: 0;
+  animation: pt-spin 48s linear infinite;
+}
+.pt-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1.5px dashed rgb(20 20 19 / 0.35);
+  border-radius: 50%;
+}
+@keyframes pt-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes pt-unspin {
+  to {
+    rotate: -360deg;
+  }
+}
+.pt-lab {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: rotate(var(--a)) translateX(var(--R)) rotate(calc(-1 * var(--a)));
+}
+.pt-lab span {
+  display: block;
+  translate: -50% -50%;
+  padding: 4px 10px;
+  border: 1px solid rgb(20 20 19 / 0.18);
+  border-radius: 99px;
+  background: var(--pw-paper);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  white-space: nowrap;
+  scale: 0;
+  animation: pt-unspin 48s linear infinite;
+  transition: scale 260ms var(--spring);
+}
+.pt-lab.is-on span {
+  scale: 1;
+}
+.pt-blob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 66px;
+  height: 66px;
+  margin: -33px 0 0 -33px;
+  border-radius: 46% 54% 50% 50% / 52% 48% 52% 48%;
+  background: #0a7fd1;
+  box-shadow: 0 14px 30px -12px rgb(10 127 209 / 0.6);
+  scale: 0;
+  transition: scale 420ms var(--spring);
+}
+.pt-stage.is-blob .pt-blob {
+  scale: 1;
+}
+/* in motion the real bubble hops in the middle, so the stand-in stays hidden */
+.bstage:not(.is-static) .pt-blob {
+  visibility: hidden;
+}
+.pt-blob-eyes {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: -6px;
+}
+.pt-blob-eyes i {
+  position: relative;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #fff;
+}
+.pt-blob-eyes i::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #141413;
+  animation: pt-look 5s ease-in-out infinite;
+  transition: translate 320ms var(--out);
+}
+@keyframes pt-look {
+  0%,
+  40%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50%,
+  65% {
+    transform: translate(-3px, -1px);
+  }
+  75%,
+  90% {
+    transform: translate(3px, 0);
+  }
+}
+/* when the designer card drops, the blob looks down at it */
+.pt-stage.is-me .pt-blob-eyes i::after {
+  animation: none;
+  translate: 0 3px;
+}
+.pt-prod {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 44px);
+  translate: -50% 0;
+  padding: 5px 12px;
+  border-radius: 99px;
+  background: var(--pw-ink);
+  font-family: var(--f-ui);
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 300ms ease 120ms;
+}
+.pt-stage.is-blob .pt-prod {
+  opacity: 1;
+}
+
+/* one designer, all of the above */
+.pt-drop {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--fold-y) + 290px);
+  width: 1px;
+  height: 52px;
+  background: var(--pw-ink);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 360ms var(--out);
+}
+.pt-stage.is-me .pt-drop {
+  transform: none;
+}
+.pt-me {
+  position: absolute;
+  left: calc(50% - 134px);
+  top: calc(var(--fold-y) + 346px);
+  width: 268px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 2px 10px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 18px 36px -18px rgb(20 20 19 / 0.45);
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity 300ms ease 220ms,
+    transform 520ms var(--spring) 220ms;
+}
+.pt-stage.is-me .pt-me {
+  opacity: 1;
+  transform: none;
+}
+.pt-medot {
+  --dot: #0a7fd1;
+  position: relative;
+  display: block;
+  border-radius: 50%;
+  background: var(--dot);
+  grid-row: span 2;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+}
+.pt-medot .pt-eyes i,
+.pt-medot .pt-eyes i::after {
+  animation: none;
+}
+.pt-mename {
+  white-space: nowrap;
+  font-family: var(--f-ui);
+  font-size: 14px;
+  font-weight: 650;
+}
+.pt-meline {
+  grid-column: 2;
+  font-family: var(--f-ui);
+  font-size: 11.5px;
+  color: var(--pw-mute);
+}
+.pt-mebig {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  font-family: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
+  font-size: 40px;
+  line-height: 1;
+}
+.pt-mebig small {
+  font-family: var(--f-ui);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--pw-mute);
+}
+.pt-flank {
+  position: absolute;
+  top: calc(var(--fold-y) + 380px);
+  width: 330px;
+  font-family: var(--f-ui);
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  opacity: 0;
+  transition:
+    opacity 400ms ease,
+    transform 520ms var(--out);
+}
+.pt-fl {
+  right: calc(50% + 162px);
+  text-align: right;
+  transform: translateX(-40px);
+  transition-delay: 420ms;
+}
+.pt-fr {
+  left: calc(50% + 162px);
+  transform: translateX(40px);
+  transition-delay: 500ms;
+}
+.pt-stage.is-me .pt-flank {
+  opacity: 1;
+  transform: none;
+}
+
+
+/* -- narrow: the stickers packed 3 across, counters and chips beneath, a
+   smaller fold */
+.bstage[data-lay='narrow'] .pt-r {
+  margin-top: 70px;
+}
+.bstage[data-lay='narrow'] .pt-stage {
+  --cell: 108px;
+  --cols: 3;
+  --rows: 6.6;
+}
+.bstage[data-lay='narrow'] .pt-v:nth-child(n + 5):not(.pt-h) {
+  display: none;
+}
+.bstage[data-lay='narrow'] .pt-v {
+  bottom: auto;
+  height: calc(4 * var(--cell));
+}
+.bstage[data-lay='narrow'] .pt-cardslot {
+  --c: var(--cn);
+  --r: var(--rn);
+  width: calc(var(--cell) - 8px);
+  height: calc(var(--cell) - 9px);
+  left: calc(var(--c) * var(--cell) + 4px);
+  top: calc(var(--r) * var(--cell) + 3px);
+}
+.bstage[data-lay='narrow'] .pt-card {
+  padding: 7px 8px 8px;
+  border-radius: 12px;
+  box-shadow: 0 3px 0 #141413;
+}
+.bstage[data-lay='narrow'] .pt-top {
+  min-height: 30px;
+}
+.bstage[data-lay='narrow'] .pt-mk {
+  width: 26px;
+  height: 26px;
+}
+.bstage[data-lay='narrow'] .pt-eyes i {
+  width: 8px;
+  height: 8px;
+}
+.bstage[data-lay='narrow'] .pt-eyes i::after {
+  left: 2px;
+  top: 2px;
+  width: 4px;
+  height: 4px;
+}
+.bstage[data-lay='narrow'] .pt-sun {
+  width: 24px;
+  height: 24px;
+}
+.bstage[data-lay='narrow'] .pt-tag {
+  padding: 1px 5px;
+  font-size: 7px;
+}
+.bstage[data-lay='narrow'] .pt-cname {
+  font-size: 12px;
+}
+.bstage[data-lay='narrow'] .pt-cname.is-long {
+  font-size: 10.5px;
+}
+.bstage[data-lay='narrow'] .pt-cline {
+  margin-top: 2px;
+  font-size: 8.5px;
+}
+.bstage[data-lay='narrow'] .pt-big {
+  font-size: 34px;
+}
+.bstage[data-lay='narrow'] .pt-card[data-id='teach'] .pt-big,
+.bstage[data-lay='narrow'] .pt-card[data-id='hello'] .pt-big {
+  font-size: 28px;
+}
+.bstage[data-lay='narrow'] .pt-tools i {
+  width: 25px;
+  height: 25px;
+  font-size: 10px;
+}
+.bstage[data-lay='narrow'] .pt-counts {
+  left: 0;
+  top: calc(4 * var(--cell) + 12px);
+  width: 100%;
+  height: 86px;
+}
+.bstage[data-lay='narrow'] .pt-c0 {
+  left: 4px;
+  top: 0;
+}
+.bstage[data-lay='narrow'] .pt-c1 {
+  left: 54%;
+  top: 12px;
+}
+.bstage[data-lay='narrow'] .pt-roll {
+  font-size: 50px;
+}
+.bstage[data-lay='narrow'] .pt-c1 .pt-roll {
+  font-size: 38px;
+}
+.bstage[data-lay='narrow'] .pt-clab {
+  padding-bottom: 5px;
+  font-size: 10px;
+}
+.bstage[data-lay='narrow'] .pt-typed {
+  left: 4px;
+  top: 58px;
+  font-size: 18px;
+}
+.bstage[data-lay='narrow'] .pt-pin-dot {
+  display: none;
+}
+.bstage[data-lay='narrow'] .pt-chips {
+  left: 0;
+  top: calc(4 * var(--cell) + 106px);
+  width: 100%;
+  height: auto;
+  align-content: flex-start;
+  gap: 5px 4px;
+}
+.bstage[data-lay='narrow'] .pt-chip {
+  padding: 3px 7px;
+  font-size: 9px;
+}
+.bstage[data-lay='narrow'] .pt-orbit {
+  --R: 88px;
+  top: calc(var(--fold-y) + 64px);
+}
+.bstage[data-lay='narrow'] .pt-lab span {
+  padding: 3px 7px;
+  font-size: 9.5px;
+}
+.bstage[data-lay='narrow'] .pt-blob {
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+}
+.bstage[data-lay='narrow'] .pt-blob-eyes i {
+  width: 14px;
+  height: 14px;
+}
+.bstage[data-lay='narrow'] .pt-blob-eyes i::after {
+  left: 4px;
+  top: 4px;
+  width: 6px;
+  height: 6px;
+}
+.bstage[data-lay='narrow'] .pt-prod {
+  top: calc(50% + 42px);
+  font-size: 10.5px;
+}
+.bstage[data-lay='narrow'] .pt-drop {
+  top: calc(var(--fold-y) + 248px);
+  height: 40px;
+}
+.bstage[data-lay='narrow'] .pt-me {
+  top: calc(var(--fold-y) + 290px);
+}
+.bstage[data-lay='narrow'] .pt-flank {
+  left: 0;
+  right: 0;
+  width: auto;
+  font-size: 19px;
+  text-align: center;
+}
+.bstage[data-lay='narrow'] .pt-fl {
+  top: calc(var(--fold-y) + 394px);
+}
+.bstage[data-lay='narrow'] .pt-fr {
+  top: calc(var(--fold-y) + 418px);
+}
+
+/* -- reduced motion / static: everything landed, the fold beneath the tally
+   (the driver doesn't run on the still page, so this is CSS alone) */
+.bstage.is-static .pt-grid i,
+.bstage.is-static .pt-drop {
+  transform: none;
+}
+.bstage.is-static :is(.pt-counts, .pt-me, .pt-flank) {
+  opacity: 1;
+  transform: none;
+  translate: none;
+  scale: none;
+}
+.bstage.is-static .pt-prod {
+  opacity: 1;
+}
+.bstage.is-static :is(.pt-arc, .pt-card, .pt-chip) {
+  translate: none;
+}
+.bstage.is-static .pt-card {
+  opacity: 1;
+  transform: rotate(var(--rest));
+}
+.bstage.is-static .pt-chip {
+  opacity: 1;
+  transform: rotate(calc((var(--k) - 3) * 1deg));
+}
+.bstage.is-static .pt-typed span {
+  clip-path: none;
+}
+.bstage.is-static :is(.pt-lab span, .pt-blob) {
+  scale: 1;
+}
+.bstage.is-static .pt-plus {
+  display: none;
+}
+/* the final count, 32 products and 10 industries, set in the digit columns */
+.bstage.is-static .pt-c0 .pt-col:nth-child(1) .pt-strip {
+  transform: translate3d(0, -30%, 0) !important;
+}
+.bstage.is-static .pt-c0 .pt-col:nth-child(2) .pt-strip {
+  transform: translate3d(0, -20%, 0) !important;
+}
+.bstage.is-static .pt-c1 .pt-col:nth-child(1) .pt-strip {
+  transform: translate3d(0, -10%, 0) !important;
+}
+.bstage.is-static .pt-c1 .pt-col:nth-child(2) .pt-strip {
+  transform: none !important;
+}
+.bstage.is-static .pt-col.is-off {
+  width: auto;
+}
+.bstage.is-static .pt-c0 .pt-roll {
+  color: #0a7fd1;
+}
+.bstage.is-static .pt-v {
+  bottom: auto;
+  height: calc(var(--rows) * var(--cell));
+}
+.bstage.is-static .pt-stage {
+  --fold-y: calc(var(--rows) * var(--cell) + 30px);
+}
+.bstage.is-static .pt-board {
+  height: calc(var(--rows) * var(--cell) + 520px);
+}
+.bstage.is-static .pt-orbit {
+  opacity: 1;
+}
+.bstage.is-static .pt-ring,
+.bstage.is-static .pt-lab span,
+.bstage.is-static .pt-blob-eyes i::after {
+  animation: none;
+}
+.bstage.is-static .pt-stage *,
+.bstage.is-static .pt-stage *::before,
+.bstage.is-static .pt-stage *::after {
+  transition: none !important;
+  animation: none !important;
+}
+.bstage[data-lay='narrow'].is-static .pt-board {
+  height: calc(var(--rows) * var(--cell) + 440px);
+}

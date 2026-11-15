@@ -43,7 +43,7 @@ export const SPLIT_PAL: [string, string, string] = ['#B6F03A', '#2DB8FF', '#FF7A
  * for the "same tools → taste" beat; everything is normalised so the other
  * sections keep exactly the same absolute scroll length (SCROLL_VH grows).
  */
-const RAW_W = [0.145, 0.34, 0.36, 0.098]
+const RAW_W = [0.145, 0.34, 0.52, 0.098]
 const RAW_TR = 0.068
 const RAW_SUM = RAW_W.reduce((a, b) => a + b, 0) + RAW_TR * (RAW_W.length - 1)
 export const TR_LEN = RAW_TR / RAW_SUM

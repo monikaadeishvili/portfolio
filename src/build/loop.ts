@@ -37,6 +37,8 @@ export const live = {
   pOverride: null as number | null,
   travelling: null as string | null,
   bubScreen: { x: 0, y: 0, r: 0 },
+  /** bumped by section fx when they spit something out: the bubble gulps */
+  gulp: 0,
   cam: { x: 0, y: 0, s: 1, rx: 0, rz: 0 } as CamPose,
   intro: 1,
   state: null as BubState | null,
@@ -65,6 +67,8 @@ export function startLoop(ctx: LoopCtx) {
   let wob = 0
   let wobV = 0
   let lastImpact = 0
+  let lastGulp = 0
+  let hopUp = false
   let lastTr = -1
   let lastZoom = ''
   let placedSig = ''
@@ -469,6 +473,18 @@ export function startLoop(ctx: LoopCtx) {
       if (S.impact > lastImpact) wobV += 3.2
       lastImpact = S.impact
     }
+    if (live.gulp !== lastGulp) {
+      if (live.gulp > lastGulp) wobV -= 2.4
+      lastGulp = live.gulp
+    }
+    // perched (03 Proof): a small hop, squashing on every landing
+    const hopS = S.hop > 0 && !scene.reduced ? Math.abs(Math.sin(t * 4.6)) : 1
+    const hopY = S.hop > 0 && !scene.reduced ? -hopS * S.hop : 0
+    if (S.hop > 0 && !scene.reduced) {
+      const up = hopS > 0.25
+      if (hopUp && !up) wobV += 2
+      hopUp = up
+    }
     if (S.tr !== lastTr) lastTr = S.tr
     wobV += (-140 * wob - 6.5 * wobV) * dt
     wob += wobV * dt
@@ -490,13 +506,13 @@ export function startLoop(ctx: LoopCtx) {
         }
         const C = S.cores[i]
         const jx = shake ? Math.sin(t * 53 + i * 1.7) * shake + Math.sin(t * 31) * shake * 0.4 : 0
-        const jy = shake ? Math.cos(t * 47 + i) * shake * 0.8 : 0
+        const jy = (shake ? Math.cos(t * 47 + i) * shake * 0.8 : 0) + (i === 0 ? hopY : 0)
         project(g, cam, C.x + jx, C.y + jy, C.z, pr)
         const Rs = C.R * pr.f * intro * (1 + 0.04 * Math.max(0, -wob))
         fb.cores[o] = pr.x
         fb.cores[o + 1] = pr.y
         fb.cores[o + 2] = Rs
-        fb.cores[o + 3] = C.st
+        fb.cores[o + 3] = C.st + (i === 0 && hopY ? -0.14 * (1 - Math.min(1, hopS * 5)) + 0.05 * Math.min(1, hopS * 2) : 0)
         fb.coreCols.set(C.col, i * 3)
         maxR = Math.max(maxR, Rs)
         x0 = Math.min(x0, pr.x - Rs * 2.4)
