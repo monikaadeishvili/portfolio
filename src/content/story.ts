@@ -303,17 +303,20 @@ export const TALLY = {
   kicker: 'the running total',
   /** thirteen stickers: six client products (they count) and seven facts about her.
    *  `at` is the grid cell on wide boards; narrow boards pack them 3 across, in
-   *  this order (the third sits under the waiting bubble for a while). */
+   *  this order (the third sits under the waiting bubble for a while). Four
+   *  projects don't come from the bubble: they wait on the board beside the
+   *  headline (`park`: board px of the box's top-left, and a tilt; `parkN` on
+   *  phones) and jump into their cells first. */
   cards: [
     { kind: 'me', id: 'ai', at: [2, 0], big: 'AI', name: 'I design with AI', line: 'and use it like a pro', bg: '#7ef0d2', fg: '#141413', mk: '#141413' },
-    { kind: 'work', id: 'dazn', at: [0, 0], name: 'DAZN', line: 'Sport streaming in 200+ countries', tag: 'Media', shape: 'ball', bg: '#f7e733', fg: '#141413', mk: '#141413' },
+    { kind: 'work', id: 'dazn', park: [700, -335, -9], parkN: [-10, -90], at: [0, 0], name: 'DAZN', line: 'Sport streaming in 200+ countries', tag: 'Media', shape: 'ball', bg: '#f7e733', fg: '#141413', mk: '#141413' },
     { kind: 'me', id: 'home', at: [2, 3], big: '', name: 'Based in Alicante', line: 'Spain', bg: '#ff6b5a', fg: '#141413', mk: '#ffd23f' },
     { kind: 'me', id: 'certs', at: [1, 0], big: '7', name: 'Google UX certificates', line: 'via Coursera', bg: '#ffffff', fg: '#141413', mk: '#1a73e8' },
-    { kind: 'work', id: 'nota', at: [3, 0], name: 'Nota by M&T Bank', line: 'Banking for law firms', tag: 'Banking', shape: 'safe', bg: '#0e6f78', fg: '#ffffff', mk: '#ffd84d' },
-    { kind: 'work', id: 'toeic', at: [1, 1], name: 'toeic.pal', line: 'AI English speaking tutor', tag: 'EdTech', shape: 'bubble', bg: '#b9f23a', fg: '#141413', mk: '#0f7a3d' },
+    { kind: 'work', id: 'nota', park: [880, -262, 8], parkN: [72, -90], at: [3, 0], name: 'Nota by M&T Bank', line: 'Banking for law firms', tag: 'Banking', shape: 'safe', bg: '#0e6f78', fg: '#ffffff', mk: '#ffd84d' },
+    { kind: 'work', id: 'toeic', park: [650, -150, 5], parkN: [154, -90], at: [1, 1], name: 'toeic.pal', line: 'AI English speaking tutor', tag: 'EdTech', shape: 'bubble', bg: '#b9f23a', fg: '#141413', mk: '#0f7a3d' },
     { kind: 'me', id: 'years', at: [2, 1], big: '7+', name: 'years designing products', line: 'web, mobile and TV', bg: '#141413', fg: '#ffffff', mk: '#c6f135' },
     { kind: 'work', id: 'pronto', at: [3, 1], name: 'Pronto', line: 'Nurse staffing', tag: 'Healthcare', shape: 'cross', bg: '#ff8fd8', fg: '#141413', mk: '#c4006f' },
-    { kind: 'work', id: 'realoffer', at: [0, 2], name: 'Realoffer.ge', line: 'Real estate listings', tag: 'PropTech', shape: 'house', bg: '#5cc8ff', fg: '#141413', mk: '#0b3d91' },
+    { kind: 'work', id: 'realoffer', park: [840, -118, -6], parkN: [236, -90], at: [0, 2], name: 'Realoffer.ge', line: 'Real estate listings', tag: 'PropTech', shape: 'house', bg: '#5cc8ff', fg: '#141413', mk: '#0b3d91' },
     { kind: 'work', id: 'moneymarket', at: [2, 2], name: 'Moneymarket.ge', line: 'Loan marketplace', tag: 'Loans', shape: 'coin', bg: '#ff7a3d', fg: '#141413', mk: '#ffe14d' },
     { kind: 'me', id: 'teach', at: [3, 2], big: 'UX', name: 'I teach it, too', line: 'Lecturer at Qwerty', bg: '#c9b8ff', fg: '#141413', mk: '#141413' },
     { kind: 'me', id: 'hello', at: [0, 3], big: 'Hi!', name: 'English and Georgian', line: 'გამარჯობა means hello', bg: '#5b4bff', fg: '#ffffff', mk: '#ffffff' },

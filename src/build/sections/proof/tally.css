@@ -102,6 +102,27 @@
   translate: 0 0;
   transform: rotate(var(--rest));
 }
+/* four projects wait on the board beside the headline, tilted and idling,
+   then jump into their cells (the same arc as a spat one, from where they lie) */
+.pt-cardslot[data-park] {
+  --fx: calc(var(--pkx) - var(--c) * var(--cell) - 6px);
+  --fy: calc(var(--pky) - var(--r) * var(--cell) - 5px);
+}
+.pt-cardslot[data-park]:not(.is-in) .pt-card {
+  opacity: 1;
+  transform: rotate(var(--pkr)) scale(0.9);
+  box-shadow: 0 6px 0 #141413;
+  animation: pt-idle 2.8s ease-in-out calc(var(--i) * -0.7s) infinite;
+}
+.pt-cardslot[data-park]:not(.is-in) .pt-mk {
+  animation: pt-bob 2.4s ease-in-out calc(var(--i) * -0.5s) infinite;
+}
+@keyframes pt-idle {
+  50% {
+    rotate: 2.5deg;
+    translate: 0 calc(var(--fy, 0px) - 5px);
+  }
+}
 @media (hover: hover) and (pointer: fine) {
   .pt-cardslot.is-in:hover {
     z-index: 2;
@@ -1047,6 +1068,14 @@
   top: calc(var(--fold-y) + 418px);
 }
 
+.bstage[data-lay='narrow'] .pt-cardslot[data-park] {
+  --fx: calc(var(--pkxn) - var(--c) * var(--cell) - 4px);
+  --fy: calc(var(--pkyn) - var(--r) * var(--cell) - 3px);
+}
+.bstage[data-lay='narrow'] .pt-cardslot[data-park]:not(.is-in) .pt-card {
+  transform: rotate(var(--pkr)) scale(0.58);
+}
+
 /* -- reduced motion / static: everything landed, the fold beneath the tally
    (the driver doesn't run on the still page, so this is CSS alone) */
 .bstage.is-static .pt-grid i,
@@ -1067,6 +1096,9 @@
 }
 .bstage.is-static .pt-card {
   opacity: 1;
+  transform: rotate(var(--rest));
+}
+.bstage.is-static .pt-cardslot[data-park] .pt-card {
   transform: rotate(var(--rest));
 }
 .bstage.is-static .pt-chip {

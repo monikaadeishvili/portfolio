@@ -87,7 +87,7 @@ export function Proof({ lay, live }: SectionProps) {
           <Tally />
         </Region>
 
-        <Region index={2} label="Work" className="pw-r1" weight={9} pan hold="0.69,0.46,0.93">
+        <Region index={2} label="Work" className="pw-r1" weight={9} pan hold="0.64,0.36,0.93">
           <div className="pw-pin">
             <div className="pw-clip">
               <div className="pw-wash" aria-hidden="true">

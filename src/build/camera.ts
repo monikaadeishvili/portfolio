@@ -434,6 +434,11 @@ function schedule(g: Geo) {
         if (i === 0 && r === 0) {
           c.in0 = -1
           c.in1 = -1
+        } else if (i === LAST) {
+          // Say hello: the balloon has just popped; every piece is thrown out of
+          // it onto the canvas at once, whichever region it will crawl to
+          c.in0 = SEC[i][0] - 0.004 + j * 0.0012 + r * 0.0025
+          c.in1 = c.in0 + 0.01
         } else {
           // drop in as the camera arrives, settle before the first one leaves
           c.in0 = r === 0 ? SEC[i][0] - 0.006 + j * 0.0015 : A - L * 0.3 + j * 0.002

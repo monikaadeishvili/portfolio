@@ -1,11 +1,9 @@
 /**
  * 04 Say hello — the poster's life (./Contact.tsx):
- *   · scroll: "won't ignore." drops in letter by letter (scrubbed), the marker
- *     strokes in under it, then the Ignore button pops up beside the CTA; the
- *     crowd wanders in for the family photo at the very end;
- *   · the Ignore button ducks to the next spot whenever you reach for it,
- *     talks back, and after four tries gives in as a mailto ("Fine, say hello")
- *     with a burst of confetti;
+ *   · scroll: "won't ignore." drops in letter by letter (scrubbed) and the
+ *     marker strokes in under it; the crowd walks in from beyond the screen
+ *     edges for the family photo at the very end;
+ *   · the Say hello button bursts confetti when clicked (the mail opens as usual);
  *   · the letters hop under the cursor (a tap sends a wave through them);
  *   · the email chip copies the address; a poked crowd member jumps, and its
  *     neighbours follow;
@@ -15,22 +13,6 @@
 import { EMAIL } from '../../../content/story'
 import { clamp01, registerFx, smooth, range } from '../../runtime'
 
-const LABELS = ['Ignore', 'Nice try', 'Not today', 'Still here']
-/** where the Ignore button ducks to, board px from its home, in order */
-const SPOTS = [
-  [0, 0],
-  [-330, 24],
-  [300, 70],
-  [-190, 104],
-  [250, -8],
-]
-const SPOTS_N = [
-  [0, 0],
-  [-40, 74],
-  [40, 4],
-  [-34, 124],
-  [38, 74],
-]
 const outBack = (t: number) => {
   const c = 1.6
   return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2)
@@ -42,17 +24,11 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
   const em = q1('.k-em')
   const letters = Array.from(root.querySelectorAll<HTMLElement>('.k-l')).map((el) => ({ el, inn: el.firstElementChild as HTMLElement, key: '' }))
   const pen = q1('.k-pen')
-  const halo = q1('.k-ig-halo')
-  const ig = q1<HTMLButtonElement>('button.k-ig')
-  const igIn = ig?.querySelector<HTMLElement>('.k-ig-in') ?? null
-  const yes = q1<HTMLAnchorElement>('.k-ig-yes')
-  const count = q1('.k-count b')
-  const liveMsg = q1('.k-live')
+  const cta = q1('.k-cta-btn')
   const chips = Array.from(root.querySelectorAll<HTMLElement>('.k-confetti i'))
   const mail = q1<HTMLButtonElement>('.k-mail')
   const crowd = Array.from(board?.querySelectorAll<HTMLElement>('.cw') ?? [])
   if (!board || !em || !pen) return () => {}
-  const spots = narrow ? SPOTS_N : SPOTS
 
   // the still page (reduced motion) never runs the scroll driver: know it up front
   let reduced = !live || !!root.closest('.is-static') || window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -70,57 +46,6 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
     void el.offsetWidth
     el.classList.add(cls)
   }
-
-  /* -------------------------------------------- the Ignore button */
-  let step = 0
-  const gasp = () => {
-    board.dataset.gasp = '1'
-    window.setTimeout(() => delete board.dataset.gasp, 520)
-  }
-  const dodge = () => {
-    if (!halo || !igIn || step >= LABELS.length) return
-    step++
-    if (count) replay(count, 'is-wig')
-    gasp()
-    if (step >= LABELS.length) {
-      // it gives in: home again, and now it says hello too
-      halo.style.transform = ''
-      halo.classList.add('is-done')
-      if (yes) yes.tabIndex = 0
-      if (ig) ig.tabIndex = -1
-      if (liveMsg) liveMsg.textContent = 'Fine, say hello'
-      window.setTimeout(() => burst(yes), 60)
-      return
-    }
-    const [x, y] = reduced ? [0, 0] : spots[step]
-    halo.style.transform = x || y ? `translate3d(${x}px, ${y}px, 0)` : ''
-    igIn.textContent = LABELS[step]
-    if (liveMsg) liveMsg.textContent = LABELS[step]
-    if (!reduced) replay(halo, 'is-dash')
-  }
-  const resetIgnore = () => {
-    if (!halo || !igIn || step === 0) return
-    step = 0
-    halo.style.transform = ''
-    halo.classList.remove('is-done', 'is-dash')
-    igIn.textContent = LABELS[0]
-    if (yes) yes.tabIndex = -1
-    if (ig) ig.tabIndex = 0
-  }
-  on(halo, 'pointerenter', (e) => {
-    if (e.pointerType === 'mouse' && !reduced) dodge()
-  })
-  on(ig, 'pointerdown', (e) => {
-    if (e.pointerType !== 'mouse') {
-      e.preventDefault()
-      dodge()
-    }
-  })
-  // keyboard (Enter / Space), or a mouse that got there anyway
-  on(ig, 'click', (e) => {
-    e.preventDefault()
-    if (e.detail === 0 || reduced) dodge()
-  })
 
   /* ------------------------------------------------ hoppy letters */
   const hop = (i: number) => {
@@ -164,7 +89,7 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
       )
     })
   }
-  on(yes, 'click', () => burst(yes))
+  on(cta, 'click', () => burst(cta))
 
   /* ------------------------------------------------- copy the email */
   let okT = 0
@@ -201,7 +126,7 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
   let lastWave = -1e9
   let waves = 0
 
-  const cache = { mark: '', ig: '', crowd: '' }
+  const cache = { mark: '', crowd: '' }
   const offFx = !live
     ? () => {}
     : registerFx({
@@ -243,12 +168,6 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
             cache.mark = mk
             em.classList.toggle('is-mark', !!mk)
           }
-          const igk = q >= 0.95 ? '1' : ''
-          if (igk !== cache.ig) {
-            cache.ig = igk
-            pen.classList.toggle('is-ig', !!igk)
-          }
-          if (e.u < 0.3) resetIgnore()
 
           // the crowd wanders in from both edges for the family photo
           const g = range(0.84, 0.95, e.u)
@@ -259,11 +178,12 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
               const side = i % 2 ? 1 : -1
               const delay = (i % 3) * 0.08
               const a = e.reduced ? 1 : smooth(delay, delay + 0.8, g)
-              const x = (1 - a) * side * 900
+              // from beyond the screen's edges: nobody pops into view
+              const x = (1 - a) * side * (narrow ? 900 : 2200)
               const walking = a > 0.02 && a < 0.98
               const bob = walking ? Math.abs(Math.sin((e.t * 9 + i) * 1.4)) * -14 : Math.sin(e.t * 2.4 + i) * -4 * (a >= 1 ? 1 : 0)
               el.style.transform = `translate3d(${x.toFixed(1)}px, ${bob.toFixed(1)}px, 0)`
-              el.style.opacity = a < 0.01 ? '0' : '1'
+              el.style.opacity = a <= 0 ? '0' : '1'
               el.dataset.walk = walking ? '1' : '0'
             })
           }
@@ -286,10 +206,8 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
     offFx()
     off.forEach((f) => f())
     window.clearTimeout(okT)
-    resetIgnore()
     letters.forEach((l) => (l.el.style.transform = l.el.style.opacity = ''))
     em.classList.remove('is-mark')
-    pen.classList.remove('is-ig')
     crowd.forEach((el) => (el.style.transform = el.style.opacity = ''))
   }
 }

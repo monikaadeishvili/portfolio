@@ -1,14 +1,15 @@
 /**
- * 04 SAY HELLO — "Try to ignore it". One poster: a huge headline whose last
- * words drop in letter by letter over a marker stroke, and one button, Ignore,
- * that can never be pressed: it ducks away, talks back, and finally gives in as
- * "Fine, say hello", bursting confetti. The letters hop under the cursor, the
- * email copies with a click, and the crowd along the bottom jumps when poked.
- * ./posterFx.ts drives it all.
+ * 04 SAY HELLO — one poster: a huge headline whose last words drop in letter by
+ * letter over a marker stroke, and one big Say hello button that bursts
+ * confetti. When the balloon pops on the way in, its pieces (badge, button,
+ * email chip, links) are thrown onto the canvas around the board and crawl to
+ * their places as you scroll. The letters hop under the cursor, the email copies
+ * with a click, and the crowd walks in from the screen edges and jumps when
+ * poked. ./posterFx.ts drives it all.
  */
 import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from 'react'
 import { CHAPTERS, EMAIL, FOOTER, LINKS } from '../../../content/story'
-import { Badge, LinkButton, MomoGlyph, TONE_HEX as T } from '../../../ui/components'
+import { Badge, Button, LinkButton, MomoGlyph, TONE_HEX as T } from '../../../ui/components'
 import { Piece, Region, Reveal } from '../../parts'
 import { Artboard, type SectionProps } from '../Artboard'
 import { Sticker } from '../hello/Sticker'
@@ -58,7 +59,7 @@ export function Contact({ lay, live }: SectionProps) {
     <Artboard idx={3} live={live} lay={lay}>
       <div ref={rootRef} className="k-root">
         <Region index={0} label="Poster" className="k-r0">
-          <Piece id="k-badge" name="Badge" kind="bubble" travel="rain" tone={T.mint} order={0}>
+          <Piece id="k-badge" name="Badge" kind="hero" travel="crawl" tone={T.mint} order={0} at={0.35} park="-300,40" parkN="40,-150" eyes={{ x: 50, y: -8, s: 16 }}>
             <Badge tone="pink">Open to new work</Badge>
           </Piece>
 
@@ -83,22 +84,11 @@ export function Contact({ lay, live }: SectionProps) {
           <Reveal id="k-para" mode="type" segs={[CHAPTERS[3].body]} className="rv-para k-para" order={2} />
 
           <div className="k-pen">
-            <div className="k-row">
-              <span className="k-ig-home">
-                <span className="k-ig-halo">
-                  <button type="button" className="k-ig" data-step="0">
-                    <span className="k-ig-in">Ignore</span>
-                  </button>
-                  <a className="k-ig k-ig-yes" href={`mailto:${EMAIL}`} tabIndex={-1}>
-                    <span className="k-ig-in">Fine, say hello →</span>
-                  </a>
-                </span>
-              </span>
-            </div>
-            <p className="k-count">
-              Times ignored: <b>0</b>
-            </p>
-            <span className="k-live sr-only" aria-live="polite" />
+            <Piece id="k-cta" name="Button / CTA" kind="hero" travel="crawl" tone={T.violet} order={1} at={0.92} park="1190,560" parkN="200,-120" className="k-cta" eyes={{ x: 6, y: 50, s: 24 }}>
+              <Button size="xl" href={`mailto:${EMAIL}`} icon="right" className="k-cta-btn">
+                Say hello
+              </Button>
+            </Piece>
             <span className="k-confetti" aria-hidden="true">
               {Array.from({ length: 16 }, (_, i) => (
                 <i key={i} style={{ '--c': ['#ff7ad1', '#8b5cff', '#ffd84d', '#2db8ff', '#b6f03a'][i % 5] } as CSSProperties} />
@@ -108,7 +98,7 @@ export function Contact({ lay, live }: SectionProps) {
         </Region>
 
         <Region index={1} label="Sign-off" className="k-r1">
-          <Piece id="k-mail" name="Chip / Email" kind="bubble" travel="rain" tone={T.violet} order={0}>
+          <Piece id="k-mail" name="Chip / Email" kind="hero" travel="crawl" tone={T.violet} order={0} at={0.35} park="-360,30" parkN="10,b+40" eyes={{ x: 8, y: -8, s: 16 }}>
             <button type="button" className="k-mail" aria-label="Copy email address">
               <span className="k-mail-a">{EMAIL}</span>
               <span className="k-mail-b">
@@ -120,18 +110,27 @@ export function Contact({ lay, live }: SectionProps) {
           <ul className="k-links" aria-label="Elsewhere">
             {LINKS.map((l, i) => (
               <li key={l.label}>
-                <Piece id={`k-l${i}`} name={`Link / ${l.label}`} kind="bubble" travel="rain" tone={T.ink} order={1 + i}>
+                <Piece
+                  id={`k-l${i}`}
+                  name={`Link / ${l.label}`}
+                  kind="hero"
+                  travel="crawl"
+                  tone={T.ink}
+                  order={1 + i}
+                  at={0.6 + i * 0.2}
+                  park={i ? '1200,150' : '1180,20'}
+                  parkN={i ? '210,b+130' : '40,b+150'}
+                  eyes={{ x: 50, y: -10, s: 14 }}
+                >
                   <LinkButton href={l.href}>{l.label}</LinkButton>
                 </Piece>
               </li>
             ))}
           </ul>
-          <Piece id="k-foot" name="Footer" kind="bubble" travel="rain" tone={T.ink} order={5} className="k-footslot">
-            <footer className="k-foot">
-              <MomoGlyph size={20} />
-              <span>{FOOTER}</span>
-            </footer>
-          </Piece>
+          <footer className="k-foot">
+            <MomoGlyph size={20} />
+            <span>{FOOTER}</span>
+          </footer>
         </Region>
       </div>
       {live && (

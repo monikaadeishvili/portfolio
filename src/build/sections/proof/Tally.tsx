@@ -98,7 +98,18 @@ export function Tally() {
           <span
             key={c.id}
             className="pt-fly pt-cardslot"
-            style={{ '--cw': c.at[0], '--rw': c.at[1], '--cn': i % 3, '--rn': Math.floor(i / 3), '--rest': `${(((i * 37) % 5) - 2) * 1.2}deg`, '--i': i } as CSSProperties}
+            data-park={'park' in c ? '' : undefined}
+            style={
+              {
+                '--cw': c.at[0],
+                '--rw': c.at[1],
+                '--cn': i % 3,
+                '--rn': Math.floor(i / 3),
+                '--rest': `${(((i * 37) % 5) - 2) * 1.2}deg`,
+                '--i': i,
+                ...('park' in c ? { '--pkx': `${c.park[0]}px`, '--pky': `${c.park[1]}px`, '--pkr': `${c.park[2]}deg`, '--pkxn': `${c.parkN[0]}px`, '--pkyn': `${c.parkN[1]}px` } : {}),
+              } as CSSProperties
+            }
           >
             <span className="pt-arc">
               <span className={`pt-card pt-card-${c.kind}`} data-id={c.id} style={{ '--bg': c.bg, '--fg': c.fg, '--mk': c.mk } as CSSProperties}>

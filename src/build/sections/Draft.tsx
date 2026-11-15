@@ -13,6 +13,7 @@
 import type { CSSProperties } from 'react'
 import { CHAPTERS, type Seg } from '../../content/story'
 import { clamp01, inOut, range, registerFx } from '../runtime'
+import { phOf } from '../worlds'
 import './draft.css'
 
 const plain = (segs: Seg[]) => segs.map((s) => (typeof s === 'string' ? s : s.em)).join('')
@@ -184,9 +185,10 @@ export function mountDraft(board: HTMLElement, idx: number) {
         }
         return
       }
-      const q = e.reg[0] ?? 0
-      // the draft holds while the board arrives; the sweep runs as the camera settles
-      const w = inOut(range(0.03, 0.5, q))
+      // the draft shows while the board travels in; the sweep starts the moment the
+      // section begins (no dead scroll on a white board) and is done well before
+      // the top region has finished building
+      const w = inOut(range(0, Math.max(0.04, phOf(idx).topEnd * 0.6), e.u))
       const r = w * far
       const st = w <= 0 ? 'draft' : w >= 1 ? 'done' : 'sweep'
       if (st !== cache.st) {

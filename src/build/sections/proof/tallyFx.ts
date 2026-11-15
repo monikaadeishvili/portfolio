@@ -38,8 +38,12 @@ export function mountTally(root: HTMLElement, region: number) {
   let gulps = 0
   const waves = [0, 1, 2, 3].map((w) => chips.filter((c) => c.dataset.w === String(w)))
   const nCards = TALLY.cards.length
-  /** how many client products have landed once the first i stickers are down */
-  const workBy = TALLY.cards.reduce<number[]>((acc, c) => [...acc, acc[acc.length - 1] + (c.kind === 'work' ? 1 : 0)], [0])
+  /** landing order: the four waiting on the board jump in first, then the bubble's */
+  const order = TALLY.cards.map((c, i) => ({ c, i })).sort((a, b) => Number('park' in b.c) - Number('park' in a.c))
+  const rank = new Array<number>(nCards)
+  order.forEach((o, k) => (rank[o.i] = k))
+  /** how many client products have landed once the first n stickers are down */
+  const workBy = order.reduce<number[]>((acc, o) => [...acc, acc[acc.length - 1] + (o.c.kind === 'work' ? 1 : 0)], [0])
   const nWork = workBy[nCards]
   const total = nWork + TALLY.chips.length
 
@@ -127,7 +131,8 @@ export function mountTally(root: HTMLElement, region: number) {
       const b = live.state?.cores[0]
       if (b && q < 0.7) {
         spits.forEach((sp) => {
-          if (sp.el.classList.contains('is-in') || (sp.el === counts && stage.classList.contains('is-count'))) return
+          // (the parked ones fly from where they wait, set in CSS)
+          if (sp.el.hasAttribute('data-park') || sp.el.classList.contains('is-in') || (sp.el === counts && stage.classList.contains('is-count'))) return
           const k = `${Math.round(b.x - bw.x - sp.x)},${Math.round(b.y - bw.y - sp.y)}`
           if (k === sp.key) return
           sp.key = k
@@ -137,7 +142,7 @@ export function mountTally(root: HTMLElement, region: number) {
         })
       }
       const landed = q < 0.08 ? 0 : Math.min(nCards, Math.floor((q - 0.08) / (0.36 / nCards)) + 1)
-      cards.forEach((c, i) => on(c, 'is-in', i < landed))
+      cards.forEach((c, i) => on(c, 'is-in', rank[i] < landed))
       on(stage, 'is-count', landed > 0)
       let started = 0
       waves.forEach((w, k) => {
