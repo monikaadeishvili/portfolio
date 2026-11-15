@@ -160,6 +160,7 @@ export const WORK: readonly WorkProject[] = [
       ['Role', 'Senior UX Designer'],
       ['Platforms', 'TV, mobile, desktop'],
     ],
+    link: { label: 'dazn.com', href: 'https://www.dazn.com/en-ES/welcome' },
     media: [
       m('tv', 1600, 894, ['dazn-0', 'DAZN on TV: the home screen with live football']),
       // a short session: Home, the profile and back, then Scores, Schedule and Search along the tab bar
@@ -268,6 +269,7 @@ export const WORK: readonly WorkProject[] = [
     name: 'GrowthOptix',
     body: 'A growth dashboard: clicks, leads, sales and traffic sources at a glance, in light and in dark.',
     meta: [['Platform', 'Web app']],
+    link: { label: 'growthoptix.com', href: 'https://www.growthoptix.com/' },
     media: [
       // light and dark: the theme flips from the sun/moon switch in the sidebar
       { ...m('web', 1600, 1138, ['growthoptix-0', 'The GrowthOptix overview, light'], ['growthoptix-1', 'The GrowthOptix overview, dark']), nav: 'theme', origin: [0.021, 0.765] },

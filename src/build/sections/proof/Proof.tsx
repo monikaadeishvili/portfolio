@@ -101,7 +101,8 @@ export function Proof({ lay, live }: SectionProps) {
                       <span className="pw-idx" aria-hidden="true">
                         {pad(i + 1)} <i>/ {pad(WORK.length)}</i>
                       </span>
-                      <h3 className="pw-name">
+                      {/* the longest word sets the size, so a one-word name never clips */}
+                      <h3 className="pw-name" style={{ '--n': Math.max(...p.name.split(' ').map((w) => w.length)) } as CSSProperties}>
                         <span>{p.name}</span>
                       </h3>
                       <p className="pw-body">{p.body}</p>

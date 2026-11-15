@@ -162,7 +162,7 @@
   margin: 0;
   font-family: var(--f-ui);
   font-weight: 750;
-  font-size: 58px;
+  font-size: min(58px, calc(300px / (var(--n, 1) * 0.57)));
   line-height: 0.95;
   letter-spacing: -0.045em;
   text-wrap: balance;
@@ -577,7 +577,7 @@
   width: 250px;
 }
 .bstage[data-lay='narrow'] .pw-name {
-  font-size: 42px;
+  font-size: min(42px, calc(250px / (var(--n, 1) * 0.57)));
 }
 .bstage[data-lay='narrow'] .pw-body {
   font-size: 14px;
