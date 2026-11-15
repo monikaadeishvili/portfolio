@@ -126,6 +126,9 @@ export interface WorkMedia {
   /** intrinsic size of the first screen */
   w: number
   h: number
+  /** public/work/<video>.mp4: a screen recording that plays in the frame
+   *  (the first file is its poster and the still for reduced motion) */
+  video?: string
 }
 export interface WorkProject {
   id: string
@@ -179,8 +182,8 @@ export const WORK: readonly WorkProject[] = [
     meta: [['Platforms', 'Website, mobile app']],
     link: { label: 'toeicpal.com', href: 'https://toeicpal.com/' },
     media: [
-      m('web', 1600, 1000, ['toeic-0', 'The toeic.pal website: Master spoken English with your personal AI tutor']),
-      m('phone', 640, 1385, ['toeic-1', 'The toeic.pal website on a phone'], ['toeic-2', 'toeic.pal on a phone: speak English']),
+      { ...m('web', 1280, 800, ['toeic-0', 'The toeic.pal website: Master spoken English with your personal AI tutor']), video: 'toeic-web' },
+      { ...m('phone', 640, 1386, ['toeic-1', 'The toeic.pal app: home, the learning-stage map and an AI speaking dialog']), video: 'toeic-phone' },
     ],
   },
   {

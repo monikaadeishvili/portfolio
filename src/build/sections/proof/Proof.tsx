@@ -14,7 +14,8 @@ import './proof.css'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
-/** one device frame; with several screens it changes page in turn (./workFx.ts) */
+/** one device frame; with several screens it changes page in turn, and with a
+ *  recording it plays while in view (./workFx.ts) */
 function Screen({ m }: { m: WorkMedia }) {
   const many = m.files.length > 1
   const taps = m.taps.some(Boolean)
@@ -29,9 +30,23 @@ function Screen({ m }: { m: WorkMedia }) {
           </span>
         )}
         <div className="pw-shot">
-          {m.files.map((f, i) => (
-            <img key={i} src={`/work/${f}.webp`} alt={m.alts[i]} width={m.w} height={m.h} decoding="async" fetchPriority="low" data-s={i === 0 ? 'on' : 'park'} />
-          ))}
+          {m.video ? (
+            <video
+              src={`/work/${m.video}.mp4`}
+              poster={`/work/${m.files[0]}.webp`}
+              aria-label={m.alts[0]}
+              width={m.w}
+              height={m.h}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+            />
+          ) : (
+            m.files.map((f, i) => (
+              <img key={i} src={`/work/${f}.webp`} alt={m.alts[i]} width={m.w} height={m.h} decoding="async" fetchPriority="low" data-s={i === 0 ? 'on' : 'park'} />
+            ))
+          )}
           {taps && <span className="pw-tap" aria-hidden="true" />}
         </div>
       </div>

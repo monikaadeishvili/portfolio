@@ -2,8 +2,8 @@
  * 03 Proof — the work strip's driver. Region 1's build progress slides the
  * track sideways (the camera holds still on the region, like How I think's
  * pan). Frames with several screens change page while in view, like
- * tapping through an app. The bottom timeline's dot follows the strip and names the project
- * in view.
+ * tapping through an app; screen recordings play only while their frame is in
+ * view. The bottom timeline's dot follows the strip and names the project in view.
  * Layout is read only in `measure`; `update` writes cached transforms.
  */
 import { WORK } from '../../../content/story'
@@ -43,6 +43,17 @@ export function mountWork(root: HTMLElement) {
       next: 1.4 + (k % 3) * 0.8,
     }
   })
+  /** screen recordings: they play while their frame is in view */
+  const vids = Array.from(track.querySelectorAll<HTMLVideoElement>('.pw-shot video')).map((v) => {
+    v.muted = true // autoplay without a gesture needs the property, not just the attribute
+    return { v, el: v.closest<HTMLElement>('.pw-m') ?? v, on: false, mid: 0, w: 0 }
+  })
+  const play = (o: (typeof vids)[number], on: boolean) => {
+    if (o.on === on) return
+    o.on = on
+    if (on) o.v.play().catch(() => (o.on = false))
+    else o.v.pause()
+  }
   const HOLD = 2.3 // seconds on each page
   const TAP = 0.3 // the tap lands this long before the page changes
 
@@ -55,15 +66,18 @@ export function mountWork(root: HTMLElement) {
 
   const measure = () => {
     clipW = clip.offsetWidth || 1
-    // the camera scales the world: undo it to get board px
-    const tr = track.getBoundingClientRect()
-    const k = tr.width / Math.max(1, track.offsetWidth) || 1
     travel = Math.max(0, track.scrollWidth - clipW)
-    starts = projs.map((p) => (p.getBoundingClientRect().left - tr.left) / k)
-    decks.forEach((d) => {
-      const r = d.el.getBoundingClientRect()
+    // layout offsets inside the track, in board px: screen rects would be
+    // skewed by the camera's tilt (and the track's own slide)
+    const left = (el: HTMLElement) => {
+      let x = 0
+      for (let n: HTMLElement | null = el; n && n !== clip; n = n.offsetParent as HTMLElement | null) x += n.offsetLeft
+      return x - track.offsetLeft
+    }
+    starts = projs.map(left)
+    ;[...decks, ...vids].forEach((d) => {
       d.w = d.el.offsetWidth
-      d.mid = (r.left - tr.left) / k + d.w / 2
+      d.mid = left(d.el) + d.w / 2
     })
     lineW = line?.offsetWidth || 1
     // a tick where each project starts arriving in frame
@@ -88,7 +102,10 @@ export function mountWork(root: HTMLElement) {
     section: 2,
     measure: () => measure(),
     update: (e) => {
-      if (!e.near || e.reduced) return
+      if (!e.near || e.reduced) {
+        vids.forEach((o) => play(o, false))
+        return
+      }
       const q = e.reg[1] ?? 0
       const T = clamp01((q - 0.03) / 0.92)
       const x = -T * travel
@@ -130,6 +147,9 @@ export function mountWork(root: HTMLElement) {
         }
       })
 
+      // a recording plays while any of its frame is on screen
+      vids.forEach((o) => play(o, Math.abs(o.mid + x - clipW / 2) < clipW / 2 + o.w / 2))
+
       // the project in view: the last one whose text has crossed 40% of the frame
       const edge = -x + clipW * 0.4
       let now = 0
@@ -161,5 +181,6 @@ export function mountWork(root: HTMLElement) {
     if (dot) dot.style.transform = ''
     if (rule) rule.style.opacity = ''
     decks.forEach((d) => d.imgs.forEach((img, n) => (img.dataset.s = n === 0 ? 'on' : 'park')))
+    vids.forEach((o) => play(o, false))
   }
 }

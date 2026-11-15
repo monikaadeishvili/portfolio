@@ -5,8 +5,9 @@
  *
  *   node scripts/work/build.mjs            (from the website folder)
  *
- * Sources: ../Projects/<Project>/… (the momo design folder) and ./src/ (the
- * TOEIC website captures, taken from toeicpal.com).
+ * Sources: ../Projects/<Project>/… (the momo design folder). toeic.pal's frames
+ * are screen recordings of toeicpal.com: ./video/record.cjs writes those videos
+ * and their posters (toeic-0, toeic-1).
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -15,7 +16,6 @@ import sharp from 'sharp'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const P = path.resolve(here, '../../../Projects')
-const SRC = path.join(here, 'src')
 const OUT = path.resolve(here, '../../public/work')
 fs.mkdirSync(OUT, { recursive: true })
 
@@ -35,11 +35,6 @@ const MEDIA = {
     ['phone', `${P}/DAZN/Mobile Screens-3.svg`, { bg: '#0a0e13' }],
     ['phone', `${P}/DAZN/Mobile Screens-1.svg`, { bg: '#0a0e13' }],
     ['phone', `${P}/DAZN/Mobile Screens.svg`, { bg: '#0a0e13' }],
-  ],
-  toeic: [
-    ['web', `${SRC}/toeic-web.webp`],
-    ['phone', `${SRC}/toeic-phone-1.webp`],
-    ['phone', `${SRC}/toeic-phone-2.webp`],
   ],
   nota: [
     ['web', `${P}/Nota/Dashboard 2.jpg`],
