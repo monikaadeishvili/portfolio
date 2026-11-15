@@ -90,8 +90,6 @@ export function LayersPanel2() {
     <aside className="layers chrome layers2" aria-label="Layers">
       <div className="panel-head">
         <span className="panel-tab is-active">Layers</span>
-        <span className="panel-tab">Assets</span>
-        <span className="page-switch-label">Page 1</span>
       </div>
       <div className="l2-list" role="tree" aria-label={`Frame ${frameName(ch, hello.name)}`} ref={listRef}>
         <div className="layer-row d0 l2-row l2-frame" role="treeitem" aria-level={1} aria-expanded="true" key={`f-${ch}`}>
@@ -247,7 +245,6 @@ export function Inspector2() {
     <aside className="inspector chrome inspector2" aria-label="Design inspector (live values)">
       <div className="panel-head">
         <span className="panel-tab is-active">Design</span>
-        <span className="panel-tab">Prototype</span>
       </div>
       <div className="insp-sel">
         {isBub ? <span className="layer-ico i-organism">{LayerIcon.organism()}</span> : c ? <KindIcon kind={c.kind} /> : <span className="layer-ico i-frame">{LayerIcon.frame()}</span>}
