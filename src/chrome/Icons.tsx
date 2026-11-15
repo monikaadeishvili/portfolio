@@ -63,7 +63,8 @@ export const ToolIcon: Record<Tool, () => ReactNode> = {
   ),
   hand: () => (
     <S>
-      <path d="M7 10V4.8a1.3 1.3 0 0 1 2.6 0V9m0-.5V3.6a1.3 1.3 0 0 1 2.6 0V9m0-4a1.3 1.3 0 0 1 2.6 0v6c0 3.5-2.2 6-5.5 6-2.6 0-3.9-1.1-5.1-2.9L3.5 12a1.4 1.4 0 0 1 2.2-1.7L7 11.6" />
+      {/* drawn larger and denser than the other tools: scaled down to match them (the stroke keeps its width) */}
+      <path transform="translate(10 10) scale(0.8) translate(-9.05 -9.65)" vectorEffect="non-scaling-stroke" d="M7 10V4.8a1.3 1.3 0 0 1 2.6 0V9m0-.5V3.6a1.3 1.3 0 0 1 2.6 0V9m0-4a1.3 1.3 0 0 1 2.6 0v6c0 3.5-2.2 6-5.5 6-2.6 0-3.9-1.1-5.1-2.9L3.5 12a1.4 1.4 0 0 1 2.2-1.7L7 11.6" />
     </S>
   ),
   comment: () => (
