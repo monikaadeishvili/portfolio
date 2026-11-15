@@ -43,7 +43,7 @@ export const SPLIT_PAL: [string, string, string] = ['#B6F03A', '#2DB8FF', '#FF7A
  * for the "same tools → taste" beat; everything is normalised so the other
  * sections keep exactly the same absolute scroll length (SCROLL_VH grows).
  */
-const RAW_W = [0.145, 0.34, 0.135, 0.098]
+const RAW_W = [0.145, 0.34, 0.36, 0.098]
 const RAW_TR = 0.068
 const RAW_SUM = RAW_W.reduce((a, b) => a + b, 0) + RAW_TR * (RAW_W.length - 1)
 export const TR_LEN = RAW_TR / RAW_SUM
@@ -94,7 +94,15 @@ export const PH2: Phases = {
   descStart: 0.28,
   descEnd: 0.9,
 }
-export const phOf = (i: number): Phases => (i === 0 ? PH0 : i === 1 ? PH2 : PH)
+/** 03 Proof: a short intro, then a long descent that is the sideways work strip */
+export const PH3: Phases = {
+  arrive: 0.04,
+  topEnd: 0.17,
+  flat: 0.21,
+  descStart: 0.25,
+  descEnd: 0.92,
+}
+export const phOf = (i: number): Phases => (i === 0 ? PH0 : i === 1 ? PH2 : i === 2 ? PH3 : PH)
 
 export const secU = (i: number, p: number) => (p - SEC[i][0]) / (SEC[i][1] - SEC[i][0])
 export const secP = (i: number, u: number) => SEC[i][0] + u * (SEC[i][1] - SEC[i][0])

@@ -241,7 +241,7 @@ html.is-coarse .bstage a {
   padding: 44px 56px 56px;
   transform-style: preserve-3d;
 }
-.bf-body :is(div, ul, ol, li, section, figure, header, nav, footer):not(.alive, .alive *, .slot-ph, .alive-shadow, .trail, .cs *, .cs, .hk-gl, .hk-gl *, .hk-back, .hk-back *, .hk-clip, .hk-clip *, .hk-hit) {
+.bf-body :is(div, ul, ol, li, section, figure, header, nav, footer):not(.alive, .alive *, .slot-ph, .alive-shadow, .trail, .cs *, .cs, .hk-gl, .hk-gl *, .hk-back, .hk-back *, .hk-clip, .hk-clip *, .hk-hit, .pw-clip, .pw-clip *, .pw-rule, .pw-rule *) {
   transform-style: preserve-3d;
 }
 .rg {
