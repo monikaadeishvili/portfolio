@@ -603,8 +603,12 @@
   gap: 14px;
 }
 .bstage[data-lay='narrow'] .pw-now {
+  /* a fixed width: the line beside it (and its walker) must not change length
+     as the project name changes */
+  width: 136px;
   min-width: 0;
   font-size: 10px;
+  white-space: nowrap;
 }
 
 /* -- reduced motion / static: one readable page, the strip stacked */
