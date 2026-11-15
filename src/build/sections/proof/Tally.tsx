@@ -1,6 +1,6 @@
 /**
- * 03 Proof, part one — the running total. On grid paper, twelve stickers land
- * one by one (six client products, six facts about her), the other 26 client
+ * 03 Proof, part one — the running total. On grid paper, thirteen stickers land
+ * one by one (six client products, seven facts about her), the other 26 client
  * products follow as chips, and the counters add up to 32 products and 10
  * industries. Then everything folds into
  * one orbit around "your product", and a single card drops out below it: one
@@ -57,6 +57,7 @@ function Fact({ id, big }: { id: string; big: string }) {
       )}
       {id === 'years' && <span className="pt-dd pt-dd-spark">✦</span>}
       {id === 'teach' && <span className="pt-dd pt-dd-pill">101</span>}
+      {id === 'ai' && <span className="pt-dd pt-dd-pill pt-dd-pro">PRO</span>}
       {id === 'hello' && <span className="pt-dd pt-dd-wave">გა!</span>}
     </>
   )
@@ -87,7 +88,7 @@ export function Tally() {
           {Array.from({ length: 8 }, (_, i) => (
             <i key={`v${i}`} className="pt-v" style={{ '--i': i } as CSSProperties} />
           ))}
-          {Array.from({ length: 5 }, (_, i) => (
+          {Array.from({ length: 6 }, (_, i) => (
             <i key={`h${i}`} className="pt-h" style={{ '--i': i } as CSSProperties} />
           ))}
         </div>

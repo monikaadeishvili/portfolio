@@ -1,7 +1,7 @@
 /**
  * 03 Proof, part one — drives the running total (./Tally.tsx) from its
  * region's progress q (the camera holds flat on it):
- *   0.08–0.44  twelve stickers land one by one; the counters roll up with the
+ *   0.08–0.44  the stickers land one by one; the counters roll up with the
  *              client products among them
  *   0.44–0.62  the other 26 products arrive in four waves; the count runs to 32
  *   0.70–0.86  everything folds into the orbit around "your product" (scrubbed)

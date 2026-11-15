@@ -375,6 +375,20 @@
     transform: rotate(6deg);
   }
 }
+/* PRO: the pill gleams now and then */
+.pt-dd-pro {
+  background: linear-gradient(100deg, var(--mk) 40%, #5b4bff 50%, var(--mk) 60%) 100% 0 / 300% 100%;
+  animation: pt-gleam 3.4s ease-in-out infinite;
+}
+@keyframes pt-gleam {
+  0%,
+  55% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
 /* three little app tiles, fanned */
 .pt-tools {
   display: flex;
@@ -856,6 +870,10 @@
 }
 
 
+.bstage:not([data-lay='narrow']) .pt-h:last-child {
+  display: none;
+}
+
 /* -- narrow: the stickers packed 3 across, counters and chips beneath, a
    smaller fold */
 .bstage[data-lay='narrow'] .pt-r {
@@ -864,14 +882,14 @@
 .bstage[data-lay='narrow'] .pt-stage {
   --cell: 108px;
   --cols: 3;
-  --rows: 6.6;
+  --rows: 6.75;
 }
 .bstage[data-lay='narrow'] .pt-v:nth-child(n + 5):not(.pt-h) {
   display: none;
 }
 .bstage[data-lay='narrow'] .pt-v {
   bottom: auto;
-  height: calc(4 * var(--cell));
+  height: calc(5 * var(--cell));
 }
 .bstage[data-lay='narrow'] .pt-cardslot {
   --c: var(--cn);
@@ -933,41 +951,45 @@
   height: 25px;
   font-size: 10px;
 }
+/* the counters sit in the last row, in the two cells beside the 13th sticker */
 .bstage[data-lay='narrow'] .pt-counts {
-  left: 0;
-  top: calc(4 * var(--cell) + 12px);
-  width: 100%;
-  height: 86px;
+  left: var(--cell);
+  top: calc(4 * var(--cell));
+  width: calc(2 * var(--cell));
+  height: var(--cell);
+}
+.bstage[data-lay='narrow'] .pt-count {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
 }
 .bstage[data-lay='narrow'] .pt-c0 {
-  left: 4px;
-  top: 0;
+  left: 12px;
+  top: 8px;
 }
 .bstage[data-lay='narrow'] .pt-c1 {
-  left: 54%;
-  top: 12px;
+  left: calc(var(--cell) + 10px);
+  top: 8px;
 }
-.bstage[data-lay='narrow'] .pt-roll {
-  font-size: 50px;
-}
+.bstage[data-lay='narrow'] .pt-roll,
 .bstage[data-lay='narrow'] .pt-c1 .pt-roll {
-  font-size: 38px;
+  font-size: 46px;
 }
 .bstage[data-lay='narrow'] .pt-clab {
-  padding-bottom: 5px;
-  font-size: 10px;
+  padding: 2px 0 0;
+  font-size: 9.5px;
 }
 .bstage[data-lay='narrow'] .pt-typed {
-  left: 4px;
-  top: 58px;
-  font-size: 18px;
+  left: 12px;
+  top: 76px;
+  font-size: 17px;
 }
 .bstage[data-lay='narrow'] .pt-pin-dot {
   display: none;
 }
 .bstage[data-lay='narrow'] .pt-chips {
   left: 0;
-  top: calc(4 * var(--cell) + 106px);
+  top: calc(5 * var(--cell) + 14px);
   width: 100%;
   height: auto;
   align-content: flex-start;
