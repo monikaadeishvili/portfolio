@@ -1,33 +1,19 @@
-/** 05 CONTACT — "The conversation": a chat that types itself, then the ask */
+/**
+ * 04 SAY HELLO — "Try to ignore it". One poster: a huge headline whose last
+ * words drop in letter by letter over a marker stroke, and one button, Ignore,
+ * that can never be pressed: it ducks away, talks back, and finally gives in as
+ * "Fine, say hello", bursting confetti. The letters hop under the cursor, the
+ * email copies with a click, and the crowd along the bottom jumps when poked.
+ * ./posterFx.ts drives it all.
+ */
 import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from 'react'
 import { CHAPTERS, EMAIL, FOOTER, LINKS } from '../../../content/story'
-import { Arrow, Badge, Button, LinkButton, MomoGlyph, TONE_HEX as T } from '../../../ui/components'
+import { Badge, LinkButton, MomoGlyph, TONE_HEX as T } from '../../../ui/components'
 import { Piece, Region, Reveal } from '../../parts'
-import { clamp01, pieces, range, registerFx, smooth } from '../../runtime'
 import { Artboard, type SectionProps } from '../Artboard'
 import { Sticker } from '../hello/Sticker'
+import { mountPoster } from './posterFx'
 import './contact.css'
-
-function Msg({ who, children }: { who: 'you' | 'me'; children: ReactNode }) {
-  return (
-    <div className={`msg msg-${who}`}>
-      <span className="msg-av" aria-hidden="true">
-        {who === 'me' ? <img src="/monika.jpg" alt="" width={44} height={44} decoding="async" /> : 'You'}
-      </span>
-      <p className="msg-b">
-        <span className="sr-only">{who === 'me' ? 'Monika: ' : 'You: '}</span>
-        {children}
-      </p>
-    </div>
-  )
-}
-const words = (s: string) =>
-  s.split(' ').flatMap((w, i, a) => [
-    <span key={i} className="mw">
-      {w}
-    </span>,
-    i < a.length - 1 ? ' ' : null,
-  ])
 
 /** decorative crowd member: a tiny version of a hero, with eyes and legs */
 function Member({ k, children, look = 1 }: { k: number; children: ReactNode; look?: number }) {
@@ -48,154 +34,101 @@ function Member({ k, children, look = 1 }: { k: number; children: ReactNode; loo
   )
 }
 
+const EM = "won't ignore."
+/** a seeded tilt per letter, so the drop and the hops never look mechanical */
+const tilt = (i: number) => (((i * 47) % 9) - 4) * 3.4
+
 export function Contact({ lay, live }: SectionProps) {
   const narrow = lay === 'narrow'
   const rootRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
     const root = rootRef.current
-    if (!live || !root) return
-    const msgs = ['k-m0', 'k-m1', 'k-m2', 'k-m3'].map((id) => ({ id, words: Array.from(root.querySelectorAll<HTMLElement>(`[data-cid="${id}"] .mw`)), last: -1 }))
-    const typing = root.querySelector<HTMLElement>('[data-cid="k-typing"] .alive')
-    const crowd = Array.from(root.closest('.bf')!.querySelectorAll<HTMLElement>('.cw'))
-    let lastTy = ''
-    let lastCrowd = ''
-    return registerFx({
-      id: 'contact-chat',
-      section: 3,
-      update: (e) => {
-        if (!e.near) return
-        // each bubble types its words after it lands
-        msgs.forEach((m) => {
-          const c = pieces.get(m.id)
-          // heroes wait with their real words; only spat bubbles type themselves
-          if (!c || c.kind === 'hero') return
-          const d = (c.p1 - c.p0) * 2.6
-          const q = e.reduced ? 1 : range(c.p1, c.p1 + d, e.p)
-          const n = m.words.length
-          const shown = Math.round(q * n * 10)
-          if (shown === m.last) return
-          m.last = shown
-          m.words.forEach((w, j) => {
-            const v = clamp01(q * n - j)
-            w.style.opacity = v >= 1 ? '' : v.toFixed(2)
-          })
-        })
-        // typing dots wait, then make room for Monika's first answer
-        const reply = pieces.get('k-m1')
-        if (typing && reply) {
-          const out = smooth(reply.p0 + (reply.p1 - reply.p0) * 0.6, reply.p1, e.p)
-          const k = out.toFixed(2)
-          if (k !== lastTy) {
-            lastTy = k
-            typing.style.setProperty('--out', k)
-          }
-        }
-        // the crowd wanders in from both edges for the family photo
-        const g = range(0.84, 0.95, e.u)
-        const key = g.toFixed(3) + (e.u > 0.95 ? Math.floor(e.t * 20) : '')
-        if (key === lastCrowd) return
-        lastCrowd = key
-        crowd.forEach((el, i) => {
-          const side = i % 2 ? 1 : -1
-          const delay = (i % 3) * 0.08
-          const a = e.reduced ? 1 : smooth(delay, delay + 0.8, g)
-          const x = (1 - a) * side * 900
-          const walking = a > 0.02 && a < 0.98
-          const hop = walking ? Math.abs(Math.sin((e.t * 9 + i) * 1.4)) * -14 : Math.sin(e.t * 2.4 + i) * -4 * (a >= 1 ? 1 : 0)
-          el.style.transform = `translate3d(${x.toFixed(1)}px, ${hop.toFixed(1)}px, 0)`
-          el.style.opacity = a < 0.01 ? '0' : '1'
-          el.dataset.walk = walking ? '1' : '0'
-        })
-      },
-    })
-  }, [live])
+    if (!root) return
+    // the interactions work on the still page too; the scroll life only when live
+    return mountPoster(root, narrow, live)
+  }, [live, narrow])
+
+  const sans = CHAPTERS[3].headline.filter((s): s is string => typeof s === 'string').join('').trim()
+  // two sans lines: "Let's build" / "something people"
+  const l1 = "Let's build"
+  const l2 = sans.replace(`${l1} `, '')
 
   return (
     <Artboard idx={3} live={live} lay={lay}>
       <div ref={rootRef} className="k-root">
-        <Region index={0} label="Conversation" className="k-r0" weight={1.4}>
-          <div className="chat" role="log" aria-label="Conversation">
-            <Piece id="k-head" name="Chat header" kind="bubble" travel="rain" tone={T.pink} order={0} className="chat-headslot">
-              <header className="chat-head">
-                <span className="chat-av">
-                  <img src="/monika.jpg" alt="" width={48} height={48} decoding="async" />
-                  <i aria-hidden="true" />
-                </span>
-                <span className="chat-who">
-                  <b>Monika Adeishvili</b>
-                  <span>online · usually replies within a day</span>
-                </span>
-                <span className="chat-tools" aria-hidden="true">
-                  <i />
-                  <i />
-                  <i />
-                </span>
-              </header>
-            </Piece>
-            <div className="chat-thread">
-              <span className="chat-day" aria-hidden="true">
-                Today
-              </span>
-              <Piece id="k-m0" name="Message / You" kind="bubble" travel="rain" tone={T.sky} order={1} at={0.16} className="m-you">
-                <Msg who="you">{words('Hi Monika — are you taking on new work?')}</Msg>
-              </Piece>
-              <div className="m-pair">
-                <Piece id="k-typing" name="Typing…" kind="bubble" travel="rain" tone={T.pink} order={2} at={0.3} className="m-typing">
-                  <span className="typing" aria-hidden="true">
-                    <i />
-                    <i />
-                    <i />
-                  </span>
-                </Piece>
-                <Piece id="k-m1" name="Message / Monika" kind="hero" travel="leap" tone={T.violet} order={3} at={0.52} park="150,n+120" parkN="10,n+30" className="m-me" eyes={{ x: 8, y: 0, s: 20 }}>
-                  <Msg who="me">{words('I am. Product design, design systems, and teams that care.')}</Msg>
-                </Piece>
-              </div>
-              <Piece id="k-m2" name="Message / You" kind="bubble" travel="rain" tone={T.sky} order={4} at={0.68} className="m-you">
-                <Msg who="you">{words('What would we build?')}</Msg>
-              </Piece>
-              <Piece id="k-m3" name="Message / Monika" kind="hero" travel="leap" tone={T.violet} order={5} at={0.94} park="150,n+320" className="m-me m-big" eyes={{ x: 8, y: 0, s: 20 }}>
-                <Msg who="me">
-                  {words('Something people')} <em className="mw">won't</em> <em className="mw">ignore.</em>
-                </Msg>
-              </Piece>
-            </div>
-            <Piece id="k-compose" name="Composer" kind="bubble" travel="rain" tone={T.violet} order={6} className="chat-composeslot">
-              <div className="chat-compose" aria-hidden="true">
-                <span>Write a message…</span>
-                <i>
-                  <Arrow />
-                </i>
-              </div>
-            </Piece>
-          </div>
-        </Region>
-
-        <Region index={1} label="Finale" className="k-r1">
+        <Region index={0} label="Poster" className="k-r0">
           <Piece id="k-badge" name="Badge" kind="bubble" travel="rain" tone={T.mint} order={0}>
             <Badge tone="pink">Open to new work</Badge>
           </Piece>
-          <Reveal id="k-title" as="h2" hid="h-contact" segs={CHAPTERS[3].headline} className="rv-title k-title" />
-          <Reveal id="k-para" mode="type" segs={[CHAPTERS[3].body]} className="rv-para k-para" order={1} />
-          <div className="k-cta-row">
-            <Piece id="k-cta" name="Button / CTA" kind="hero" travel="leap" tone={T.violet} order={9} at={0.97} park="420,b+120" parkN="60,b+40" className="k-cta" eyes={{ x: 6, y: 50, s: 24 }}>
-              <Button size="xl" href={`mailto:${EMAIL}`} icon="right" className="k-cta-btn">
-                Say hello
-              </Button>
-            </Piece>
-            <span className="f5-mascot-spot" aria-hidden="true" />
+
+          <h2 id="h-contact" className="rv-title k-title" tabIndex={-1}>
+            <Reveal id="k-title-1" as="span" segs={[l1]} className="rv-title k-sans" label="Heading" />
+            <Reveal id="k-title-2" as="span" segs={[l2]} className="rv-title k-sans" order={1} label="Heading" />
+            <span className="sr-only"> {EM}</span>
+            <span className="k-em" aria-hidden="true">
+              <span className="k-mark" />
+              {EM.split('').map((ch, i) =>
+                ch === ' ' ? (
+                  <span key={i} className="k-sp" />
+                ) : (
+                  <span key={i} className="k-l" style={{ '--r': `${tilt(i)}deg` } as CSSProperties}>
+                    <span className="k-li">{ch}</span>
+                  </span>
+                ),
+              )}
+            </span>
+          </h2>
+
+          <Reveal id="k-para" mode="type" segs={[CHAPTERS[3].body]} className="rv-para k-para" order={2} />
+
+          <div className="k-pen">
+            <div className="k-row">
+              <span className="k-ig-home">
+                {/* the mascot perches here, and stays put while the button runs */}
+                <span className="f5-mascot-spot" aria-hidden="true" />
+                <span className="k-ig-halo">
+                  <button type="button" className="k-ig" data-step="0">
+                    <span className="k-ig-in">Ignore</span>
+                  </button>
+                  <a className="k-ig k-ig-yes" href={`mailto:${EMAIL}`} tabIndex={-1}>
+                    <span className="k-ig-in">Fine, say hello →</span>
+                  </a>
+                </span>
+              </span>
+            </div>
+            <p className="k-count">
+              Times ignored: <b>0</b>
+            </p>
+            <span className="k-live sr-only" aria-live="polite" />
+            <span className="k-confetti" aria-hidden="true">
+              {Array.from({ length: 16 }, (_, i) => (
+                <i key={i} style={{ '--c': ['#ff7ad1', '#8b5cff', '#ffd84d', '#2db8ff', '#b6f03a'][i % 5] } as CSSProperties} />
+              ))}
+            </span>
           </div>
+        </Region>
+
+        <Region index={1} label="Sign-off" className="k-r1">
+          <Piece id="k-mail" name="Chip / Email" kind="bubble" travel="rain" tone={T.violet} order={0}>
+            <button type="button" className="k-mail" aria-label="Copy email address">
+              <span className="k-mail-a">{EMAIL}</span>
+              <span className="k-mail-b">
+                <span className="k-mail-t">Copy</span>
+                <span className="k-mail-t k-mail-ok">Copied ✓</span>
+              </span>
+            </button>
+          </Piece>
           <ul className="k-links" aria-label="Elsewhere">
             {LINKS.map((l, i) => (
               <li key={l.label}>
-                <Piece id={`k-l${i}`} name={`Link / ${l.label}`} kind="bubble" travel="rain" tone={T.ink} order={3 + i}>
+                <Piece id={`k-l${i}`} name={`Link / ${l.label}`} kind="bubble" travel="rain" tone={T.ink} order={1 + i}>
                   <LinkButton href={l.href}>{l.label}</LinkButton>
                 </Piece>
               </li>
             ))}
           </ul>
-          <Piece id="k-foot" name="Footer" kind="bubble" travel="rain" tone={T.ink} order={7} className="k-footslot">
+          <Piece id="k-foot" name="Footer" kind="bubble" travel="rain" tone={T.ink} order={5} className="k-footslot">
             <footer className="k-foot">
               <MomoGlyph size={20} />
               <span>{FOOTER}</span>
@@ -204,7 +137,7 @@ export function Contact({ lay, live }: SectionProps) {
         </Region>
       </div>
       {live && (
-        <div className="crowd" aria-hidden="true">
+        <div className="crowd">
           <Member k={0} look={1}>
             <Sticker ring="OPEN TO NEW WORK" tone="mint" glyph="arrow" size={120} />
           </Member>
