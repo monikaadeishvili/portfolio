@@ -217,7 +217,6 @@ export function Tally() {
           </span>
           <span className="pt-prod">{TALLY.centre}</span>
         </span>
-        <span className="pt-drop" />
         <span className="pt-me">
           <span className="pt-dot pt-medot">
             <Eyes />

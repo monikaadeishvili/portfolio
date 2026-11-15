@@ -741,21 +741,6 @@
 }
 
 /* one designer, all of the above */
-.pt-drop {
-  position: absolute;
-  z-index: 1;
-  left: 50%;
-  top: calc(var(--fold-y) + 290px);
-  width: 1px;
-  height: 52px;
-  background: var(--pw-ink);
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 360ms var(--out);
-}
-.pt-stage.is-me .pt-drop {
-  transform: none;
-}
 .pt-me {
   position: absolute;
   left: calc(50% - 134px);
@@ -1006,10 +991,6 @@
   top: calc(50% + 42px);
   font-size: 10.5px;
 }
-.bstage[data-lay='narrow'] .pt-drop {
-  top: calc(var(--fold-y) + 248px);
-  height: 40px;
-}
 .bstage[data-lay='narrow'] .pt-me {
   top: calc(var(--fold-y) + 290px);
 }
@@ -1029,8 +1010,7 @@
 
 /* -- reduced motion / static: everything landed, the fold beneath the tally
    (the driver doesn't run on the still page, so this is CSS alone) */
-.bstage.is-static .pt-grid i,
-.bstage.is-static .pt-drop {
+.bstage.is-static .pt-grid i {
   transform: none;
 }
 .bstage.is-static :is(.pt-counts, .pt-me, .pt-flank) {
