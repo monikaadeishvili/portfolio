@@ -409,3 +409,86 @@
 .dock .ruler-subs i {
   height: 7px;
 }
+
+/* -- phones: a bigger ruler. Taller track, taller ticks, a bigger playhead,
+   and each chapter's number at its mark, so the four segments read as places
+   you can tap (each quarter of the track is its chapter's button) */
+.dock.tb-unit.is-compact {
+  height: 64px;
+  padding: 6px 6px 6px 8px;
+}
+.dock.is-compact .ruler {
+  gap: 8px;
+  padding: 0 6px 0 0;
+}
+.dock.is-compact .ruler-track {
+  height: 50px;
+}
+.dock.is-compact .ruler-time {
+  padding: 6px 9px;
+  border-radius: 10px;
+  font-size: 12.5px;
+}
+/* the chip keeps just 03/04: the ruler itself shows where you are */
+.dock.is-compact .ruler-now {
+  display: none;
+}
+.dock.is-compact .ruler-mark {
+  padding: 5px 0 0 7px;
+  border-radius: 8px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.dock.is-compact .ruler-mark::before {
+  top: 4px;
+  bottom: 8px;
+  width: 2px;
+}
+.dock.is-compact .ruler-num {
+  display: inline;
+  font-size: 10.5px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+.dock.is-compact .ruler-mark.is-on .ruler-num {
+  opacity: 1;
+}
+.dock.is-compact .ruler-ticks {
+  bottom: 9px;
+  height: 14px;
+  background-size: 100% 14px, 100% 7px;
+}
+.dock.is-compact .ruler-subs {
+  bottom: 9px;
+}
+.dock.is-compact .ruler-subs i {
+  height: 10px;
+}
+.dock.is-compact .ruler-fill {
+  bottom: 7px;
+  height: 3px;
+}
+.dock.is-compact .ruler-head i {
+  top: 26px;
+  width: 2.5px;
+}
+/* (below the chapter numbers, so it never covers one) */
+.dock.is-compact .ruler-head i::before {
+  left: -5px;
+  top: -7px;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+.dock.is-compact .play {
+  height: 50px;
+  padding: 0 10px 0 6px;
+  border-radius: 13px;
+}
+.dock.is-compact .play-ring {
+  width: 32px;
+  height: 32px;
+}
+.dock.is-compact .play-label {
+  font-size: 14px;
+}
