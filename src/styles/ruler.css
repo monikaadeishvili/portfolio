@@ -354,6 +354,35 @@
   width: 8px;
   height: 8px;
 }
+/* a slimmer tools row: 32px tools and Play, tighter padding */
+.dock.tb-unit:not(.is-compact) {
+  padding-bottom: 4px;
+}
+.dock.tb-unit .tb-row {
+  padding-top: 4px;
+}
+.dock .tool {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+}
+.dock .tool .ico {
+  width: 17px;
+  height: 17px;
+}
+.dock .tb-div {
+  height: 18px;
+}
+.dock:not(.is-compact) .play {
+  height: 32px;
+  padding: 0 12px 0 4px;
+  border-radius: 10px;
+  font-size: 13.5px;
+}
+.dock:not(.is-compact) .play-ring {
+  width: 24px;
+  height: 24px;
+}
 /* phone: one row — the ruler and a compact Play */
 .dock.tb-unit.is-compact {
   min-width: 0;

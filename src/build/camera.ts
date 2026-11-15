@@ -57,8 +57,8 @@ export function viewFor(bp: Breakpoint): { view: Rect; lay: Lay; fw: number } {
   const vw = document.documentElement.clientWidth
   const vh = window.innerHeight
   let l: number, r: number, t: number, b: number
-  if (bp === 'desk') [l, r, t, b] = [12 + 240 + 28, 12 + 248 + 28, 12 + 48 + 34, 112]
-  else if (bp === 'tab') [l, r, t, b] = [24, 12 + 248 + 24, 12 + 48 + 30, 108]
+  if (bp === 'desk') [l, r, t, b] = [12 + 240 + 28, 12 + 248 + 28, 12 + 48 + 34, 100]
+  else if (bp === 'tab') [l, r, t, b] = [24, 12 + 248 + 24, 12 + 48 + 30, 96]
   else [l, r, t, b] = [12, 12, 10 + 44 + 26, 92]
   const view = { x: l, y: t, w: Math.max(240, vw - l - r), h: Math.max(320, vh - t - b) }
   const lay: Lay = view.w >= 640 ? 'wide' : 'narrow'
@@ -253,7 +253,7 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   // panels (16px margins), height permitting
   const vw0 = document.documentElement.clientWidth
   const vh0 = window.innerHeight
-  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - 62 - (bp === 'mob' ? 72 : 121) - 24 } // top bar · dock (two rows on desktop/tablet) · margins
+  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - 62 - (bp === 'mob' ? 72 : 109) - 24 } // top bar · dock (two rows on desktop/tablet) · margins
   const fit0 = (h: number) => Math.min(1.25, free.w / FW, free.h / h)
 
   pieces.forEach((c) => {
