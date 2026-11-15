@@ -1,6 +1,6 @@
 /**
  * Screen-records toeicpal.com for the toeic.pal frames in Proof (no ffmpeg here):
- *   web   — the dark hero story, scrolled through stop by stop (1440×900 → 1280×800)
+ *   web   — the dark hero story in one continuous scroll (1440×900 → 1280×800)
  *   phone — the app screen inside the sticky "Speak English with Confidence" phone
  * Frames come from a CDP screencast in real Chrome, are resampled to a steady
  * 30 fps and cropped with sharp, then ./encode.swift writes the H.264 MP4.
@@ -25,7 +25,9 @@ const JOBS = {
     bitrate: 2_400_000,
     file: 'toeic-web',
     poster: 'toeic-0',
-    stops: [[0, 0, 2.0], [900, 1.2, 1.1], [2100, 1.3, 1.1], [2800, 1.1, 1.1], [4500, 1.5, 1.1], [5400, 1.1, 1.1], [6300, 1.1, 1.4]],
+    // one steady glide through the whole story: no stops, a soft start and end
+    stops: [[0, 0, 1.2], [7900, 17, 1.0]],
+    ease: 'cruise',
     crop: async () => null,
   },
   phone: {
@@ -67,7 +69,8 @@ const JOBS = {
   const cdp = await page.context().newCDPSession(page)
   const frames = []
   cdp.on('Page.screencastFrame', (f) => {
-    frames.push({ t: f.metadata.timestamp, b: Buffer.from(f.data, 'base64') })
+    // the frame's own timestamp, and when it arrived here (the clocks can differ)
+    frames.push({ t: f.metadata.timestamp, at: Date.now() / 1000, b: Buffer.from(f.data, 'base64') })
     cdp.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {})
   })
   await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 92, everyNthFrame: 1 })
@@ -75,7 +78,7 @@ const JOBS = {
   const t0 = Date.now() / 1000
   // the tour runs inside the page: eased glides between stops, holds on each
   await page.evaluate(
-    (stops) =>
+    ([stops, kind]) =>
       new Promise((done) => {
         const plan = []
         let at = 0
@@ -84,26 +87,47 @@ const JOBS = {
           at += h
         })
         const end = at
-        const ease = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2)
+        // glide: ease in and out between stops; cruise: speed up over the first
+        // tenth, hold a constant speed, slow down over the last tenth
+        const A = 0.1
+        const cruise = (k) => {
+          const v = 1 / (1 - A) // top speed, so the distance still sums to 1
+          if (k < A) return (v * k * k) / (2 * A)
+          if (k > 1 - A) return 1 - (v * (1 - k) * (1 - k)) / (2 * A)
+          return (v * A) / 2 + v * (k - A)
+        }
+        const ease = kind === 'cruise' ? cruise : (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2)
+        // the site's smooth scroll (Lenis) undoes small scrollTo steps, so a
+        // continuous cruise is fed to it as wheel events, like a trackpad
+        let last = stops[0][0]
+        const go = (y) => {
+          if (kind !== 'cruise') return window.scrollTo(0, y)
+          const d = y - last
+          last = y
+          if (d) document.documentElement.dispatchEvent(new WheelEvent('wheel', { deltaY: d, deltaMode: 0, bubbles: true, cancelable: true }))
+        }
         const s = performance.now()
         const tick = (now) => {
           const t = (now - s) / 1000
           const seg = plan.find((p) => t >= p.a && t < p.b)
-          if (seg) window.scrollTo(0, seg.from + (seg.to - seg.from) * ease((t - seg.a) / (seg.b - seg.a)))
+          if (seg) go(seg.from + (seg.to - seg.from) * ease((t - seg.a) / (seg.b - seg.a)))
+          else if (kind === 'cruise' && t >= plan[plan.length - 1].b) go(plan[plan.length - 1].to)
           if (t < end) requestAnimationFrame(tick)
           else done()
         }
         requestAnimationFrame(tick)
       }),
-    job.stops,
+    [job.stops, job.ease || 'glide'],
   )
   const dur = Date.now() / 1000 - t0
   await cdp.send('Page.stopScreencast')
   await browser.close()
 
   // a steady 30 fps: each output frame shows the newest screencast frame at that moment
-  // (a still page sends no frames: before the first change, the first frame stands)
-  const start = t0
+  // map the tour's start onto the frames' clock (the median arrival lag), and
+  // before the first change the first frame stands (a still page sends none)
+  const lags = frames.map((f) => f.at - f.t).sort((a, b) => a - b)
+  const start = t0 - lags[Math.floor(lags.length / 2)]
   const n = Math.floor(dur * FPS)
   const gaps = frames.slice(1).map((f, i) => f.t - frames[i].t)
   console.log(`${frames.length} frames over ${dur.toFixed(1)}s, longest gap ${(Math.max(...gaps) * 1000).toFixed(0)}ms`)
