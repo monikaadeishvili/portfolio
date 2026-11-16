@@ -459,8 +459,9 @@
   z-index: 3;
   /* above the pen (which sits 1px up off the paper) */
   transform: translateZ(3px);
-  left: -26px;
-  bottom: 70px;
+  /* the ad's bottom-right corner: clear of the button and the pen's loop */
+  right: -22px;
+  bottom: 30px;
   padding: 0;
   border: 0;
   background: none;
@@ -481,15 +482,15 @@
   box-shadow: inset 0 0 0 2px var(--np-panel), inset 0 0 0 3px var(--np-red);
   font-family: var(--np-old);
   font-weight: 700;
-  font-size: 22px;
+  font-size: 26px;
   letter-spacing: 0.12em;
   color: var(--np-red);
   white-space: nowrap;
-  /* a worn rubber stamp: ink missing here and there */
-  mask: radial-gradient(rgb(0 0 0 / 0.55) 0.8px, #000 1.6px) 0 0 / 6px 5px;
+  /* a worn rubber stamp: a little ink missing here and there */
+  mask: radial-gradient(rgb(0 0 0 / 0.78) 0.8px, #000 1.6px) 0 0 / 6px 5px;
 }
 .np-ad.is-stamp .np-stamp {
-  opacity: 0.85;
+  opacity: 0.95;
   scale: 1;
   pointer-events: auto;
 }
@@ -974,11 +975,11 @@
   font-size: 24px;
 }
 .bstage[data-lay='narrow'] .np-stamp {
-  left: -6px;
-  bottom: 58px;
+  right: -4px;
+  bottom: 26px;
 }
 .bstage[data-lay='narrow'] .np-stamp span {
-  font-size: 16px;
+  font-size: 18px;
 }
 .bstage[data-lay='narrow'] .np-r1 {
   gap: 16px;
@@ -1033,7 +1034,7 @@
   translate: 0 0;
 }
 .bstage.is-static .np-stamp {
-  opacity: 0.85;
+  opacity: 0.95;
   scale: 1;
   pointer-events: auto;
 }

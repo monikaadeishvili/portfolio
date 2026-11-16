@@ -344,7 +344,9 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
     const holdS = big ? fit0(lastR.h + 90) : sHold(lastR.h + extra)
     const visH = view.h / holdS
     const bottomAnchor = b.y + b.h + extra - visH * 0.5 + (narrow ? 20 : 40)
-    const holdY = Math.min(bottomAnchor, b.y + lastR.y + visH * 0.5 - 30)
+    // Say Hello rests a little lower, so the whole paper (masthead included) shows
+    // above the crowd instead of hugging the top edge
+    const holdY = Math.min(bottomAnchor, b.y + lastR.y + visH * 0.5 - 30) - (i === LAST ? (narrow ? 60 : 70) : 0)
     K.push({ u: PH.descEnd + 0.035, c: { x: cxw, y: holdY, s: holdS, rx: 0, rz: 0 } })
     K.push({ u: 1, c: { x: cxw, y: holdY, s: holdS, rx: 0, rz: 0 } })
     keys.push(K)

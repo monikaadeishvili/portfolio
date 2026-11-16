@@ -4,8 +4,8 @@
  *     an ink roller crosses the page and each column prints as it passes
  *     (`data-print` = where it prints); "won't ignore." drops in letter by
  *     letter like metal type and the yellow overprint lands under it;
- *   · scroll (sign-off q1): a red pen circles her ad and notes "this one!",
- *     then a HIRED? stamp hits it; the crowd queues up for the paper at the end;
+ *   · scroll (end of the front page): a red pen circles her ad and notes
+ *     "this one!", then a HIRED? stamp hits it; the crowd queues up for the paper at the end;
  *   · the ad's googly eyes follow the reader's pointer (a tap: look and blink);
  *   · click a small ad and the reader's own red pen circles it (two at most);
  *   · click the stamp and it stamps again, at a new angle, with a new word;
@@ -257,7 +257,10 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
           })
 
           // the overprint, then (as the page settles) the red pen and the stamp
-          const st = `${q >= 0.86 ? 1 : 0}${qs >= 0.3 ? 1 : 0}${qs >= 0.6 ? 1 : 0}`
+          // (the pen and the stamp land while the whole ad is still on screen, at the
+          // end of the front page's hold; they used to wait for the sign-off, when
+          // the ad had scrolled away on phones and the page was about to move on)
+          const st = `${q >= 0.86 ? 1 : 0}${q >= 0.93 || qs > 0 ? 1 : 0}${q >= 0.985 || qs > 0 ? 1 : 0}`
           if (st !== cache.st) {
             const was = cache.st
             cache.st = st
