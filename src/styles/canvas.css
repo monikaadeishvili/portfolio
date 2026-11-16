@@ -505,10 +505,6 @@ html.is-static .layer-sheet {
   white-space: nowrap;
   box-shadow: 0 2px 4px -1px rgb(22 19 29 / 0.25);
 }
-.cur-pm .cur-tag,
-.cur-dev .cur-tag {
-  color: var(--ink);
-}
 .cur-bubble {
   position: absolute;
   left: 18px;

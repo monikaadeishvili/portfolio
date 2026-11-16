@@ -15,10 +15,7 @@ const PEOPLE = [
   // the visitor first, in the same coral as their own "You" cursor on the canvas
   { i: 'Y', c: 'var(--coral)', n: 'You (viewing)' },
   { i: 'M', c: 'var(--violet)', n: 'Monika (owner)' },
-  { i: 'P', c: 'var(--mint)', n: 'PM', ink: true },
-  { i: 'D', c: 'var(--sky)', n: 'Dev', ink: true },
 ]
-const fg = (p: (typeof PEOPLE)[number]) => ('ink' in p ? 'var(--ink)' : '#fff')
 
 /** the file: mark, name and project, like Figma's file menu */
 export function FileHead() {
@@ -59,7 +56,7 @@ export function ShareHead() {
     <div className="shead">
       <ul className="avatars" aria-label="People in this file">
           {PEOPLE.map((p) => (
-            <li key={p.i} className="avatar" style={{ background: p.c, color: fg(p) }}>
+            <li key={p.i} className="avatar" style={{ background: p.c, color: '#fff' }}>
               <span aria-hidden="true">{p.i}</span>
               <span className="sr-only">{p.n}</span>
               {/* our own tooltip: shows the moment you hover (the native one waits) */}
@@ -116,15 +113,12 @@ export function FileBar() {
           Open to work
         </span>
       </button>
-      <ul className="avatars fb-ppl" aria-label={`${PEOPLE.length} people in this file: you, Monika, a PM and a developer`}>
+      <ul className="avatars fb-ppl" aria-label={`${PEOPLE.length} people in this file: you and Monika`}>
         {PEOPLE.map((p) => (
-          <li key={p.i} className={`avatar fb-av-${p.i.toLowerCase()}`} style={{ background: p.c, color: fg(p) }} aria-hidden="true">
+          <li key={p.i} className="avatar" style={{ background: p.c, color: '#fff' }} aria-hidden="true">
             {p.i}
           </li>
         ))}
-        <li className="avatar fb-more" aria-hidden="true">
-          +{PEOPLE.length - 2}
-        </li>
       </ul>
       <a className="btn-primary fb-cta" href={`mailto:${EMAIL}`}>
         Say hello

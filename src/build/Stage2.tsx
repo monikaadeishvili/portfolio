@@ -22,26 +22,19 @@ import { bootReady } from '../boot'
 
 /* -------------------------------------------------------- cursor story */
 
-/** the collaborators' chat (Fable 5.2's script): jokes from the trade and, for
- *  about half the lines, a hint at something the visitor can actually do
+/** Monika's cursor chat: a hint at something the visitor can actually do
  *  right then. `touch` replaces a hint that names a mouse-only gesture or a
  *  dock tool phones don't have. */
 const LINES: { sec: number; key: BotKey; u0: number; u1: number; line: string; touch?: string }[] = [
   // 01 Hello
-  { sec: 0, key: 'pm', u0: 0.004, u1: 0.06, line: 'can we make the logo bigger' },
-  { sec: 0, key: 'dev', u0: 0.34, u1: 0.45, line: 'hover the headline. it slims', touch: 'drag across the headline' },
-  { sec: 0, key: 'pm', u0: 0.66, u1: 0.8, line: '32 products. 0 bigger logos' },
-  { sec: 0, key: 'pm', u0: 0.9, u1: 1.01, line: 'so we hire her. noted' },
+  { sec: 0, key: 'monika', u0: 0.34, u1: 0.45, line: 'hover the headline. it slims', touch: 'drag across the headline' },
   // 02 How I think
   { sec: 1, key: 'monika', u0: 0.14, u1: 0.23, line: 'try to catch ‘ignores’', touch: 'tap ‘ignores’. watch it hop' },
-  { sec: 1, key: 'pm', u0: 0.22, u1: 0.31, line: 'it’s ignoring me. like devs' },
   { sec: 1, key: 'monika', u0: 0.42, u1: 0.52, line: 'press and hold the model', touch: 'tap the model. it unpacks' },
   // 03 Proof
-  { sec: 2, key: 'dev', u0: 0.2, u1: 0.29, line: 'color picker. click. copied', touch: '#5B4BFF. you’re welcome' },
-  { sec: 2, key: 'pm', u0: 0.8, u1: 0.9, line: 'one tiny change' },
-  { sec: 2, key: 'dev', u0: 0.89, u1: 1.01, line: 'no.' },
+  { sec: 2, key: 'monika', u0: 0.2, u1: 0.29, line: 'color picker. click. copied', touch: '#5B4BFF. you’re welcome' },
   // 04 Say Hello
-  { sec: 3, key: 'dev', u0: 0.66, u1: 0.74, line: 'clip the coupon. copies email' },
+  { sec: 3, key: 'monika', u0: 0.66, u1: 0.74, line: 'clip the coupon. copies email' },
 ]
 /** no mouse to hover with: hints say press / tap instead */
 const touchOnly = () => typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches
@@ -55,11 +48,11 @@ function storyFor(getGeo: () => Geo | null) {
     const i = sectionAt(p)
     const u = secU(i, p)
     // idle in Hello's hold with the Taste switch untouched: a dare
-    if (i === 0 && key === 'dev' && taste.nag) {
+    if (i === 0 && key === 'monika' && taste.nag) {
       return {
-        id: '0-dev-dare',
+        id: '0-monika-dare',
         at: (r) => [r.left + r.width * 0.3, r.top + r.height * 0.4],
-        line: 'switch it off. see my version',
+        line: 'switch it off. see it plain',
         rect: () => {
           const r = freeSpots(g.view)[key]
           return new DOMRect(r.x0, r.y0, Math.max(1, r.x1 - r.x0), Math.max(1, r.y1 - r.y0))
@@ -91,15 +84,7 @@ function freeSpots(v: Rect): Record<BotKey, CurRegion> {
   const top: CurRegion = { x0: v.x + v.w * 0.3, y0: v.y - 34, x1: v.x + v.w * 0.55, y1: v.y - 24 }
   const right: CurRegion | null = insp && bottom - insp.bottom > 90 ? { x0: insp.left + 6, y0: insp.bottom + 22, x1: vw - 170, y1: Math.min(bottom, insp.bottom + 120) } : null
   const left: CurRegion | null = lay && bottom - lay.bottom > 100 && v.x > 200 ? { x0: 22, y0: lay.bottom + 22, x1: v.x - 170, y1: bottom } : null
-  if (left && right) {
-    const mid = (left.y0 + left.y1) / 2
-    return { monika: { ...left, y1: mid }, dev: { ...left, y0: Math.min(mid + 30, left.y1) }, pm: right }
-  }
-  if (right) {
-    const h = (right.y1 - right.y0) / 3
-    return { monika: { ...right, y1: right.y0 + h }, dev: { ...right, y0: right.y0 + h, y1: right.y0 + 2 * h }, pm: { ...right, y0: right.y0 + 2 * h } }
-  }
-  return { monika: top, dev: { ...top, x0: v.x + v.w * 0.05, x1: v.x + v.w * 0.25 }, pm: { ...top, x0: v.x + v.w * 0.6, x1: v.x + v.w * 0.8 } }
+  return { monika: left ?? right ?? top }
 }
 
 /* --------------------------------------------------------------- stage */
@@ -177,7 +162,7 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
     const prevCfg = { ...cursorConfig }
     cursorConfig.story = storyFor(() => geo)
     cursorConfig.idleWindow = () => false
-    cursorConfig.lines = { monika: ['hmm, more air?', 'love that'], pm: ['ooh', 'love this'], dev: ['is that a div?', 'nudge 2px left'] }
+    cursorConfig.lines = { monika: ['hmm, more air?', 'love that'] }
     cursorConfig.regions = (key) => (geo ? [freeSpots(geo.view)[key]] : [])
 
     const stopLoop = reduced

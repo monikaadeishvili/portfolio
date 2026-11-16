@@ -14,7 +14,7 @@ function Arrow({ color }: { color: string }) {
 /* -------------------------------------------------------------- state */
 
 interface Bot {
-  key: 'monika' | 'pm' | 'dev'
+  key: 'monika'
   el: HTMLElement | null
   bubble: HTMLElement | null
   x: number
@@ -42,8 +42,6 @@ function makeBot(key: Bot['key'], x: number, y: number): Bot {
 
 export const bots: Record<Bot['key'], Bot> = {
   monika: makeBot('monika', 0, 0),
-  pm: makeBot('pm', 0, 0),
-  dev: makeBot('dev', 0, 0),
 }
 
 const you = { el: null as HTMLElement | null, x: -100, y: -100, vx: 0, vy: 0, shown: false }
@@ -52,8 +50,6 @@ export const youAt = (): [number, number, boolean] => [you.x, you.y, you.shown]
 
 const IDLE_LINES: Record<Bot['key'], string[]> = {
   monika: ['nudge 2px left', 'hmm, more air?', 'ooh'],
-  pm: ['ooh', 'love this', 'ship it'],
-  dev: ['ship it', 'wait, it\'s alive?', 'is that a div?'],
 }
 
 function sayBubble(key: Bot['key'], text: string, t: number, dur = 2.6) {
@@ -136,15 +132,6 @@ function storyFor(key: Bot['key'], p: number): Story {
     if (p > 0.07 && p < 0.26) return { id: 'sticky', at: tr(0.82, 0.22) }
     if (p > 0.56 && p < 0.84) return { id: 'organism', at: tr(1.05, 0.2), line: 'nudge 2px left' }
     if (p >= 0.86) return { id: 'cta', at: tr(0.8, 0.15) }
-  }
-  if (key === 'dev') {
-    if (p > 0.14 && p < 0.3) return { id: 'c-blob', at: tr(0.1, 0.9), line: "wait, it's alive?" }
-    if (p > 0.34 && p < 0.52) return { id: 'organism', at: tr(0.1, 0.85) }
-    if (p >= 0.88) return { id: 'cta', at: tr(0.97, 0.9), line: 'ship it' }
-  }
-  if (key === 'pm') {
-    if (p > 0.36 && p < 0.54) return { id: 'organism', at: tr(0.95, 0.75), line: 'ooh' }
-    if (p >= 0.86) return { id: 'cta', at: tr(0.62, 1.12), line: 'say hi!' }
   }
   return null
 }
@@ -309,8 +296,6 @@ export function updateCursors(t: number, dt: number) {
 
 const BOTS: { key: Bot['key']; name: string; color: string }[] = [
   { key: 'monika', name: 'Monika', color: '#5B4BFF' },
-  { key: 'pm', name: 'PM', color: '#19D3A2' },
-  { key: 'dev', name: 'Dev', color: '#2DB8FF' },
 ]
 
 export function Cursors() {
@@ -320,12 +305,8 @@ export function Cursors() {
   useLayoutEffect(() => {
     const root = rootRef.current
     if (!root) return
-    const vw = window.innerWidth
-    const vh = window.innerHeight
     const starts: Record<Bot['key'], [number, number]> = {
       monika: [scene.frame.x + 20, scene.frame.y + 20],
-      pm: [vw * 0.72, vh * 0.78],
-      dev: [vw * 0.3, vh * 0.86],
     }
     for (const { key } of BOTS) {
       const b = bots[key]
