@@ -4,8 +4,8 @@
  *     an ink roller crosses the page and each column prints as it passes
  *     (`data-print` = where it prints); "won't ignore." drops in letter by
  *     letter like metal type and the yellow overprint lands under it;
- *   · scroll (end of the front page): a red pen circles her ad and notes
- *     "this one!", then a HIRED? stamp hits it; the crowd queues up for the paper at the end;
+ *   · once the headline has landed: a red pen circles her ad and notes
+ *     "this one!", then a HIRED? stamp hits it (a beat apart, on a clock); the crowd queues up for the paper at the end;
  *   · the ad's googly eyes follow the reader's pointer (a tap: look and blink);
  *   · click a small ad and the reader's own red pen circles it (two at most);
  *   · click the stamp and it stamps again, at a new angle, with a new word;
@@ -188,6 +188,8 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
 
   /* ----------------------------------------------- printing on scroll */
   let lastMove = 0
+  /** when the headline landed (the pen and the stamp follow on a clock) */
+  let landedAt = -1
   let lastIdle = -1e9
   let idles = 0
   const cache = { rule: '', vr: '', roll: '', st: '', crowd: '' }
@@ -257,10 +259,15 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
           })
 
           // the overprint, then (as the page settles) the red pen and the stamp
-          // (the pen and the stamp land while the whole ad is still on screen, at the
-          // end of the front page's hold; they used to wait for the sign-off, when
-          // the ad had scrolled away on phones and the page was about to move on)
-          const st = `${q >= 0.86 ? 1 : 0}${q >= 0.93 || qs > 0 ? 1 : 0}${q >= 0.985 || qs > 0 ? 1 : 0}`
+          // once "won't ignore." has landed, the pen circles the ad half a second
+          // later and the stamp hits 1.3 s later, on a clock, not on more scroll:
+          // a reader who stops to read the finished page still sees them land
+          // (scrolling back above the headline takes them off again)
+          const landed = q >= 0.86 || qs > 0
+          if (!landed) landedAt = -1
+          else if (landedAt < 0) landedAt = qs > 0 ? e.t - 2 : e.t
+          const since = landed ? e.t - landedAt : -1
+          const st = `${landed ? 1 : 0}${since >= 0.5 || e.reduced ? 1 : 0}${since >= 1.3 || e.reduced ? 1 : 0}`
           if (st !== cache.st) {
             const was = cache.st
             cache.st = st
