@@ -156,7 +156,6 @@ export const WORK: readonly WorkProject[] = [
     name: 'DAZN',
     body: 'A global sports-streaming platform, live and on demand in over 200 countries. I designed for TV, mobile and desktop: wireframes, prototypes, a competitor audit and one consistent experience.',
     meta: [
-      ['Year', '2024'],
       ['Role', 'Senior UX Designer'],
       ['Platforms', 'TV, mobile, desktop'],
     ],
@@ -195,7 +194,6 @@ export const WORK: readonly WorkProject[] = [
     name: 'Nota',
     body: 'Cloud business banking for solo and small law firms, by M&T Bank: checking, trust accounts and 3-way reconciliation, built into the way a firm already works.',
     meta: [
-      ['Years', '2021–2023'],
       ['Role', 'Senior UX/UI Designer'],
       ['Platforms', 'Web, mobile'],
     ],
