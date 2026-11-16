@@ -341,40 +341,7 @@
   border-radius: 2px;
 }
 
-/* -- top-right caption + badge */
-.slot.h-metaslot {
-  position: absolute;
-  right: var(--h-px);
-  top: calc(var(--h-nav) + 26px);
-  z-index: 4;
-}
-.h-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 12px;
-  text-align: right;
-}
-.h-dash {
-  color: var(--h-ink-2);
-}
-.h-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  height: 30px;
-  padding: 0 12px 0 11px;
-  border-radius: 999px;
-  background: #fff;
-  box-shadow: 0 0 0 1px var(--h-line-2);
-  font-family: var(--h-plain-sans);
-  font-size: var(--h-cap);
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.h-badge i,
+/* -- the live dot (Now numeral) */
 .h-live {
   position: relative;
   width: 8px;
@@ -382,7 +349,6 @@
   border-radius: 50%;
   background: var(--h-green);
 }
-.h-badge i::after,
 .h-live::after {
   content: '';
   position: absolute;
@@ -1374,14 +1340,13 @@
 }
 
 /* paused off-screen, gone for reduced motion */
-.bf:not([data-near='1']) :is(.h-topo, .h-badge i::after, .h-live::after),
+.bf:not([data-near='1']) :is(.h-topo, .h-live::after),
 .bstage.is-static .h-topo {
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
   .h-addtaste span,
   .h-topo,
-  .h-badge i::after,
   .h-live::after,
   .h-sw-wrap[data-nag='1'] .h-sw {
     animation: none;
@@ -1414,24 +1379,6 @@
 }
 .bstage[data-lay='narrow'] .h-ghost {
   top: calc(var(--h-r0) - var(--port-h) - var(--FW) * 0.08);
-}
-.bstage[data-lay='narrow'] .slot.h-metaslot {
-  left: var(--h-px);
-  right: var(--h-px);
-  top: calc(var(--h-nav) + 14px + var(--h-fs) * 2.7 + 14px);
-}
-.bstage[data-lay='narrow'] .h-meta {
-  align-items: flex-start;
-  gap: 8px;
-  text-align: left;
-}
-.bstage[data-lay='narrow'] .h-role {
-  white-space: nowrap;
-}
-.bstage[data-lay='narrow'] .h-badge {
-  height: 26px;
-  padding: 0 10px 0 9px;
-  gap: 7px;
 }
 .bstage[data-lay='narrow'] .h-l2 {
   top: auto;

@@ -20,7 +20,6 @@ import { Artboard, type SectionProps } from '../Artboard'
 import { TasteSwitch } from './TasteSwitch'
 import { mountTaste, taste } from './taste'
 import { mountPortrait } from './portraitFx'
-import { mountHeadWake } from './headWake'
 import { mountRibbons, mountWw } from './wwMarquee'
 import { mountClose } from './closeFx'
 import './hello.css'
@@ -252,21 +251,6 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
         </div>
       </Piece>
 
-      {/* top-right caption + status badge */}
-      <Piece id="h-meta" name="Caption / Role" kind="bubble" tone={HC.green} order={1} at={0.48} className="h-metaslot">
-        <div className="h-swap">
-          <div className="h-meta">
-            <p className="h-cap h-role">
-              Product designer <span className="h-dash">—</span> Alicante, ES
-            </p>
-            <span className="h-badge">
-              <i aria-hidden="true" />
-              {HELLO.badge}
-            </span>
-          </div>
-        </div>
-      </Piece>
-
       {/* headline line 1: huge, upper left, behind her */}
       <h1 className="h-title" id="h-hello" tabIndex={-1} ref={h1Ref} aria-labelledby="h-hello-name">
         <span className="sr-only" id="h-hello-name">
@@ -384,7 +368,6 @@ export function Hello({ lay, live, onNav }: SectionProps) {
     if (!live || !board) return
     const a = mountTaste(board)
     const b = mountPortrait(board)
-    const c = mountHeadWake(board)
     const d = mountWw(board)
     const r = mountRibbons(board)
     const cl = mountClose(board)
@@ -392,7 +375,6 @@ export function Hello({ lay, live, onNav }: SectionProps) {
       cl()
       r()
       d()
-      c()
       b()
       a()
     }

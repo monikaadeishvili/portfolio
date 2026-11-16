@@ -26,8 +26,6 @@ import { bootReady } from '../boot'
  *  right then. `touch` replaces a hint that names a mouse-only gesture or a
  *  dock tool phones don't have. */
 const LINES: { sec: number; key: BotKey; u0: number; u1: number; line: string; touch?: string }[] = [
-  // 01 Hello
-  { sec: 0, key: 'monika', u0: 0.34, u1: 0.45, line: 'hover the headline. it slims', touch: 'drag across the headline' },
   // 02 How I think
   { sec: 1, key: 'monika', u0: 0.14, u1: 0.23, line: 'try to catch ‘ignores’', touch: 'tap ‘ignores’. watch it hop' },
   { sec: 1, key: 'monika', u0: 0.42, u1: 0.52, line: 'press and hold the model', touch: 'tap the model. it unpacks' },
