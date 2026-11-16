@@ -80,6 +80,17 @@ export function LayersPanel2() {
   const all = [...pieces.values()].filter((c) => c.section === ch)
   const placedAll = all.filter((c) => c.pose.state === 'placed').length
   const listRef = useRef<HTMLDivElement>(null)
+  // collapsed rows, like Figma's layer tree (the frame, or a region)
+  const [shut, setShut] = useState<Set<string>>(() => new Set())
+  const toggle = (k: string) =>
+    setShut((prev) => {
+      const next = new Set(prev)
+      if (next.has(k)) next.delete(k)
+      else next.add(k)
+      return next
+    })
+  const frameKey = `f-${ch}`
+  const frameOpen = !shut.has(frameKey)
 
   // keep the building region in view
   useEffect(() => {
@@ -94,8 +105,10 @@ export function LayersPanel2() {
         <span className="panel-tab is-active">Layers</span>
       </div>
       <div className="l2-list" role="tree" aria-label={`Frame ${frameName(ch, hello.name)}`} ref={listRef}>
-        <div className="layer-row d0 l2-row l2-frame" role="treeitem" aria-level={1} aria-expanded="true" key={`f-${ch}`}>
-          <Chevron open />
+        <div className="layer-row d0 l2-row l2-frame" role="treeitem" aria-level={1} aria-expanded={frameOpen} key={`f-${ch}`}>
+          <button type="button" className="l2-tog" aria-label={frameOpen ? 'Collapse frame' : 'Expand frame'} onClick={() => toggle(frameKey)}>
+            <Chevron open={frameOpen} />
+          </button>
           <span className="layer-ico i-frame">{LayerIcon.frame()}</span>
           <span className={`layer-name${ch === 0 && !hello.taste ? ' is-untitled' : ''}`}>
             {frameName(ch, hello.name)}
@@ -104,6 +117,7 @@ export function LayersPanel2() {
             {placedAll}/{all.length}
           </span>
         </div>
+        {frameOpen && (
         <div className="l2-rows" key={ch}>
           {regs.map((r) => {
             const rows: Row[] = [
@@ -111,17 +125,21 @@ export function LayersPanel2() {
               ...all.filter((c) => c.region === r.index && c.layer !== false).map((c) => ({ kind: 'piece' as const, c })),
             ].sort((a, b) => (a.kind === 'piece' ? a.c.p1 : a.t.p0) - (b.kind === 'piece' ? b.c.p1 : b.t.p0))
             const done = rows.filter((x) => (x.kind === 'piece' ? x.c.pose.state === 'placed' : p >= x.t.p1)).length
+            const rk = `${ch}-${r.index}`
+            const open = !shut.has(rk)
             return (
               <div key={r.index} className={`l2-group${r.index === reg ? ' is-active' : ''}`} data-rg={r.index}>
-                <div className="layer-row d1 l2-row l2-region" role="treeitem" aria-level={2} aria-expanded="true">
-                  <Chevron open />
+                <div className="layer-row d1 l2-row l2-region" role="treeitem" aria-level={2} aria-expanded={open}>
+                  <button type="button" className="l2-tog" aria-label={`${open ? 'Collapse' : 'Expand'} ${r.label}`} onClick={() => toggle(rk)}>
+                    <Chevron open={open} />
+                  </button>
                   <span className="layer-ico i-auto">{LayerIcon.auto()}</span>
                   <span className="layer-name">{r.label}</span>
                   <span className="layer-tag">
                     {done}/{rows.length}
                   </span>
                 </div>
-                {rows.map((x, i) => {
+                {open && rows.map((x, i) => {
                   if (x.kind === 'text') {
                     const on = p >= x.t.p1
                     return (
@@ -157,8 +175,9 @@ export function LayersPanel2() {
             )
           })}
         </div>
+        )}
         {/* after the balloon pops in the last section there is no bubble left to list */}
-        {ch !== LAST && (
+        {frameOpen && ch !== LAST && (
           <div className="layer-row d1 l2-row l2-bubble" role="treeitem" aria-level={2}>
             <span className="chev-pad" />
             <span className="layer-ico i-organism">{LayerIcon.organism()}</span>

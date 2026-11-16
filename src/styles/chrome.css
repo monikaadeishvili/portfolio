@@ -329,6 +329,32 @@
   width: 10px;
   flex: none;
 }
+/* a layer row's chevron: a real button that collapses / expands its children */
+.l2-tog {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0 -4px;
+  padding: 0;
+  border-radius: 5px;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .l2-tog:hover {
+    background: rgb(22 19 29 / 0.07);
+    color: var(--ink);
+  }
+}
+.l2-tog:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 0;
+}
 
 .layer-list {
   position: relative;
