@@ -17,10 +17,14 @@ import './ui/ui.css'
 import './styles/ruler.css'
 import './styles/build.css'
 import App, { bootLayout } from './App'
+import { bootReady } from './boot'
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
 window.scrollTo(0, 0)
 bootLayout()
+
+// safety net: never leave the cover up if something fails to report ready
+window.setTimeout(bootReady, 6000)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

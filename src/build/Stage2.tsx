@@ -18,6 +18,7 @@ import { Fun, FUN_VH } from './sections/fun/Fun'
 import { holdOf, LAST, topOf, SCROLL_VH, WORLDS, sectionAt, secP, secU, transitionAt } from './worlds'
 import { installOverlapCheck } from './dev/overlap'
 import { taste } from './sections/hello/taste'
+import { bootReady } from '../boot'
 
 /* -------------------------------------------------------- cursor story */
 
@@ -198,10 +199,17 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
         })
     const unCheck = import.meta.env.DEV && !reduced ? installOverlapCheck(() => geo) : () => {}
 
-    /* ---------- intro (skippable by scrolling) */
+    /* ---------- intro (skippable by scrolling)
+       The loop draws the intro's starting pose from the first frame, under the
+       first-load cover (index.html #boot); the intro itself plays only once the
+       page is set up (fonts in, camera measured, a frame drawn), as the cover
+       fades, so nothing half-built or jumpy is ever on screen. */
     live.intro = 1
-    if (!reduced && window.scrollY < 10) {
-      live.intro = 0
+    const playIntro = !reduced && window.scrollY < 10
+    if (playIntro) live.intro = 0
+    else scene.introDone = true
+    const startIntro = () => {
+      if (!playIntro) return
       const o = { v: 0 }
       intro = gsap.timeline({ defaults: { ease: 'expo.out' }, onComplete: () => void (scene.introDone = true) })
       const chrome = ['.layers', '.inspector', '.dock']
@@ -214,8 +222,6 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
       intro.to(o, { v: 1, duration: 1.8, ease: 'expo.inOut', onUpdate: () => void (live.intro = o.v) }, 0)
       const words = texts.get('h-title')?.words
       if (words) intro.fromTo(words, { yPercent: 118, rotation: 7 }, { yPercent: 0, rotation: 0, duration: 1, stagger: 0.08, ease: 'back.out(1.5)', clearProps: 'transform' }, 0.7)
-    } else {
-      scene.introDone = true
     }
     const skip = () => {
       if (intro && intro.progress() < 1 && window.scrollY > 4) intro.progress(1)
@@ -263,13 +269,29 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
     }
     window.addEventListener('resize', onResize)
     let alive = true
+    let readyRaf = 0
+    // fonts in (capped, so a slow font never holds the page back), re-measure,
+    // let the loop draw two frames, then lift the cover and start the intro
     document.fonts?.ready.then(() => {
-      if (!alive || reduced) return
-      build()
+      // fonts that arrive after the cap still get the page re-measured
+      if (alive && !reduced && document.documentElement.classList.contains('is-booting') === false) build()
+    })
+    const fontsIn = Promise.race([document.fonts?.ready ?? Promise.resolve(), new Promise((r) => window.setTimeout(r, 1500))])
+    fontsIn.then(() => {
+      if (!alive) return
+      if (!reduced) build()
+      readyRaf = requestAnimationFrame(() => {
+        readyRaf = requestAnimationFrame(() => {
+          if (!alive) return
+          startIntro()
+          bootReady()
+        })
+      })
     })
 
     return () => {
       alive = false
+      cancelAnimationFrame(readyRaf)
       ui.scrollTo = null
       Object.assign(cursorConfig, prevCfg)
       stopLoop()

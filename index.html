@@ -13,8 +13,63 @@
     <meta property="og:description" content="Everyone has the same tools now. Not the same taste." />
     <link rel="preload" as="image" href="/monika-new.webp" type="image/webp" fetchpriority="high" />
     <title>Monika Adeishvili — Product Designer</title>
+    <!-- first-load cover: painted with the first byte, removed by src/boot.ts once the page is set up -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #e8e9ec;
+      }
+      #boot {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: grid;
+        place-items: center;
+        background: #e8e9ec;
+        transition: opacity 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      #boot.is-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #boot svg {
+        width: 56px;
+        height: 53px;
+        animation: boot-bob 1.6s ease-in-out infinite;
+      }
+      #boot .bp {
+        animation: boot-look 3.2s ease-in-out infinite;
+      }
+      @keyframes boot-bob {
+        50% {
+          transform: translateY(-5px) scale(1.04);
+        }
+      }
+      @keyframes boot-look {
+        0%, 40%, 100% { transform: translate(0, 0); }
+        55%, 85% { transform: translate(3px, 1px); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #boot svg,
+        #boot .bp {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="boot" aria-hidden="true">
+      <svg viewBox="0 0 100 94">
+        <path d="M50 4C75 3 96 20 95 47c-1 27-19 44-45 43C23 89 4 73 5 46 6 20 25 5 50 4Z" fill="#5B4BFF" stroke="#16131D" stroke-width="6" />
+        <ellipse cx="36" cy="44" rx="11" ry="12.5" fill="#fff" stroke="#16131D" stroke-width="4" />
+        <ellipse cx="64" cy="44" rx="11" ry="12.5" fill="#fff" stroke="#16131D" stroke-width="4" />
+        <g class="bp">
+          <circle cx="37" cy="46" r="5" fill="#16131D" />
+          <circle cx="65" cy="46" r="5" fill="#16131D" />
+        </g>
+      </svg>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
