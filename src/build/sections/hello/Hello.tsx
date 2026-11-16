@@ -300,50 +300,6 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
         </span>
       </div>
 
-      {/* lower-left caption (the phone keeps two captions: role + status) */}
-      {!narrow && (
-      <Piece id="h-cap" name="Caption / Experience" kind="bubble" tone={HC.ink} order={2} at={0.56} className="h-capslot">
-        <div className="h-swap">
-          <p className="h-cap h-exp">
-            <span className="h-exp-l">{s0}</span>
-            <span className="h-exp-l">
-              {s1}
-              <strong>{s2}</strong>
-              {s3}
-            </span>
-          </p>
-        </div>
-      </Piece>
-      )}
-
-      {/* an annotation pinned to her shoulder, like a comment in a design file */}
-      {!narrow && (
-      <Piece id="h-note" name="Annotation / Intro" kind="hero" tone={HC.board} travel="leap" order={1} at={0.66} dur={0.2} park="700,-200" className="h-noteslot" eyes={{ x: 70, y: -10, s: 15 }}>
-        <div className="h-swap">
-          <p className="h-note">
-            <span className="h-note-dot" aria-hidden="true" />
-            <svg className="h-note-line" viewBox="0 0 80 80" aria-hidden="true">
-              <path d="M6 74 L58 14 H80" />
-            </svg>
-            <span className="h-cap h-note-t">
-              <span className="h-note-l">
-                {HELLO.introLines[0][0]}
-                <strong>{HELLO.introLines[0][1]}</strong>
-                {HELLO.introLines[0][2]}
-              </span>
-              <span className="h-note-l">{HELLO.introLines[1][0]}</span>
-            </span>
-          </p>
-        </div>
-      </Piece>
-      )}
-
-      {!narrow && (
-        <p className="h-cue" aria-hidden="true">
-          [ Move your cursor over me ]
-        </p>
-      )}
-
       {/* the floating pill */}
       <Piece id="h-pill" name="Nav / Pill" kind="hero" tone={HC.blue} travel="leap" order={2} at={0.9} dur={0.22} park="40,-236" parkN="176,-96" className="h-pillslot" eyes={{ x: 82, y: -8, s: 16 }}>
         <div className="h-swap">
