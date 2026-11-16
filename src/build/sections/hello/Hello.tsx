@@ -3,25 +3,23 @@
  * The section proves its own headline: it opens as the default anyone gets
  * from the same tools, and scrolling applies taste (see ./taste.ts).
  *
- * Designed state: a porcelain stage with drifting topographic contours, a
+ * Designed state: a porcelain stage with still topographic contours, a
  * giant pale MONIKA behind a bottom-anchored cut-out portrait (WebGL, with a
  * cursor-trail burn between colour and a construct drawing — ./portrait.ts),
  * the headline as architecture in a bold condensed face (line 1 behind her,
  * line 2 in electric blue in front of her, the Taste switch inline), tiny
  * uppercase editorial captions on a three-column hairline grid; then an
- * electric-blue statement band, ghost-word facts and a near-black close.
+ * two crossing ribbons (statement + process), the facts and a near-black close.
  */
-import { Fragment, type RefObject, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { Arrow } from '../../../ui/components'
-import { EMAIL, HELLO, LINKS } from '../../../content/story'
+import { type RefObject, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { HELLO, LINKS } from '../../../content/story'
 import { Piece, Region, Reveal, useSection } from '../../parts'
-import { outCubic, range, registerFx, registerText, smooth } from '../../runtime'
+import { outCubic, range, registerFx, registerText } from '../../runtime'
 import { Artboard, type SectionProps } from '../Artboard'
 import { TasteSwitch } from './TasteSwitch'
 import { mountTaste, taste } from './taste'
 import { mountPortrait } from './portraitFx'
 import { mountRibbons, mountWw } from './wwMarquee'
-import { mountClose } from './closeFx'
 import './hello.css'
 
 /** designed fills (Layers / Inspector read these as the pieces' fills) */
@@ -54,7 +52,8 @@ function useLayerText(ref: RefObject<HTMLElement | null>, id: string, label: str
   }, [ctx.live, ref, id, label])
 }
 
-/** masked words (each one masked so it can rise through its own line), one span per letter for the hover wake */
+/** masked words (each one masked so it can rise through its own line); one
+ *  span per letter, which the colour picker samples (canvas/colorSample.ts) */
 function Words({ words }: { words: string[] }) {
   return (
     <>
@@ -245,7 +244,7 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
       </div>
 
       {/* nav */}
-      <Piece id="h-nav" name="Nav" kind="bubble" tone={HC.board} order={0} at={0.4} className="h-nav">
+      <Piece id="h-nav" name="Nav" kind="bubble" tone={HC.board} travel="slide" order={0} at={0.4} className="h-nav">
         <div className="h-swap">
           <Nav onNav={onNav} />
         </div>
@@ -284,25 +283,6 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
         </span>
       </div>
 
-      {/* the floating pill */}
-      <Piece id="h-pill" name="Nav / Pill" kind="hero" tone={HC.blue} travel="leap" order={2} at={0.9} dur={0.22} park="40,-236" parkN="176,-96" className="h-pillslot" eyes={{ x: 82, y: -8, s: 16 }}>
-        <div className="h-swap">
-          {/* the pill's labels are decoration: only Say hello is a link */}
-          <div className="h-pill">
-            <span className="h-pill-links" aria-hidden="true">
-              <span>Work</span>
-              <span>About</span>
-              <span>Contact</span>
-            </span>
-            <a className="h-cta" href={`mailto:${EMAIL}`}>
-              {HELLO.ghost}
-              <span className="h-cta-ar" aria-hidden="true">
-                <Arrow dir="right" />
-              </span>
-            </a>
-          </div>
-        </div>
-      </Piece>
     </Region>
   )
 }
@@ -331,26 +311,6 @@ function Odo({ value, suffix = '' }: { value: string; suffix?: string }) {
   )
 }
 
-/** a line split into letters, words kept whole */
-function CloseLetters({ text }: { text: string }) {
-  return (
-    <>
-      {text.split(' ').map((w, wi) => (
-        <Fragment key={wi}>
-          {wi > 0 && ' '}
-          <span className="h-cw">
-            {Array.from(w).map((c, ci) => (
-              <span key={ci} className="h-cl">
-                {c}
-              </span>
-            ))}
-          </span>
-        </Fragment>
-      ))}
-    </>
-  )
-}
-
 export function Hello({ lay, live, onNav }: SectionProps) {
   const narrow = lay === 'narrow'
   const boardRef = useRef<HTMLDivElement>(null)
@@ -370,9 +330,7 @@ export function Hello({ lay, live, onNav }: SectionProps) {
     const b = mountPortrait(board)
     const d = mountWw(board)
     const r = mountRibbons(board)
-    const cl = mountClose(board)
     return () => {
-      cl()
       r()
       d()
       b()
@@ -380,16 +338,15 @@ export function Hello({ lay, live, onNav }: SectionProps) {
     }
   }, [live, lay])
 
-  // facts: hairlines draw in, ghost words surface, numerals roll, the dark base rises
+  // facts: hairlines draw in, numerals roll, the dark base rises
   useLayoutEffect(() => {
     const r1 = r1Ref.current
     if (!live || !r1) return
     const lines = Array.from(r1.querySelectorAll<HTMLElement>('.hf-line'))
-    const ghosts = Array.from(r1.querySelectorAll<HTMLElement>('.h-fghost'))
     const base = r1.querySelector<HTMLElement>('.h-base')!
     const strips = Array.from(r1.querySelectorAll<HTMLElement>('.h-odo-strip'))
     const odoPiece = strips.map((s) => s.closest<HTMLElement>('[data-cid]')?.dataset.cid ?? '')
-    const cache = { l: '', b: '', g: ghosts.map(() => ''), o: strips.map(() => '') }
+    const cache = { l: '', b: '', o: strips.map(() => '') }
     return registerFx({
       id: 'hello-facts',
       section: 0,
@@ -403,15 +360,6 @@ export function Hello({ lay, live, onNav }: SectionProps) {
           cache.l = lk
           lines.forEach((l) => (l.style.transform = l.classList.contains('hf-v') ? `scaleY(${lk})` : `scaleX(${lk})`))
         }
-        // ghost words surface behind each column, a beat before its numeral lands
-        ghosts.forEach((g, i) => {
-          const v = smooth(0.22 + i * 0.1, 0.5 + i * 0.1, q)
-          const k = v.toFixed(3)
-          if (k === cache.g[i]) return
-          cache.g[i] = k
-          g.style.opacity = k
-          g.style.transform = `translate3d(${((1 - v) * -24).toFixed(1)}px, 0, 0)`
-        })
         // the near-black close rises under its line
         const bq = outCubic(range(0.62, 0.86, q))
         const bk = bq >= 1 ? 'none' : `inset(${((1 - bq) * 100).toFixed(2)}% 0 0 0 round 0 0 var(--h-rad) var(--h-rad))`
@@ -515,38 +463,29 @@ export function Hello({ lay, live, onNav }: SectionProps) {
           <div className="h-cellsw">
             <ul className="h-cells" aria-label="Quick facts">
               <li className="h-cell">
-                <span className="h-fghost" aria-hidden="true">
-                  Years
-                </span>
-                <Piece id="h-n0" name="Numeral / Years" kind="hero" tone={HC.ink} travel="leap" order={1} at={0.3} dur={0.2} park="150,b-236" eyes={{ x: 50, y: -6, s: 18 }} className="h-numslot">
+                <Piece id="h-n0" name="Numeral / Years" kind="bubble" tone={HC.ink} travel="slide" order={1} at={0.3} className="h-numslot">
                   <span className="h-num">
                     <Odo value="8" suffix="+" />
                   </span>
                 </Piece>
-                <Reveal id="h-c0" mode="type" segs={['Years of taste']} className="h-cell-l" label="Label / Years" />
+                <Reveal id="h-c0" mode="rise" segs={['Years of taste']} className="h-cell-l" label="Label / Years" />
               </li>
               <li className="h-cell">
-                <span className="h-fghost" aria-hidden="true">
-                  Products
-                </span>
-                <Piece id="h-n1" name="Numeral / Products" kind="hero" tone={HC.ink} travel="leap" order={2} at={0.42} dur={0.2} park="420,b-214" eyes={{ x: 50, y: -6, s: 18 }} className="h-numslot">
+                <Piece id="h-n1" name="Numeral / Products" kind="bubble" tone={HC.ink} travel="slide" order={2} at={0.42} className="h-numslot">
                   <span className="h-num">
                     <Odo value="32" />
                   </span>
                 </Piece>
-                <Reveal id="h-c1" mode="type" segs={['Client products']} className="h-cell-l" label="Label / Products" />
+                <Reveal id="h-c1" mode="rise" segs={['Client products']} className="h-cell-l" label="Label / Products" />
               </li>
               <li className="h-cell">
-                <span className="h-fghost" aria-hidden="true">
-                  Now
-                </span>
-                <Piece id="h-n2" name="Numeral / Now" kind="hero" tone={HC.blue} travel="leap" order={3} at={0.54} dur={0.2} park="690,b-236" eyes={{ x: 50, y: -6, s: 18 }} className="h-numslot">
+                <Piece id="h-n2" name="Numeral / Now" kind="bubble" tone={HC.blue} travel="slide" order={3} at={0.54} className="h-numslot">
                   <span className="h-num h-num-now">
                     Now
                     <i className="h-live" aria-hidden="true" />
                   </span>
                 </Piece>
-                <Reveal id="h-c2" mode="type" segs={['Open to new work']} className="h-cell-l" label="Label / Status" />
+                <Reveal id="h-c2" mode="rise" segs={['Open to new work']} className="h-cell-l" label="Label / Status" />
               </li>
             </ul>
             <span className="hf-lines" aria-hidden="true">
@@ -570,11 +509,7 @@ export function Hello({ lay, live, onNav }: SectionProps) {
                         <li key={n} className="h-ww-n">
                           <span className="sr-only">{n}</span>
                           <span className="h-ww-vis" aria-hidden="true">
-                            {Array.from(n).map((c, j) => (
-                              <span key={j} className="h-ch">
-                                {c === ' ' ? '\u00a0' : c}
-                              </span>
-                            ))}
+                            {n}
                           </span>
                         </li>
                       ))}
@@ -588,17 +523,8 @@ export function Hello({ lay, live, onNav }: SectionProps) {
           <div className="h-close">
             <div className="h-base" aria-hidden="true" />
             <Piece id="h-hint" name="Closing line" kind="bubble" tone={HC.blue} order={6} at={1} className="h-hint-slot">
-              {/* the letters play what the line says (./closeFx.ts) */}
               <p className="h-hint-p">
-                <span className="sr-only">
-                  {HELLO.hint[0]} {HELLO.hint[1]}
-                </span>
-                <span className="h-hint-a" aria-hidden="true">
-                  <CloseLetters text={HELLO.hint[0]} />
-                </span>{' '}
-                <span className="h-hint-b" aria-hidden="true">
-                  <CloseLetters text={HELLO.hint[1]} />
-                </span>
+                <span className="h-hint-a">{HELLO.hint[0]}</span> <span className="h-hint-b">{HELLO.hint[1]}</span>
               </p>
             </Piece>
           </div>

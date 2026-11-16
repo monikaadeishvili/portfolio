@@ -141,9 +141,8 @@ void main() {
   vec3 p = position;
   float t = uTime;
   vec4 r = aRnd;
-  // shimmer: each grain circles its home on its own slow orbit; the body breathes
-  p += vec3(sin(t * (0.6 + r.x) + r.y * 6.283), cos(t * (0.5 + r.y) + r.z * 6.283), sin(t * (0.4 + r.z) + r.x * 6.283)) * (0.0016 + 0.0024 * r.w);
-  p.z += sin(t * 0.7 + position.y * 4.0) * 0.004;
+  // shimmer: each grain circles its home on its own small, slow orbit
+  p += vec3(sin(t * (0.6 + r.x) + r.y * 6.283), cos(t * (0.5 + r.y) + r.z * 6.283), sin(t * (0.4 + r.z) + r.x * 6.283)) * (0.0008 + 0.0012 * r.w);
   // wind motes: lift off her edges, drift right and up with the shawl, fade, loop
   float life = fract(t * (0.07 + 0.06 * r.x) + r.y);
   float mote = step(0.5, aKind) * (1.0 - step(1.5, aKind));

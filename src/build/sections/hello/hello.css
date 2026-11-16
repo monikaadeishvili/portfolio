@@ -188,7 +188,6 @@
 .h-cap,
 .h-navbar,
 .h-cue,
-.h-pill,
 .h-list,
 .h-cell-l,
 .h-ww-l {
@@ -224,20 +223,6 @@
   stroke: rgb(30 23 18 / 0.07);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
-}
-/* the contours drift as ONE layer, translate only: per-path animations with
-   scale made six large layers re-rasterise on every frame */
-.h-topo {
-  animation: h-drift 42s ease-in-out infinite alternate;
-  will-change: transform;
-}
-@keyframes h-drift {
-  from {
-    transform: translate3d(-8px, 4px, 0);
-  }
-  to {
-    transform: translate3d(9px, -5px, 0);
-  }
 }
 .h-grid {
   position: absolute;
@@ -334,8 +319,7 @@
     transform: translate(2px, -2px);
   }
 }
-.h-navbar a:focus-visible,
-.h-pill a:focus-visible {
+.h-navbar a:focus-visible {
   outline: 2px solid var(--h-blue);
   outline-offset: 4px;
   border-radius: 2px;
@@ -355,18 +339,6 @@
   inset: 0;
   border-radius: 50%;
   background: inherit;
-  animation: h-pulse 2.2s var(--h-ease) infinite;
-}
-@keyframes h-pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.55;
-  }
-  70%,
-  100% {
-    transform: scale(2.6);
-    opacity: 0;
-  }
 }
 
 /* -- the headline as architecture */
@@ -521,47 +493,6 @@
     scale: 1.04;
   }
 }
-/* taste has landed and the switch is untouched: a shake and a dare */
-.h-sw-wrap[data-nag='1'] .h-sw {
-  animation: sw-nag 1.9s cubic-bezier(0.36, 0.07, 0.19, 0.97) 0.1s infinite;
-}
-@keyframes sw-nag {
-  0%,
-  46%,
-  100% {
-    rotate: 0deg;
-    translate: 0 0;
-  }
-  5% {
-    rotate: -11deg;
-    translate: -5px 0;
-  }
-  11% {
-    rotate: 10deg;
-    translate: 5px 0;
-  }
-  17% {
-    rotate: -8deg;
-    translate: -4px 0;
-  }
-  23% {
-    rotate: 6deg;
-    translate: 3px 0;
-  }
-  30% {
-    rotate: -3.5deg;
-    translate: -1.5px 0;
-  }
-  38% {
-    rotate: 1.2deg;
-    translate: 0 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .h-sw-wrap[data-nag='1'] .h-sw {
-    animation: none;
-  }
-}
 .h-try {
   position: absolute;
   left: 50%;
@@ -679,87 +610,6 @@
 /* the GL canvas draws her; the image stays for its alt text only */
 .h-port:is([data-gl='1'], [data-gl='wait']) .h-port-img {
   opacity: 0;
-}
-
-/* -- the floating pill */
-.slot.h-pillslot {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 28px;
-  z-index: 5;
-  width: fit-content;
-  margin: 0 auto;
-}
-.h-pill {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-  height: 58px;
-  padding: 0 7px 0 26px;
-  border-radius: 999px;
-  background: #fff;
-  box-shadow:
-    0 0 0 1px rgb(30 23 18 / 0.06),
-    0 2px 4px rgb(30 23 18 / 0.06),
-    0 18px 36px -16px rgb(30 23 18 / 0.4);
-}
-.h-pill-links {
-  display: flex;
-  gap: 22px;
-  color: var(--h-ink);
-  cursor: default;
-}
-.h-pill a {
-  color: var(--h-ink);
-  text-decoration: none;
-}
-.h-pill a.h-cta {
-  color: #fff;
-}
-.h-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  height: 44px;
-  padding: 0 6px 0 20px;
-  border-radius: 999px;
-  /* vivid orange pill, white bold label */
-  background: var(--h-hot);
-  color: #fff;
-  font-weight: 800;
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    transform 160ms var(--h-ease),
-    background-color 200ms ease;
-}
-.h-cta:active {
-  transform: scale(0.97);
-}
-.h-cta:focus-visible,
-.h-cta-ar {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--h-ink);
-  color: #fff;
-}
-.h-cta-ar .u-ico {
-  width: 15px;
-  height: 15px;
-  stroke-width: 2;
-  transition: transform 220ms var(--h-ease);
-}
-@media (hover: hover) and (pointer: fine) {
-  .h-cta:hover {
-    background: #f26a1e;
-  }
-  .h-cta:hover .h-cta-ar .u-ico {
-    transform: translateX(2px);
-  }
 }
 
 /* ========================================== State A: the bland twins */
@@ -919,12 +769,12 @@
   top: 34px;
 }
 .bstage.is-static .bf-hello :is(.bf-bg, .bf-world),
-.bstage.is-static .h-r0 :is(.h-bgfx, .slot.h-nav, .slot.h-metaslot, .h-title, .h-l2 .rw, .slot.h-capslot, .slot.h-noteslot, .h-port, .slot.h-pillslot),
+.bstage.is-static .h-r0 :is(.h-bgfx, .slot.h-nav, .slot.h-metaslot, .h-title, .h-l2 .rw, .slot.h-capslot, .slot.h-noteslot, .h-port),
 .bstage.is-static .h-blue {
   transition: opacity 200ms ease;
 }
 .bstage.is-static .bf-hello:has(.h-r0.is-plain) .bf-bg,
-.bstage.is-static .h-r0.is-plain :is(.h-bgfx, .slot.h-nav, .slot.h-metaslot, .h-title, .h-l2 .rw, .slot.h-capslot, .slot.h-noteslot, .h-port, .slot.h-pillslot),
+.bstage.is-static .h-r0.is-plain :is(.h-bgfx, .slot.h-nav, .slot.h-metaslot, .h-title, .h-l2 .rw, .slot.h-capslot, .slot.h-noteslot, .h-port),
 .bstage.is-static .bf-hello:has(.h-r0.is-plain) .h-blue {
   opacity: 0;
 }
@@ -959,15 +809,6 @@
   translate: -50% 0;
   opacity: 0;
   pointer-events: none;
-}
-.h-addtaste span {
-  display: inline-block;
-  animation: h-bob 1.6s ease-in-out infinite;
-}
-@keyframes h-bob {
-  50% {
-    transform: translateY(3px);
-  }
 }
 .bstage[data-bp='mob'] .h-addtaste {
   bottom: 104px;
@@ -1087,24 +928,6 @@
   min-height: 262px;
   padding: 50px var(--h-px) 34px;
   text-align: left;
-}
-.h-fghost {
-  /* behind the upper part of its column, cropped cleanly at the column's hairlines */
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  padding: 18px 0 0 calc(var(--h-px) - 0.05em);
-  font-family: var(--h-display);
-  font-size: 172px;
-  line-height: 0.82;
-  text-transform: uppercase;
-  color: rgb(30 23 18 / 0.042);
-  white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
-}
-.bstage:not(.is-static) .h-fghost {
-  opacity: 0;
 }
 .slot.h-numslot {
   position: relative;
@@ -1257,15 +1080,12 @@
 .h-ww-vis {
   display: inline-flex;
 }
-/* the strip is not a selectable layer on hover: no lift, no outline (only the letters react) */
+/* the strip is not a selectable layer on hover: no lift, no outline */
 .bf-hello .slot.h-wwslot.is-hover > .alive > .alive-in {
   transform: none;
 }
 .bf-hello .slot.h-wwslot.is-hover > .alive > .alive-in > .alive-outline {
   opacity: 0;
-}
-.h-ww-n .h-ch {
-  --hs: 0.02em;
 }
 /* reduced motion / static: one copy, wrapped and centred, no drift */
 .bstage.is-static .h-ww-mq {
@@ -1323,15 +1143,6 @@
   line-height: 0.96;
   text-transform: uppercase;
 }
-/* letters that can be knocked about (./closeFx.ts) */
-.h-cw {
-  display: inline-block;
-  white-space: nowrap;
-}
-.h-cl {
-  display: inline-block;
-  transform-origin: 50% 70%;
-}
 .h-hint-a {
   color: var(--h-on-dark);
 }
@@ -1339,18 +1150,7 @@
   color: var(--h-blue-dk);
 }
 
-/* paused off-screen, gone for reduced motion */
-.bf:not([data-near='1']) :is(.h-topo, .h-live::after),
-.bstage.is-static .h-topo {
-  animation-play-state: paused;
-}
 @media (prefers-reduced-motion: reduce) {
-  .h-addtaste span,
-  .h-topo,
-  .h-live::after,
-  .h-sw-wrap[data-nag='1'] .h-sw {
-    animation: none;
-  }
   .h-sw-knob {
     transition-duration: 1ms;
   }
@@ -1389,26 +1189,6 @@
     inset 0 0 0 1px rgb(255 255 255 / 0.06),
     0 0 0 3px var(--h-board),
     0 10px 20px -12px rgb(30 23 18 / 0.6);
-}
-.bstage[data-lay='narrow'] .slot.h-pillslot {
-  bottom: 16px;
-}
-.bstage[data-lay='narrow'] .h-pill {
-  gap: 14px;
-  height: 46px;
-  padding: 0 5px 0 16px;
-}
-.bstage[data-lay='narrow'] .h-pill-links {
-  gap: 14px;
-}
-.bstage[data-lay='narrow'] .h-cta {
-  gap: 8px;
-  height: 36px;
-  padding: 0 4px 0 13px;
-}
-.bstage[data-lay='narrow'] .h-cta-ar {
-  width: 28px;
-  height: 28px;
 }
 .bstage[data-lay='narrow'] .h-navlinks {
   gap: 18px;
@@ -1504,10 +1284,6 @@
 .bstage[data-lay='narrow'] .h-num {
   font-size: calc(var(--FW) * 0.15);
 }
-.bstage[data-lay='narrow'] .h-fghost {
-  font-size: 92px;
-  padding: 14px 0 0 10px;
-}
 .bstage[data-lay='narrow'] .h-cell-l {
   font-size: 11px;
 }
@@ -1557,7 +1333,7 @@
 /* depth: inside the preserve-3d world z-index alone does not order coplanar
    layers reliably under a tilted camera, so the stage is stacked by a few px
    of real depth (invisible at any camera angle): ghost + contours < line 1 <
-   portrait < line 2, captions, pill */
+   portrait < line 2, nav */
 .bstage:not(.is-static) .h-title {
   translate: 0 0 1px;
 }
@@ -1566,9 +1342,6 @@
 }
 .bstage:not(.is-static) :is(.h-l2, .slot.h-nav, .slot.h-metaslot, .slot.h-capslot, .slot.h-noteslot, .h-cue) {
   translate: 0 0 4px;
-}
-.bstage:not(.is-static) .slot.h-pillslot {
-  translate: 0 0 5px;
 }
 /* the close line lands on the dark base; its dashed slot would only read as clutter there */
 .bf-hello .h-hint-slot > .slot-ph {

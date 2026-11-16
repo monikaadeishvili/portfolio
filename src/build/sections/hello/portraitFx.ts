@@ -17,7 +17,7 @@ import { live } from '../../loop'
 import { range, registerFx, type FxEnv } from '../../runtime'
 import type { Portrait3DFrame } from './portrait3d'
 
-import { taste, tasteFx } from './taste'
+import { tasteFx } from './taste'
 
 const SRC = '/monika-new.webp'
 const DEPTH = '/monika-new-depth.png'
@@ -25,10 +25,8 @@ const DEPTH = '/monika-new-depth.png'
 const HV_IN = 0.8
 const HV_OUT = 0.45
 /** tilt toward the pointer, radians at the screen edge (yaw, pitch) */
-const TILT_Y = 0.3
-const TILT_X = 0.1
-const IDLE_S = 6
-const PEEK_S = 1.7
+const TILT_Y = 0.12
+const TILT_X = 0.04
 
 interface Renderer {
   ok: boolean
@@ -189,9 +187,6 @@ export function mountPortrait(board: HTMLElement) {
   let key = ''
   let wasOn = false
   let interacted = false
-  let holdT = 0
-  let peekT = -1
-  let peekDone = false
   let cueK = ''
   let fbK = ''
   let hvRaw = 0
@@ -276,8 +271,6 @@ export function mountPortrait(board: HTMLElement) {
       }
       hvRaw = 0
       F.hv[2] = 0
-      holdT = 0
-      peekT = -1
       return
     }
 
@@ -304,36 +297,14 @@ export function mountPortrait(board: HTMLElement) {
       }
     }
 
-    /* idle in the hold: one slow peek at the photo, from her face */
-    const inHold = taste.can
-    if (inHold && shown) holdT += dt
-    else {
-      holdT = 0
-      peekT = -1
-    }
-    if (!inside && inHold && !interacted && !peekDone && holdT > IDLE_S && peekT < 0) peekT = 0
-    let peek = false
-    if (peekT >= 0 && !inside) {
-      peekT += dt
-      if (peekT < PEEK_S * 0.55) {
-        peek = true
-        F.hv[0] = cu(0.4)
-        F.hv[1] = cv(0.16)
-      }
-      if (peekT >= PEEK_S) {
-        peekT = -1
-        peekDone = true
-      }
-    }
-    if (interacted) peekT = -1
-    const want = (inside || peek) && playable
+    const want = inside && playable
     hvRaw = want ? Math.min(1, hvRaw + dt / HV_IN) : Math.max(0, hvRaw - dt / HV_OUT)
     if (!playable) hvRaw = 0
     F.hv[2] = ease(hvRaw)
     ptRaw = near && playable ? Math.min(1, ptRaw + dt / 0.25) : Math.max(0, ptRaw - dt / 0.6)
     F.pt[2] = ease(ptRaw)
 
-    /* tilt toward the pointer (+ a gentle sway), back to rest when she is not on stage */
+    /* a slight tilt toward the pointer, back to rest when she is not on stage */
     let ty = 0
     let tx = 0
     if (playable) {
@@ -343,8 +314,6 @@ export function mountPortrait(board: HTMLElement) {
         ty = Math.max(-1, Math.min(1, (ptr.x - cx) / (window.innerWidth * 0.5))) * TILT_Y
         tx = Math.max(-1, Math.min(1, (ptr.y - cy) / (window.innerHeight * 0.5))) * TILT_X
       }
-      ty += Math.sin(e.t * 0.55) * 0.06
-      tx += Math.sin(e.t * 0.41 + 1.3) * 0.02
     }
     const tk = 1 - Math.exp(-dt * 4.5)
     F.tilt[0] += (tx - F.tilt[0]) * tk

@@ -18,7 +18,7 @@
 import { offsetIn } from '../../../scene/layout'
 import { helloName, helloTaste } from '../../bstore'
 import type { Geo } from '../../camera'
-import { clamp01, inOut, inOutQuad, lerp, outBack, outCubic, pieces, range, registerFx, smooth, texts, type FxEnv } from '../../runtime'
+import { clamp01, inOut, inOutQuad, lerp, outCubic, pieces, range, registerFx, smooth, texts, type FxEnv } from '../../runtime'
 import { live } from '../../loop'
 import { phOf, secU } from '../../worlds'
 
@@ -588,7 +588,7 @@ export function mountTaste(board: HTMLElement) {
             if (qi === t.lastW[j]) continue
             t.lastW[j] = qi
             const w = qi / 48
-            const eb = outBack(w, 1.1)
+            const eb = outCubic(w)
             const inner = W[j].firstElementChild as HTMLElement | null
             W[j].style.opacity = w >= 1 ? '1' : smooth(0, 0.5, w).toFixed(3)
             if (inner) inner.style.transform = w >= 1 ? '' : `translate3d(0, ${((1 - eb) * 100).toFixed(1)}%, 0)`
@@ -675,15 +675,9 @@ export function mountTaste(board: HTMLElement) {
         scy *= ps
       } else if (c) {
         if (t.kind === 'tumble') {
-          // knocked off the artboard by the hero landing on it
-          const kn = range(c.p0 + 0.9 * D, c.p1 + 0.55 * D, p)
-          if (kn > 0) {
-            x += t.dir * 340 * kn
-            y += -150 * kn + 560 * kn * kn
-            z += 170 * Math.sin(Math.PI * Math.min(1, kn))
-            rot += t.dir * 220 * kn
-            op = 1 - smooth(0.55, 1, kn)
-          }
+          // fades out as its component arrives (opacity only: no throw, no spin)
+          const kn = range(c.p0 + 0.6 * D, c.p1 + 0.2 * D, p)
+          if (kn > 0) op = 1 - smooth(0, 1, kn)
         } else {
           // replaced by the bubble-born component: a quick pop
           const kn = range(c.p0 + 0.8 * D, c.p1 + 0.12 * D, p)
