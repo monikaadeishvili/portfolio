@@ -73,13 +73,13 @@ function sayBubble(key: Bot['key'], text: string, t: number, dur = 2.6) {
 const readTime = (text: string) => Math.max(2.8, 1.5 + text.length * 0.07)
 const GAP = 0.25
 const talk = {
-  cur: null as null | { key: Bot['key']; until: number },
+  cur: null as null | { key: Bot['key']; until: number; p: number },
   queue: [] as { key: Bot['key']; text: string; at: number; p: number }[],
 }
 function speak(key: Bot['key'], text: string, t: number) {
   const dur = readTime(text)
   sayBubble(key, text, t, dur)
-  talk.cur = { key, until: t + dur }
+  talk.cur = { key, until: t + dur, p: scene.p }
 }
 function requestSay(key: Bot['key'], text: string, t: number) {
   if (!talk.cur || t >= talk.cur.until + GAP) speak(key, text, t)
@@ -208,6 +208,13 @@ export function updateCursors(t: number, dt: number) {
   const p = scene.p
   const intro = !scene.introDone
 
+  // a line whose moment has scrolled far away (a jump via the ruler) ends early
+  if (talk.cur && t < talk.cur.until && Math.abs(scene.p - talk.cur.p) > 0.04) {
+    const b = bots[talk.cur.key]
+    b.bubble?.classList.remove('is-on')
+    b.bubbleUntil = 0
+    talk.cur.until = t - GAP
+  }
   // the one speaker: when the current line is done, the next waiting one (if still fresh) gets its turn
   if (talk.cur && t >= talk.cur.until + GAP) {
     talk.cur = null
