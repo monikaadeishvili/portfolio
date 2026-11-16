@@ -120,8 +120,8 @@ export function Contact({ lay, live }: SectionProps) {
               {col(PAPER.left, PRINT.left)}
             </section>
 
-            <article className="np-ad">
-              <span className="np-ad-frame" data-print={PRINT.ad.toFixed(3)} />
+            <article className="np-lead">
+              <span className="np-lead-frame" data-print={PRINT.ad.toFixed(3)} />
               <span className="np-badge">
                 <Piece id="k-badge" name="Badge" kind="hero" travel="crawl" tone={T.mint} order={0} at={0.35} park="-300,40" parkN="40,-150" eyes={{ x: 50, y: -8, s: 16 }}>
                   <Badge tone="pink">Open to new work</Badge>
@@ -171,7 +171,7 @@ export function Contact({ lay, live }: SectionProps) {
                 {PAPER.apply}
               </p>
               {/* the red pen and the stamp: someone has already found this ad */}
-              <Circle className="np-circle np-adcircle" />
+              <Circle className="np-circle np-lead-circle" />
               <span className="np-note" aria-hidden="true">
                 {PAPER.note}
               </span>

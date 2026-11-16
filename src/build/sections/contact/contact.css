@@ -191,7 +191,7 @@
 }
 
 /* -- her display ad */
-.np-ad {
+.np-lead {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -200,19 +200,19 @@
   background: var(--np-panel);
   text-align: center;
 }
-.np-ad-frame {
+.np-lead-frame {
   position: absolute;
   inset: 0;
   border: 3px solid var(--np-ink);
   pointer-events: none;
 }
-.np-ad-frame::after {
+.np-lead-frame::after {
   content: '';
   position: absolute;
   inset: 4px;
   border: 1px solid var(--np-ink);
 }
-.np-ad.is-jolt {
+.np-lead.is-jolt {
   animation: np-jolt 220ms cubic-bezier(0.3, 1.5, 0.5, 1);
 }
 @keyframes np-jolt {
@@ -409,21 +409,21 @@
 }
 
 /* someone has already found this ad: the red pen and the stamp */
-.np-adcircle {
+.np-lead-circle {
   inset: -16px -18px;
   width: calc(100% + 36px);
   height: calc(100% + 32px);
   rotate: -1.5deg;
 }
-.np-adcircle path {
+.np-lead-circle path {
   stroke-width: 3.2px;
   --len: 2300;
 }
-.np-ad.is-circle .np-adcircle path {
+.np-lead.is-circle .np-lead-circle path {
   stroke-dashoffset: 0;
   transition: stroke-dashoffset 700ms cubic-bezier(0.5, 0, 0.3, 1);
 }
-.np-ad.is-redraw .np-adcircle path {
+.np-lead.is-redraw .np-lead-circle path {
   animation: np-redraw 900ms cubic-bezier(0.5, 0, 0.3, 1);
 }
 @keyframes np-redraw {
@@ -448,7 +448,7 @@
     translate 200ms ease;
   pointer-events: none;
 }
-.np-ad.is-circle .np-note {
+.np-lead.is-circle .np-note {
   opacity: 1;
   translate: 0 0;
   transition-delay: 550ms;
@@ -489,7 +489,7 @@
   /* a worn rubber stamp: a little ink missing here and there */
   mask: radial-gradient(rgb(0 0 0 / 0.78) 0.8px, #000 1.6px) 0 0 / 6px 5px;
 }
-.np-ad.is-stamp .np-stamp {
+.np-lead.is-stamp .np-stamp {
   opacity: 0.95;
   scale: 1;
   pointer-events: auto;
@@ -896,7 +896,7 @@
 .bstage[data-lay='narrow'] .np-vr {
   display: none;
 }
-.bstage[data-lay='narrow'] .np-ad {
+.bstage[data-lay='narrow'] .np-lead {
   grid-column: 1 / -1;
   order: -1;
   padding: 20px 16px 18px;
@@ -964,7 +964,7 @@
   font-size: 23px;
   padding: 0 20px;
 }
-.bstage[data-lay='narrow'] .np-adcircle {
+.bstage[data-lay='narrow'] .np-lead-circle {
   inset: -8px -8px;
   width: calc(100% + 16px);
   height: calc(100% + 16px);
@@ -1026,7 +1026,7 @@
   transform: none;
   transition: none;
 }
-.bstage.is-static .np-adcircle path {
+.bstage.is-static .np-lead-circle path {
   stroke-dashoffset: 0;
 }
 .bstage.is-static .np-note {

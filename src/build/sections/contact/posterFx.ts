@@ -21,7 +21,7 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
   const board = root.closest<HTMLElement>('.bf')
   const q1 = <E extends HTMLElement = HTMLElement>(s: string) => root.querySelector<E>(s)
   const em = q1('.k-em')
-  const ad = q1('.np-ad')
+  const ad = q1('.np-lead')
   const pen = q1('.k-pen')
   if (!board || !em || !ad || !pen) return () => {}
   const letters = Array.from(root.querySelectorAll<HTMLElement>('.k-l')).map((el) => ({ el, key: '' }))
