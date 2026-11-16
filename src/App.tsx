@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react'
 import BuildApp from './build/BuildApp'
 import { applyLayout, breakpointFor } from './scene/layout'
 import { scene } from './scene/store'
@@ -6,7 +7,12 @@ const reducedQuery = '(prefers-reduced-motion: reduce)'
 const fineQuery = '(hover: hover) and (pointer: fine)'
 
 export default function App() {
-  return <BuildApp />
+  return (
+    <>
+      <BuildApp />
+      <Analytics />
+    </>
+  )
 }
 
 /** called once before the first render so CSS vars exist for measurements */
