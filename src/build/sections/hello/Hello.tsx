@@ -185,7 +185,6 @@ function Nav({ onNav }: { onNav: SectionProps['onNav'] }) {
 function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live: boolean; onNav: SectionProps['onNav']; plain: boolean; onToggle: () => void }) {
   const h1Ref = useRef<HTMLHeadingElement>(null)
   useLayerText(h1Ref, 'h-title', 'Heading / H1')
-  const [s0, s1, s2, s3] = HELLO.support
   return (
     <Region index={0} label="Hero" className={`h-r0${plain ? ' is-plain' : ''}`} hold="0.52,0.36,0.64">
       {/* State A: the competent-but-forgettable default (visual twins only) */}
@@ -213,11 +212,6 @@ function Stage({ narrow, live, onNav, plain, onToggle }: { narrow: boolean; live
               {HELLO.line2}
             </span>
           </div>
-          <p className="hd-p" data-tw="lead">
-            {s0} {s1}
-            {s2}
-            {s3}
-          </p>
           <div className="hd-side">
             <span className="hd-cap" data-tw="cap">
               {HELLO.intro}

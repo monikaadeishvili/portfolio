@@ -167,7 +167,6 @@ export function mountTaste(board: HTMLElement) {
     { key: 'badge', kind: 'pop', target: '[data-cid="h-meta"]', piece: 'h-meta' },
     { key: 'l1', kind: 'head', target: '.h-l1' },
     { key: 'l2', kind: 'head', target: '.h-l2' },
-    { key: 'lead', kind: 'pop', target: '[data-cid="h-cap"]', piece: 'h-cap' },
     { key: 'cap', kind: 'pop', target: '[data-cid="h-note"]', piece: 'h-note' },
     { key: 'btn', kind: 'tumble', target: '[data-cid="h-pill"]', piece: 'h-pill' },
   ]

@@ -698,14 +698,7 @@
   letter-spacing: -0.012em;
   white-space: nowrap;
 }
-.hd-p {
-  display: block;
-  margin: 14px 0 0;
-  font-size: 18px;
-  line-height: 1.5;
-  color: var(--plain-2);
-}
-/* the default's caption + button: centred under the lead, above the image placeholder */
+/* the default's caption + button: centred under the headline, above the image placeholder */
 .hd-side {
   display: flex;
   flex-direction: column;
@@ -1217,11 +1210,6 @@
 .bstage[data-lay='narrow'] :is(.hd-l1, .hd-l2) {
   font-size: 21px;
   white-space: normal;
-}
-.bstage[data-lay='narrow'] .hd-p {
-  margin-top: 10px;
-  font-size: 13px;
-  padding: 0 6px;
 }
 .bstage[data-lay='narrow'] .hd-cap {
   font-size: 12px;
