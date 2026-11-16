@@ -549,20 +549,23 @@
   cursor: pointer;
 }
 .np-scissors {
+  /* sits on the dashed edge (centred on the line), never above the card */
   position: absolute;
-  top: -15px;
+  top: -12px;
   left: 18px;
   padding: 0 4px;
-  background: var(--np-paper);
-  font-size: 22px;
-  line-height: 1;
+  /* breaks the dashed line: paper above the edge, the coupon below it */
+  background: linear-gradient(var(--np-paper) 50%, var(--np-panel) 50%);
+  font-size: 20px;
+  line-height: 22px;
 }
 .np-coupon.is-clip .np-scissors {
   animation: np-snip 800ms cubic-bezier(0.4, 0, 0.3, 1);
 }
+/* cuts along the top edge to the far corner, whatever the coupon's width */
 @keyframes np-snip {
   100% {
-    translate: 440px 0;
+    left: calc(100% - 48px);
   }
 }
 .np-chead {
@@ -988,13 +991,12 @@
 .bstage[data-lay='narrow'] .np-cmail {
   font-size: 16px;
 }
-.bstage[data-lay='narrow'] .np-coupon.is-clip .np-scissors {
-  animation-name: np-snip-n;
-}
-@keyframes np-snip-n {
-  100% {
-    translate: 250px 0;
-  }
+.bstage[data-lay='narrow'] .np-scissors {
+  top: -10px;
+  left: 12px;
+  padding: 0 3px;
+  font-size: 16px;
+  line-height: 18px;
 }
 .bstage[data-lay='narrow'] .np-links {
   flex-direction: column;
