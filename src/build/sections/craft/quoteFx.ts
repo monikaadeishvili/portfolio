@@ -4,7 +4,9 @@
  *   · the "ignores" sticker ducks away from the cursor (try to catch it),
  *   · the last "people." sticker keeps its eyes on the visitor.
  * Runs only while the pointer is moving near the stickers; a tap makes
- * "ignores" hop aside once.
+ * "ignores" hop aside once. When "ignores" lands it gives a little shake (and
+ * once more a few seconds later if nobody has come near it), so the visitor
+ * notices there's something to catch.
  */
 const REACH = 150 // board px: how close the cursor gets before "ignores" moves
 // how far it ducks (board px): further than half its own size, so it always gets clear
@@ -32,6 +34,8 @@ export function mountQuote(root: HTMLElement) {
   let dirY = 0
   let key = ''
   let eyeKey = ''
+  /** the visitor has come within reach since "ignores" landed */
+  let met = false
 
   const step = (t: number) => {
     raf = 0
@@ -50,6 +54,7 @@ export function mountQuote(root: HTMLElement) {
       const dy = (py - (r.top + r.height / 2)) / k
       // an ellipse around the pill: wide stickers are approached from the sides
       const d = Math.hypot(dx * 0.72, dy)
+      if (d < REACH) met = true
       if (d < REACH || t < hop) {
         if (d > 6) {
           dirX = -dx / Math.hypot(dx, dy)
@@ -120,7 +125,38 @@ export function mountQuote(root: HTMLElement) {
   }
   window.addEventListener('pointermove', onMove, { passive: true })
   window.addEventListener('pointerdown', onDown, { passive: true })
+
+  /* a little "look at me" shake when it lands, and once more if ignored */
+  const reduced = () => !!root.closest('.is-static') || window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const timers: number[] = []
+  const nudge = () => {
+    if (met || reduced() || board.dataset.near !== '1') return
+    dodge.classList.remove('is-nudge')
+    void dodge.offsetWidth
+    dodge.classList.add('is-nudge')
+  }
+  const onEnd = (e: AnimationEvent) => {
+    if (e.animationName === 'hk-nudge') dodge.classList.remove('is-nudge')
+  }
+  dodge.addEventListener('animationend', onEnd)
+  let wasPlaced = home.dataset.st === 'placed'
+  const watch = new MutationObserver(() => {
+    const placed = home.dataset.st === 'placed'
+    if (placed && !wasPlaced) {
+      met = false
+      timers.forEach((id) => window.clearTimeout(id))
+      timers.length = 0
+      timers.push(window.setTimeout(nudge, 650), window.setTimeout(nudge, 5200))
+    }
+    wasPlaced = placed
+  })
+  watch.observe(home, { attributes: true, attributeFilter: ['data-st'] })
+
   return () => {
+    watch.disconnect()
+    timers.forEach((id) => window.clearTimeout(id))
+    dodge.removeEventListener('animationend', onEnd)
+    dodge.classList.remove('is-nudge')
     cancelAnimationFrame(raf)
     window.removeEventListener('pointermove', onMove)
     window.removeEventListener('pointerdown', onDown)

@@ -134,6 +134,45 @@
   background: var(--k-sand);
   color: var(--k-bg);
 }
+/* "ignores" shakes when it lands: there's something here to catch */
+.hk-st-4.is-nudge {
+  animation: hk-nudge 720ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+@keyframes hk-nudge {
+  0%,
+  100% {
+    rotate: var(--r);
+    translate: 0 0;
+    scale: 1;
+  }
+  12% {
+    rotate: calc(var(--r) - 9deg);
+    translate: -4px 0;
+    scale: 1.06;
+  }
+  28% {
+    rotate: calc(var(--r) + 8deg);
+    translate: 4px 0;
+  }
+  44% {
+    rotate: calc(var(--r) - 6deg);
+    translate: -3px 0;
+  }
+  60% {
+    rotate: calc(var(--r) + 4deg);
+    translate: 2px 0;
+    scale: 1.02;
+  }
+  76% {
+    rotate: calc(var(--r) - 2deg);
+    translate: -1px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hk-st-4.is-nudge {
+    animation: none;
+  }
+}
 /* the sticker that ducks sits a hair above its neighbours (z-index means nothing in the 3-D world) */
 .slot.hk-st-dodge {
   transform: translateZ(6px);
