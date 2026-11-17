@@ -1173,7 +1173,7 @@
   --h-r0: calc(var(--h-nav) + var(--h-fs) * 2.7 + 16px + var(--port-h) + var(--port-lift));
 }
 .bstage[data-lay='narrow'] .h-title {
-  top: calc(var(--h-nav) + 14px);
+  top: calc(var(--h-nav) + 24px);
 }
 .bstage[data-lay='narrow'] .h-ghost {
   /* behind her shoulders and chest, below the headline */
