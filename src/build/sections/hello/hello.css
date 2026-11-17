@@ -345,7 +345,7 @@
 .h-title {
   position: absolute;
   left: var(--h-px);
-  top: calc(var(--h-nav) + 22px);
+  top: calc(var(--h-nav) + 32px);
   z-index: 1;
   margin: 0;
   font-weight: 400;
