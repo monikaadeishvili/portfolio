@@ -1157,25 +1157,34 @@
   padding: 0;
 }
 .bstage[data-lay='narrow'] .bf-hello {
-  --h-px: 36px;
-  --h-fs: calc(var(--FW) * 0.134);
+  --h-px: 20px;
+  /* the headline fills the wider measure */
+  --h-fs: calc(var(--FW) * 0.142);
   --h-cap: 12px;
   --h-rad: 22px;
   --h-nav: 52px;
   --port-k: 1;
-  --port-w: calc(var(--FW) * 0.72);
+  --port-w: calc(var(--FW) * 0.84);
   --port-h: calc(var(--port-w) / 0.584444);
-  --h-r0: calc(var(--h-nav) + var(--h-fs) * 2.7 + 92px + var(--port-h));
+  /* phones: line 2 sits on clear board under her feet (orange on her orange
+     particles can't be read), so she stands that much higher */
+  --l2-pad: 32px;
+  --port-lift: calc(var(--h-fs) * 1.8 + var(--l2-pad) + 12px);
+  --h-r0: calc(var(--h-nav) + var(--h-fs) * 2.7 + 16px + var(--port-h) + var(--port-lift));
 }
 .bstage[data-lay='narrow'] .h-title {
   top: calc(var(--h-nav) + 14px);
 }
 .bstage[data-lay='narrow'] .h-ghost {
-  top: calc(var(--h-r0) - var(--port-h) - var(--FW) * 0.08);
+  /* behind her shoulders and chest, below the headline */
+  top: calc(var(--h-r0) - var(--port-lift) - var(--port-h) + var(--FW) * 0.14);
 }
 .bstage[data-lay='narrow'] .h-l2 {
   top: auto;
-  bottom: calc(var(--port-h) * 0.26);
+  bottom: var(--l2-pad);
+}
+.bstage[data-lay='narrow'] .h-port {
+  bottom: var(--port-lift);
 }
 .bstage[data-lay='narrow'] .h-sw {
   box-shadow:
@@ -1192,6 +1201,21 @@
 }
 .bstage[data-lay='narrow'] .h-try {
   font-size: 11px;
+  /* to the left of the switch, off the headline */
+  left: auto;
+  right: calc(100% + 12px);
+  bottom: auto;
+  top: 50%;
+  transform: translate(6px, -50%) scale(0.96);
+  transform-origin: 100% 50%;
+}
+.bstage[data-lay='narrow'] .h-sw-wrap[data-nag='1'] .h-try {
+  transform: translate(0, -50%);
+}
+.bstage[data-lay='narrow'] .h-try::after {
+  left: 100%;
+  top: 50%;
+  margin: -4.5px 0 0 -5px;
 }
 .bstage[data-lay='narrow'] .hd-nav {
   gap: 12px;
@@ -1221,6 +1245,7 @@
   font-size: 13px;
 }
 .bstage[data-lay='narrow'] .hd-img {
+  bottom: var(--port-lift);
   height: calc(var(--port-h) * 0.66);
   border-radius: 12px;
 }
