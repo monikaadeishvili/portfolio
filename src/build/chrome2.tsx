@@ -333,7 +333,7 @@ export function Inspector2() {
             {hello.taste ? (
               <>
                 <span className="type-face">Big Shoulders</span>
-                <span className="type-meta">Black · 94 / 90% · Uppercase</span>
+                <span className="type-meta">Black · 82 / 90% · Uppercase</span>
               </>
             ) : (
               <>
