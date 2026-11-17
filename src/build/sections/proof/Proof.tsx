@@ -1,6 +1,6 @@
 /**
  * 03 PROOF — the work. The headline, then the running total (Region 1, ./Tally:
- * all 32 client products add up and fold into one designer), then one long
+ * six cards about her, and 32 client names the counter adds up), then one long
  * sideways strip of her projects (Region 2 pans: the camera holds flat and
  * ./workFx.ts slides the track with the scroll). Each project is a text column
  * (name, what it is, year / role / platforms, a link) followed by its screens in
@@ -83,7 +83,7 @@ export function Proof({ lay, live }: SectionProps) {
           <Reveal id="p-title" as="h2" hid="h-proof" segs={CHAPTERS[2].headline} className="rv-title pw-title" />
         </Region>
 
-        <Region index={1} label="Running total" className="pt-r" weight={6} pan>
+        <Region index={1} label="Running total" className="pt-r" weight={3} pan>
           <Tally />
         </Region>
 

@@ -1,18 +1,16 @@
 /* ================================ 03 Proof, part one — the running total (pt-)
-   Grid paper with client cards and chips, counters adding up, then the fold into
-   one orbit and one designer (./tallyFx.ts toggles the states). */
+   Grid paper with six cards about her, the counters beside them adding up the
+   32 client names in the band beneath (./tallyFx.ts toggles the states). */
 .pt-r {
   margin-top: 120px;
 }
 .pt-stage {
   --cell: 144px;
   --cols: 7;
-  --rows: 4;
+  --rows: 3;
   --line: rgb(20 20 19 / 0.12);
   --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --out: cubic-bezier(0.2, 0.8, 0.2, 1);
-  /* in the still page the fold sits under the tally instead of over it */
-  --fold-y: 34px;
   position: relative;
   transform: translateZ(2px);
   color: var(--pw-ink);
@@ -24,48 +22,34 @@
   margin: 0 auto;
 }
 
-/* grid paper: the lines draw themselves in */
+/* grid paper, still: columns over the cards and counters, the names in a band beneath */
 .pt-grid i {
   position: absolute;
   background: var(--line);
-  transition: transform 520ms var(--out) calc(var(--i) * 30ms);
 }
 .pt-v {
   top: 0;
-  bottom: 0;
   left: calc(var(--i) * var(--cell));
   width: 1px;
-  transform: scaleY(0);
-  transform-origin: top;
+  height: calc(2 * var(--cell));
 }
 .pt-h {
   left: 0;
   right: 0;
   top: calc(var(--i) * var(--cell));
   height: 1px;
-  transform: scaleX(0);
-  transform-origin: left;
-}
-.pt-stage.is-grid .pt-grid i {
-  transform: none;
 }
 
-/* twelve stickers scattered over the grid: six client products and six facts
-   about her, each in its own colour with an ink edge and a hard shadow */
-.pt-fly {
-  display: block;
-}
-/* the stickers and chips are alive pieces: their hops and leaps need depth, so
-   the tally keeps the camera's 3-D context down to each piece */
+/* the six cards: each in its own colour with an ink edge and a hard shadow.
+   They are alive pieces: their arrival needs depth, so the tally keeps the
+   camera's 3-D context down to each piece */
 .bf-body .pt-stage,
 .bf-body .pt-board,
-.bf-body .pt-cardslot,
-.bf-body .pt-chips,
-.bf-body .pt-chipslot {
+.bf-body .pt-cardslot {
   transform-style: preserve-3d;
 }
 .pt-cardslot {
-  /* its cell: scattered on wide boards (--cw/--rw), packed on narrow ones */
+  /* its cell: --cw/--rw on wide boards, packed 3 across (--cn/--rn) on narrow ones */
   --c: var(--cw);
   --r: var(--rw);
   position: absolute;
@@ -73,6 +57,10 @@
   height: calc(var(--cell) - 12px);
   left: calc(var(--c) * var(--cell) + 6px);
   top: calc(var(--r) * var(--cell) + 5px);
+}
+/* the grid cell already shows where a card goes: no dashed placeholder on top */
+.pt-cardslot .slot-ph {
+  display: none;
 }
 .pt-card {
   position: relative;
@@ -86,21 +74,14 @@
   color: var(--fg);
   box-shadow: 0 4px 0 #141413;
   transform: rotate(var(--rest));
-  transition:
-    transform 260ms var(--spring),
-    box-shadow 220ms var(--out);
-}
-/* while it waits or walks it leans its own way; it straightens as it lands */
-.slot:not([data-st='placed']) > .alive .pt-card {
-  transform: rotate(var(--pkr));
+  transition: transform 220ms var(--out);
 }
 @media (hover: hover) and (pointer: fine) {
   .pt-cardslot:has(.slot[data-st='placed']):hover {
     z-index: 2;
   }
   .pt-cardslot:has(.slot[data-st='placed']):hover .pt-card {
-    transform: translateY(-5px) rotate(calc(var(--rest) * -1.5)) scale(1.07);
-    box-shadow: 0 9px 0 #141413;
+    transform: translateY(-3px) rotate(var(--rest));
   }
 }
 .pt-top {
@@ -112,137 +93,12 @@
   margin-bottom: auto;
 }
 
-/* a client product's mascot: a small shape with eyes that hops in and bobs */
-.pt-mk {
-  position: relative;
-  display: block;
-  flex: none;
-  width: 34px;
-  height: 34px;
-  background: var(--mk);
-}
-.pt-card :is(.pt-mk, .pt-sun) {
-  animation: pt-bob 3.2s ease-in-out calc(var(--i) * -0.55s) infinite;
-}
-.slot[data-st='placed'] .pt-card :is(.pt-mk, .pt-sun) {
-  animation:
-    pt-hop 560ms var(--spring) 120ms both,
-    pt-bob 3.2s ease-in-out calc(var(--i) * -0.55s) infinite;
-}
-@keyframes pt-hop {
-  0% {
-    scale: 0.3;
-  }
-  60% {
-    scale: 1.18;
-  }
-}
-@keyframes pt-bob {
-  50% {
-    translate: 0 -2.5px;
-  }
-}
-.pt-mk-ball {
-  border-radius: 50%;
-}
-.pt-mk-safe {
-  border-radius: 8px;
-}
-.pt-mk-bubble {
-  border-radius: 15px 15px 15px 3px;
-}
-.pt-mk-cross {
-  clip-path: polygon(31% 0, 69% 0, 69% 31%, 100% 31%, 100% 69%, 69% 69%, 69% 100%, 31% 100%, 31% 69%, 0 69%, 0 31%, 31% 31%);
-}
-.pt-mk-house {
-  clip-path: polygon(50% 0, 100% 40%, 100% 100%, 0 100%, 0 40%);
-}
-.pt-mk-house .pt-eyes {
-  top: 8px;
-}
-.pt-mk-coin {
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 3px rgb(20 20 19 / 0.22);
-}
-.pt-eyes {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-.pt-eyes i {
-  position: relative;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #fff;
-  animation: pt-blink 4.6s ease-in-out calc(var(--i, 0) * -0.9s) infinite;
-}
-.pt-eyes i::after {
-  content: '';
-  position: absolute;
-  left: 2.5px;
-  top: 2.5px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #141413;
-  animation: pt-look-s 5s ease-in-out calc(var(--i, 0) * -0.7s) infinite;
-  transition: translate 300ms var(--out);
-}
-/* once the count is full, every sticker glances over at it */
-.pt-stage.is-full .pt-cardslot .pt-eyes i::after {
-  animation: none;
-  translate: 2px -1px;
-}
-@keyframes pt-look-s {
-  0%,
-  40%,
-  100% {
-    transform: none;
-  }
-  50%,
-  65% {
-    transform: translate(-1.5px, -0.5px);
-  }
-  75%,
-  90% {
-    transform: translate(1.5px, 0.5px);
-  }
-}
-@keyframes pt-blink {
-  0%,
-  92%,
-  100% {
-    transform: none;
-  }
-  96% {
-    transform: scaleY(0.1);
-  }
-}
-.pt-tag {
-  padding: 2px 6px;
-  border: 1px solid currentColor;
-  border-radius: 99px;
-  font-family: var(--f-mono);
-  font-size: 8.5px;
-  line-height: 1.3;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
 .pt-cname {
   font-family: var(--f-ui);
   font-size: 15.5px;
   font-weight: 750;
   line-height: 1.08;
   letter-spacing: -0.025em;
-}
-.pt-cname.is-long {
-  font-size: 13.5px;
-  letter-spacing: -0.035em;
 }
 .pt-cline {
   margin-top: 3px;
@@ -251,38 +107,8 @@
   line-height: 1.25;
   opacity: 0.8;
 }
-.pt-plus {
-  position: absolute;
-  top: -8px;
-  right: 6px;
-  padding: 1px 6px;
-  border-radius: 99px;
-  background: #141413;
-  font-family: var(--f-mono);
-  font-size: 11px;
-  font-weight: 600;
-  color: #fff;
-  opacity: 0;
-}
-.slot[data-st='placed'] .pt-plus {
-  animation: pt-plus 700ms var(--out) 160ms both;
-}
-@keyframes pt-plus {
-  0% {
-    opacity: 0;
-    transform: translateY(6px) scale(0.6);
-  }
-  30% {
-    opacity: 1;
-    transform: translateY(-6px) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-26px) scale(1);
-  }
-}
 
-/* the cards about her: a big word or number, and a small doodle */
+/* a card about her: a big word or number and a small still doodle */
 .pt-big {
   font-family: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
   font-size: 46px;
@@ -296,7 +122,7 @@
 .pt-dd {
   flex: none;
 }
-/* four dots that take turns jumping */
+/* Google's four dots */
 .pt-dd-g {
   display: flex;
   gap: 3px;
@@ -307,35 +133,15 @@
   height: 7px;
   border-radius: 50%;
   background: #4285f4;
-  animation: pt-jump 1.6s ease-in-out infinite;
 }
 .pt-dd-g i:nth-child(2) {
   background: #ea4335;
-  animation-delay: 0.12s;
 }
 .pt-dd-g i:nth-child(3) {
   background: #fbbc04;
-  animation-delay: 0.24s;
 }
 .pt-dd-g i:nth-child(4) {
   background: #34a853;
-  animation-delay: 0.36s;
-}
-@keyframes pt-jump {
-  0%,
-  40%,
-  100% {
-    transform: none;
-  }
-  20% {
-    transform: translateY(-5px);
-  }
-}
-.pt-dd-spark {
-  font-size: 18px;
-  line-height: 1;
-  color: var(--mk);
-  animation: pt-spin 7s linear infinite;
 }
 .pt-dd-pill,
 .pt-dd-wave {
@@ -352,36 +158,6 @@
 .pt-dd-wave {
   border-radius: 9px 9px 9px 2px;
   font-family: var(--f-ui);
-  animation: pt-wave 2.4s ease-in-out infinite;
-  transform-origin: 0 100%;
-}
-@keyframes pt-wave {
-  0%,
-  60%,
-  100% {
-    transform: none;
-  }
-  70%,
-  90% {
-    transform: rotate(-10deg);
-  }
-  80% {
-    transform: rotate(6deg);
-  }
-}
-/* PRO: the pill gleams now and then */
-.pt-dd-pro {
-  background: linear-gradient(100deg, var(--mk) 40%, #5b4bff 50%, var(--mk) 60%) 100% 0 / 300% 100%;
-  animation: pt-gleam 3.4s ease-in-out infinite;
-}
-@keyframes pt-gleam {
-  0%,
-  55% {
-    background-position: 100% 0;
-  }
-  100% {
-    background-position: 0 0;
-  }
 }
 /* three little app tiles, fanned */
 .pt-tools {
@@ -403,7 +179,6 @@
   font-weight: 750;
   color: #fff;
   rotate: -8deg;
-  transition: rotate 300ms var(--spring);
 }
 .pt-tools i:first-child {
   margin-left: 0;
@@ -419,13 +194,7 @@
   color: #141413;
   rotate: 8deg;
 }
-.pt-card:hover .pt-tools i:first-child {
-  rotate: -16deg;
-}
-.pt-card:hover .pt-tools i:nth-child(3) {
-  rotate: 16deg;
-}
-/* Alicante: a sun with eyes, its rays turning */
+/* Alicante: a sun with a ring of rays and two still eyes */
 .pt-sun {
   position: relative;
   display: block;
@@ -441,38 +210,67 @@
   inset: -7px;
   border: 3px dashed var(--mk);
   border-radius: 50%;
-  animation: pt-spin 14s linear infinite;
 }
-.pt-sun .pt-eyes i {
+.pt-eyes {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.pt-eyes i {
+  position: relative;
   width: 7px;
   height: 7px;
+  border-radius: 50%;
+  background: #fff;
 }
-.pt-sun .pt-eyes i::after {
+.pt-eyes i::after {
+  content: '';
+  position: absolute;
   left: 2px;
   top: 2px;
-}
-/* nothing idles while the section is off screen */
-.bf:not([data-near='1']) .pt-stage *,
-.bf:not([data-near='1']) .pt-stage *::before,
-.bf:not([data-near='1']) .pt-stage *::after {
-  animation-play-state: paused !important;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #141413;
 }
 
-/* the other 26 products, as a column of chips */
+/* the 32 client products: one wrapped strip of names in the bottom band */
 .pt-chips {
   position: absolute;
-  left: calc(4 * var(--cell) + 8px);
-  top: 12px;
-  width: calc(1.5 * var(--cell) - 14px);
-  height: calc(var(--rows) * var(--cell) - 24px);
+  left: 0;
+  right: 0;
+  top: calc(2 * var(--cell));
+  height: var(--cell);
   display: flex;
   flex-wrap: wrap;
-  align-content: space-between;
-  justify-content: center;
-  gap: 6px 5px;
+  align-content: center;
+  align-items: center;
+  gap: 7px 6px;
+  padding: 0 6px;
 }
-.pt-chipslot {
-  display: inline-block;
+.pt-more,
+.pt-chip {
+  opacity: 0;
+  translate: 0 4px;
+  transition:
+    opacity 180ms ease,
+    translate 180ms var(--out);
+}
+.pt-more.is-on,
+.pt-chip.is-on {
+  opacity: 1;
+  translate: none;
+}
+.pt-more {
+  margin-right: 4px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pw-mute);
 }
 .pt-chip {
   display: inline-block;
@@ -484,23 +282,22 @@
   font-size: 10.5px;
   line-height: 1.3;
   white-space: nowrap;
-  transform: rotate(calc((var(--k) - 3) * 1deg));
 }
 
-/* the counters */
+/* the counters, beside the cards */
 .pt-counts {
   position: absolute;
-  left: calc(5.5 * var(--cell));
+  left: calc(3.5 * var(--cell));
   top: 0;
-  width: calc(1.5 * var(--cell));
-  height: 100%;
+  width: calc(3.5 * var(--cell));
+  height: calc(2 * var(--cell));
   opacity: 0;
   translate: 0 14px;
   transition:
     opacity 380ms ease 300ms,
     translate 420ms cubic-bezier(0.2, 0.8, 0.2, 1) 300ms;
 }
-/* the counters rise in place once the grid has drawn, and wait at zero */
+/* the counters rise in place and wait at zero */
 .pt-stage.is-count .pt-counts {
   opacity: 1;
   translate: 0 0;
@@ -512,12 +309,12 @@
   gap: 10px;
 }
 .pt-c0 {
-  left: 14px;
-  top: calc(var(--cell) * 1.3);
+  left: 30px;
+  top: 34px;
 }
 .pt-c1 {
-  left: 14px;
-  top: calc(var(--cell) * 2.18);
+  left: 30px;
+  top: 140px;
 }
 .pt-roll {
   display: inline-flex;
@@ -555,6 +352,7 @@
   text-transform: uppercase;
   color: var(--pw-mute);
 }
+/* the payoff: the full count turns blue with one small pop */
 .pt-stage.is-full .pt-c0 .pt-roll {
   color: #0a7fd1;
   animation: pt-pop 360ms var(--spring);
@@ -566,296 +364,38 @@
 }
 .pt-typed {
   position: absolute;
-  left: 14px;
+  left: 30px;
   right: 6px;
-  top: calc(var(--cell) * 3.12);
+  top: 222px;
   font-family: var(--f-serif);
   font-style: italic;
   font-size: 21px;
   white-space: nowrap;
   line-height: 1.15;
-}
-.pt-typed span {
-  display: inline-block;
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path 760ms steps(25) 0ms;
-}
-.pt-stage.is-full .pt-typed span {
-  clip-path: inset(0 0 0 0);
-  transition-delay: 380ms;
-}
-.pt-pin-dot {
-  position: absolute;
-  left: calc((var(--x) + 0.5) * var(--cell) - 3px);
-  top: calc((2 + var(--y)) * var(--cell) - 3px);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--pw-ink);
-}
-
-/* the fold: an orbit of skills around your product */
-.pt-orbit {
-  --R: 120px;
-  position: absolute;
-  /* above the line that drops to the designer card: it starts under the tags */
-  z-index: 2;
-  left: calc(50% - var(--R));
-  top: calc(var(--fold-y) + 45px);
-  width: calc(var(--R) * 2);
-  height: calc(var(--R) * 2);
   opacity: 0;
-  pointer-events: none;
+  transition: opacity 300ms ease;
 }
-.pt-ring {
-  position: absolute;
-  inset: 0;
-  animation: pt-spin 48s linear infinite;
-}
-.pt-ring::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 1.5px dashed rgb(20 20 19 / 0.35);
-  border-radius: 50%;
-}
-@keyframes pt-spin {
-  to {
-    rotate: 360deg;
-  }
-}
-@keyframes pt-unspin {
-  to {
-    rotate: -360deg;
-  }
-}
-.pt-lab {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: rotate(var(--a)) translateX(var(--R)) rotate(calc(-1 * var(--a)));
-}
-.pt-lab span {
-  display: block;
-  translate: -50% -50%;
-  padding: 4px 10px;
-  border: 1px solid rgb(20 20 19 / 0.18);
-  border-radius: 99px;
-  background: var(--pw-paper);
-  font-family: var(--f-mono);
-  font-size: 11px;
-  white-space: nowrap;
-  scale: 0;
-  animation: pt-unspin 48s linear infinite;
-  transition: scale 260ms var(--spring);
-}
-.pt-lab.is-on span {
-  scale: 1;
-}
-.pt-blob {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 66px;
-  height: 66px;
-  margin: -33px 0 0 -33px;
-  border-radius: 46% 54% 50% 50% / 52% 48% 52% 48%;
-  background: #0a7fd1;
-  box-shadow: 0 14px 30px -12px rgb(10 127 209 / 0.6);
-  scale: 0;
-  transition: scale 420ms var(--spring);
-}
-.pt-stage.is-blob .pt-blob {
-  scale: 1;
-}
-/* in motion the real bubble hops in the middle, so the stand-in stays hidden */
-.bstage:not(.is-static) .pt-blob {
-  visibility: hidden;
-}
-.pt-blob-eyes {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  margin-top: -6px;
-}
-.pt-blob-eyes i {
-  position: relative;
-  width: 17px;
-  height: 17px;
-  border-radius: 50%;
-  background: #fff;
-}
-.pt-blob-eyes i::after {
-  content: '';
-  position: absolute;
-  left: 5px;
-  top: 5px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #141413;
-  animation: pt-look 5s ease-in-out infinite;
-  transition: translate 320ms var(--out);
-}
-@keyframes pt-look {
-  0%,
-  40%,
-  100% {
-    transform: translate(0, 0);
-  }
-  50%,
-  65% {
-    transform: translate(-3px, -1px);
-  }
-  75%,
-  90% {
-    transform: translate(3px, 0);
-  }
-}
-/* when the designer card drops, the blob looks down at it */
-.pt-stage.is-me .pt-blob-eyes i::after {
-  animation: none;
-  translate: 0 3px;
-}
-.pt-prod {
-  position: absolute;
-  left: 50%;
-  top: calc(50% + 44px);
-  translate: -50% 0;
-  padding: 5px 12px;
-  border-radius: 99px;
-  background: var(--pw-ink);
-  font-family: var(--f-ui);
-  font-size: 12px;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 300ms ease 120ms;
-}
-.pt-stage.is-blob .pt-prod {
+.pt-stage.is-full .pt-typed {
   opacity: 1;
+  transition-delay: 300ms;
 }
 
-/* one designer, all of the above */
-.pt-me {
-  position: absolute;
-  left: calc(50% - 134px);
-  top: calc(var(--fold-y) + 346px);
-  width: 268px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 2px 10px;
-  padding: 14px 16px;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 18px 36px -18px rgb(20 20 19 / 0.45);
-  opacity: 0;
-  transform: translateY(30px);
-  transition:
-    opacity 300ms ease 220ms,
-    transform 520ms var(--spring) 220ms;
-}
-.pt-stage.is-me .pt-me {
-  opacity: 1;
-  transform: none;
-}
-.pt-medot {
-  --dot: #0a7fd1;
-  position: relative;
-  display: block;
-  border-radius: 50%;
-  background: var(--dot);
-  grid-row: span 2;
-  width: 26px;
-  height: 26px;
-  margin: 0;
-}
-.pt-medot .pt-eyes i,
-.pt-medot .pt-eyes i::after {
-  animation: none;
-}
-.pt-mename {
-  white-space: nowrap;
-  font-family: var(--f-ui);
-  font-size: 14px;
-  font-weight: 650;
-}
-.pt-meline {
-  grid-column: 2;
-  font-family: var(--f-ui);
-  font-size: 11.5px;
-  color: var(--pw-mute);
-}
-.pt-mebig {
-  grid-column: 3;
-  grid-row: 1 / span 2;
-  font-family: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
-  font-size: 40px;
-  line-height: 1;
-}
-.pt-mebig small {
-  font-family: var(--f-ui);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--pw-mute);
-}
-.pt-flank {
-  position: absolute;
-  top: calc(var(--fold-y) + 380px);
-  width: 330px;
-  font-family: var(--f-ui);
-  font-size: 25px;
-  font-weight: 600;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-  opacity: 0;
-  transition:
-    opacity 400ms ease,
-    transform 520ms var(--out);
-}
-.pt-fl {
-  right: calc(50% + 162px);
-  text-align: right;
-  transform: translateX(-40px);
-  transition-delay: 420ms;
-}
-.pt-fr {
-  left: calc(50% + 162px);
-  transform: translateX(40px);
-  transition-delay: 500ms;
-}
-.pt-stage.is-me .pt-flank {
-  opacity: 1;
-  transform: none;
-}
-
-
-.bstage:not([data-lay='narrow']) .pt-h:last-child {
-  display: none;
-}
-
-/* -- narrow: the stickers packed 3 across, counters and chips beneath, a
-   smaller fold */
+/* -- narrow: the cards 3 across, the counters in the row beneath, then the names */
 .bstage[data-lay='narrow'] .pt-r {
   margin-top: 70px;
 }
 .bstage[data-lay='narrow'] .pt-stage {
   --cell: 108px;
   --cols: 3;
-  --rows: 6.75;
+  --rows: 5.2;
 }
-.bstage[data-lay='narrow'] .pt-v:nth-child(n + 5):not(.pt-h) {
+.bstage[data-lay='narrow'] .pt-v:nth-child(n + 5) {
   display: none;
 }
 .bstage[data-lay='narrow'] .pt-v {
-  bottom: auto;
-  height: calc(5 * var(--cell));
+  height: calc(3 * var(--cell));
 }
+
 .bstage[data-lay='narrow'] .pt-cardslot {
   --c: var(--cn);
   --r: var(--rn);
@@ -872,33 +412,8 @@
 .bstage[data-lay='narrow'] .pt-top {
   min-height: 30px;
 }
-.bstage[data-lay='narrow'] .pt-mk {
-  width: 26px;
-  height: 26px;
-}
-.bstage[data-lay='narrow'] .pt-eyes i {
-  width: 8px;
-  height: 8px;
-}
-.bstage[data-lay='narrow'] .pt-eyes i::after {
-  left: 2px;
-  top: 2px;
-  width: 4px;
-  height: 4px;
-}
-.bstage[data-lay='narrow'] .pt-sun {
-  width: 24px;
-  height: 24px;
-}
-.bstage[data-lay='narrow'] .pt-tag {
-  padding: 1px 5px;
-  font-size: 7px;
-}
 .bstage[data-lay='narrow'] .pt-cname {
   font-size: 12px;
-}
-.bstage[data-lay='narrow'] .pt-cname.is-long {
-  font-size: 10.5px;
 }
 .bstage[data-lay='narrow'] .pt-cline {
   margin-top: 2px;
@@ -916,11 +431,14 @@
   height: 25px;
   font-size: 10px;
 }
-/* the counters sit in the last row, in the two cells beside the 13th sticker */
+.bstage[data-lay='narrow'] .pt-sun {
+  width: 24px;
+  height: 24px;
+}
 .bstage[data-lay='narrow'] .pt-counts {
-  left: var(--cell);
-  top: calc(4 * var(--cell));
-  width: calc(2 * var(--cell));
+  left: 0;
+  top: calc(2 * var(--cell));
+  width: 100%;
   height: var(--cell);
 }
 .bstage[data-lay='narrow'] .pt-count {
@@ -945,100 +463,39 @@
   font-size: 9.5px;
 }
 .bstage[data-lay='narrow'] .pt-typed {
-  left: 12px;
-  top: 76px;
-  font-size: 17px;
-}
-.bstage[data-lay='narrow'] .pt-pin-dot {
-  display: none;
+  left: calc(2 * var(--cell) + 8px);
+  right: 4px;
+  top: 16px;
+  font-size: 16px;
+  white-space: normal;
 }
 .bstage[data-lay='narrow'] .pt-chips {
-  left: 0;
-  top: calc(5 * var(--cell) + 14px);
-  width: 100%;
+  top: calc(3 * var(--cell) + 12px);
   height: auto;
   align-content: flex-start;
   gap: 5px 4px;
+  padding: 0;
+}
+.bstage[data-lay='narrow'] .pt-more {
+  flex-basis: 100%;
+  margin: 0 0 2px;
+  font-size: 9.5px;
 }
 .bstage[data-lay='narrow'] .pt-chip {
   padding: 3px 7px;
   font-size: 9px;
 }
-.bstage[data-lay='narrow'] .pt-orbit {
-  --R: 88px;
-  top: calc(var(--fold-y) + 64px);
-}
-.bstage[data-lay='narrow'] .pt-lab span {
-  padding: 3px 7px;
-  font-size: 9.5px;
-}
-.bstage[data-lay='narrow'] .pt-blob {
-  width: 52px;
-  height: 52px;
-  margin: -26px 0 0 -26px;
-}
-.bstage[data-lay='narrow'] .pt-blob-eyes i {
-  width: 14px;
-  height: 14px;
-}
-.bstage[data-lay='narrow'] .pt-blob-eyes i::after {
-  left: 4px;
-  top: 4px;
-  width: 6px;
-  height: 6px;
-}
-.bstage[data-lay='narrow'] .pt-prod {
-  top: calc(50% + 42px);
-  font-size: 10.5px;
-}
-.bstage[data-lay='narrow'] .pt-me {
-  top: calc(var(--fold-y) + 290px);
-}
-.bstage[data-lay='narrow'] .pt-flank {
-  left: 0;
-  right: 0;
-  width: auto;
-  font-size: 19px;
-  text-align: center;
-}
-.bstage[data-lay='narrow'] .pt-fl {
-  top: calc(var(--fold-y) + 394px);
-}
-.bstage[data-lay='narrow'] .pt-fr {
-  top: calc(var(--fold-y) + 418px);
-}
 
-/* -- reduced motion / static: everything landed, the fold beneath the tally
-   (the driver doesn't run on the still page, so this is CSS alone) */
-.bstage.is-static .pt-grid i {
-  transform: none;
-}
-.bstage.is-static :is(.pt-counts, .pt-me, .pt-flank) {
+/* -- reduced motion / static: everything in, the counts final
+   (the driver may not run on the still page, so this is CSS alone) */
+.bstage.is-static :is(.pt-counts, .pt-typed, .pt-more, .pt-chip) {
   opacity: 1;
   transform: none;
   translate: none;
-  scale: none;
 }
-.bstage.is-static .pt-prod {
-  opacity: 1;
-}
-
 .bstage.is-static .pt-card {
   opacity: 1;
   transform: rotate(var(--rest));
-}
-.bstage.is-static .pt-chip {
-  opacity: 1;
-  transform: rotate(calc((var(--k) - 3) * 1deg));
-}
-.bstage.is-static .pt-typed span {
-  clip-path: none;
-}
-.bstage.is-static :is(.pt-lab span, .pt-blob) {
-  scale: 1;
-}
-.bstage.is-static .pt-plus {
-  display: none;
 }
 /* the final count, 32 products and 10 industries, set in the digit columns */
 .bstage.is-static .pt-c0 .pt-col:nth-child(1) .pt-strip {
@@ -1059,30 +516,9 @@
 .bstage.is-static .pt-c0 .pt-roll {
   color: #0a7fd1;
 }
-.bstage.is-static .pt-v {
-  bottom: auto;
-  height: calc(var(--rows) * var(--cell));
-}
-.bstage.is-static .pt-stage {
-  --fold-y: calc(var(--rows) * var(--cell) + 30px);
-}
-.bstage.is-static .pt-board {
-  height: calc(var(--rows) * var(--cell) + 520px);
-}
-.bstage.is-static .pt-orbit {
-  opacity: 1;
-}
-.bstage.is-static .pt-ring,
-.bstage.is-static .pt-lab span,
-.bstage.is-static .pt-blob-eyes i::after {
-  animation: none;
-}
 .bstage.is-static .pt-stage *,
 .bstage.is-static .pt-stage *::before,
 .bstage.is-static .pt-stage *::after {
   transition: none !important;
   animation: none !important;
-}
-.bstage[data-lay='narrow'].is-static .pt-board {
-  height: calc(var(--rows) * var(--cell) + 440px);
 }
