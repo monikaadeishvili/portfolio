@@ -339,14 +339,17 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
     }
     const lastR = rs[rs.length - 1]
     // hold: the last region, with the artboard's bottom edge resting low in
-    // the frame (contact leaves room for the crowd along the bottom edge)
-    const extra = i === LAST ? (narrow ? 90 : 170) : 0
+    // the frame (contact leaves a little air above the dock)
+    const extra = i === LAST ? (narrow ? 40 : 60) : 0
     const holdS = big ? fit0(lastR.h + 90) : sHold(lastR.h + extra)
     const visH = view.h / holdS
     const bottomAnchor = b.y + b.h + extra - visH * 0.5 + (narrow ? 20 : 40)
     // Say Hello rests a little lower, so the whole paper (masthead included) shows
-    // above the crowd instead of hugging the top edge
-    const holdY = Math.min(bottomAnchor, b.y + lastR.y + visH * 0.5 - 30) - (i === LAST ? (narrow ? 60 : 70) : 0)
+    // instead of hugging the top edge
+    let holdY = Math.min(bottomAnchor, b.y + lastR.y + visH * 0.5 - 30) - (i === LAST ? (narrow ? 60 : 70) : 0)
+    // Say Hello, when the whole paper fits: centred between the file bar and the
+    // dock, so any spare room splits evenly instead of pooling on one side
+    if (i === LAST && b.h + 40 <= visH) holdY = b.y + b.h / 2
     K.push({ u: PH.descEnd + 0.035, c: { x: cxw, y: holdY, s: holdS, rx: 0, rz: 0 } })
     K.push({ u: 1, c: { x: cxw, y: holdY, s: holdS, rx: 0, rz: 0 } })
     keys.push(K)

@@ -8,7 +8,7 @@
  * reader answers with the button or by clipping the coupon. ./posterFx.ts
  * prints the page as you scroll and runs the interactions.
  */
-import { useLayoutEffect, useMemo, useRef, type CSSProperties, type ReactNode } from 'react'
+import { useLayoutEffect, useMemo, useRef, type CSSProperties } from 'react'
 import '@fontsource/unifrakturcook/700.css'
 import '@fontsource/playfair-display/900.css'
 import '@fontsource/playfair-display/900-italic.css'
@@ -20,28 +20,8 @@ import { CHAPTERS, EMAIL, FOOTER, LINKS, PAPER } from '../../../content/story'
 import { Badge, Button, LinkButton, TONE_HEX as T } from '../../../ui/components'
 import { Piece, Region, Reveal } from '../../parts'
 import { Artboard, type SectionProps } from '../Artboard'
-import { Sticker } from '../hello/Sticker'
 import { mountPoster } from './posterFx'
 import './contact.css'
-
-/** decorative crowd member: a tiny version of a hero, with eyes and legs */
-function Member({ k, children, look = 1 }: { k: number; children: ReactNode; look?: number }) {
-  return (
-    <span className="cw" style={{ '--k': k, '--look': look } as CSSProperties}>
-      <span className="cw-body">
-        {children}
-        <span className="cw-eyes">
-          <i />
-          <i />
-        </span>
-      </span>
-      <span className="cw-legs">
-        <i />
-        <i />
-      </span>
-    </span>
-  )
-}
 
 const EM = "won't ignore."
 /** a seeded tilt per letter, so the drop never looks mechanical */
@@ -76,7 +56,8 @@ export function Contact({ lay, live }: SectionProps) {
     const root = rootRef.current
     if (!root) return
     // the interactions work on the still page too; the printing only when live
-    return mountPoster(root, narrow, live)
+    // (remounted when the layout changes, so it re-reads the page)
+    return mountPoster(root, live)
   }, [live, narrow])
 
   // today's date, like a real dateline
@@ -235,41 +216,6 @@ export function Contact({ lay, live }: SectionProps) {
           </footer>
         </Region>
       </div>
-      {live && (
-        <div className="crowd">
-          <Member k={0} look={1}>
-            <Sticker ring="OPEN TO NEW WORK" tone="mint" glyph="arrow" size={120} />
-          </Member>
-          <Member k={1} look={1}>
-            <span className="cw-hi">
-              <b>Hi!</b>
-              <span lang="ka">გამარჯობა</span>
-            </span>
-          </Member>
-          {!narrow && (
-            <Member k={2} look={1}>
-              <span className="cw-switch">
-                <i />
-              </span>
-            </Member>
-          )}
-          {!narrow && (
-            <Member k={3} look={-1}>
-              <span className="cw-stat">8+</span>
-            </Member>
-          )}
-          <Member k={4} look={-1}>
-            <span className="cw-ai">
-              AI<i>PRO</i>
-            </span>
-          </Member>
-          {!narrow && (
-            <Member k={5} look={-1}>
-              <Sticker ring="BASED IN ALICANTE" tone="yellow" glyph="sun" size={110} />
-            </Member>
-          )}
-        </div>
-      )}
     </Artboard>
   )
 }

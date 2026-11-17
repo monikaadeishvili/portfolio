@@ -17,7 +17,7 @@
 import { EMAIL, PAPER } from '../../../content/story'
 import { clamp01, outBack, range, registerFx, smooth } from '../../runtime'
 
-export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
+export function mountPoster(root: HTMLElement, live = true) {
   const board = root.closest<HTMLElement>('.bf')
   const q1 = <E extends HTMLElement = HTMLElement>(s: string) => root.querySelector<E>(s)
   const em = q1('.k-em')
@@ -38,7 +38,6 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
   const cta = q1('.k-cta-btn')
   const chips = Array.from(root.querySelectorAll<HTMLElement>('.k-confetti i'))
   const mail = q1<HTMLButtonElement>('.np-coupon')
-  const crowd = Array.from(board.querySelectorAll<HTMLElement>('.cw'))
 
   // the still page (reduced motion) never runs the scroll driver: know it up front
   let reduced = !live || !!root.closest('.is-static') || window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -167,32 +166,13 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
     else window.location.href = `mailto:${EMAIL}`
   })
 
-  /* ------------------------------------------------- poke the crowd */
-  crowd.forEach((el, i) => {
-    const body = el.querySelector<HTMLElement>('.cw-body')
-    on(body, 'pointerdown', () => {
-      if (reduced) return
-      if (body) {
-        body.style.animationDelay = ''
-        replay(body, 'is-jump')
-      }
-      crowd.forEach((o, j) => {
-        if (j === i || Math.abs(j - i) > 2) return
-        const b = o.querySelector<HTMLElement>('.cw-body')
-        if (!b) return
-        b.style.animationDelay = `${Math.abs(j - i) * 70}ms`
-        replay(b, 'is-jump-s')
-      })
-    })
-  })
-
   /* ----------------------------------------------- printing on scroll */
   let lastMove = 0
   /** when the headline landed (the pen and the stamp follow on a clock) */
   let landedAt = -1
   let lastIdle = -1e9
   let idles = 0
-  const cache = { rule: '', vr: '', roll: '', st: '', crowd: '' }
+  const cache = { rule: '', vr: '', roll: '', st: '' }
   const offFx = !live
     ? () => {}
     : registerFx({
@@ -277,24 +257,6 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
             if (st[2] === '1' && was && was[2] !== '1' && !e.reduced) replay(ad, 'is-jolt')
           }
 
-          // the crowd queues for the paper: in from beyond the screen edges
-          const g = range(0.84, 0.95, e.u)
-          const ck = g.toFixed(3) + (e.u > 0.95 ? Math.floor(e.t * 20) : '')
-          if (ck !== cache.crowd) {
-            cache.crowd = ck
-            crowd.forEach((el, i) => {
-              const side = i % 2 ? 1 : -1
-              const delay = (i % 3) * 0.08
-              const a = e.reduced ? 1 : smooth(delay, delay + 0.8, g)
-              const x = (1 - a) * side * (narrow ? 900 : 2200)
-              const walking = a > 0.02 && a < 0.98
-              const bob = walking ? Math.abs(Math.sin((e.t * 9 + i) * 1.4)) * -14 : Math.sin(e.t * 2.4 + i) * -4 * (a >= 1 ? 1 : 0)
-              el.style.transform = `translate3d(${x.toFixed(1)}px, ${bob.toFixed(1)}px, 0)`
-              el.style.opacity = a <= 0 ? '0' : '1'
-              el.dataset.walk = walking ? '1' : '0'
-            })
-          }
-
           // left alone at the end: the ad glances at its button, the pen circles again
           if (moved) {
             moved = false
@@ -323,6 +285,5 @@ export function mountPoster(root: HTMLElement, narrow: boolean, live = true) {
     if (roller) roller.style.opacity = '0'
     em.classList.remove('is-mark')
     ad.classList.remove('is-circle', 'is-stamp', 'is-jolt', 'is-redraw')
-    crowd.forEach((el) => (el.style.transform = el.style.opacity = ''))
   }
 }
