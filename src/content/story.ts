@@ -301,25 +301,23 @@ export const WORK: readonly WorkProject[] = [
  *  it all folds into one orbit around "your product", with one designer below. */
 export const TALLY = {
   kicker: 'the running total',
-  /** thirteen stickers: six client products (they count) and seven facts about her.
-   *  `at` is the grid cell on wide boards; narrow boards pack them 3 across, in
-   *  this order. Where each waits and how it walks in lives in Tally.tsx. */
+  /** six cards about her, 3 across and 2 down (`at` is the grid cell on wide boards) */
   cards: [
-    { kind: 'me', id: 'ai', at: [2, 0], big: 'AI', name: 'I design with AI', line: 'and use it like a pro', bg: '#7ef0d2', fg: '#141413', mk: '#141413' },
-    { kind: 'work', id: 'dazn', at: [0, 0], name: 'DAZN', line: 'Sport streaming in 200+ countries', tag: 'Media', shape: 'ball', bg: '#f7e733', fg: '#141413', mk: '#141413' },
-    { kind: 'me', id: 'home', at: [2, 3], big: '', name: 'Based in Alicante', line: 'Spain', bg: '#ff6b5a', fg: '#141413', mk: '#ffd23f' },
-    { kind: 'me', id: 'certs', at: [1, 0], big: '7', name: 'Google UX certificates', line: 'via Coursera', bg: '#ffffff', fg: '#141413', mk: '#1a73e8' },
-    { kind: 'work', id: 'nota', at: [3, 0], name: 'Nota by M&T Bank', line: 'Banking for law firms', tag: 'Banking', shape: 'safe', bg: '#0e6f78', fg: '#ffffff', mk: '#ffd84d' },
-    { kind: 'work', id: 'toeic', at: [1, 1], name: 'toeic.pal', line: 'AI English speaking tutor', tag: 'EdTech', shape: 'bubble', bg: '#b9f23a', fg: '#141413', mk: '#0f7a3d' },
-    { kind: 'me', id: 'years', at: [2, 1], big: '8+', name: 'years designing products', line: 'web, mobile and TV', bg: '#141413', fg: '#ffffff', mk: '#c6f135' },
-    { kind: 'work', id: 'pronto', at: [3, 1], name: 'Pronto', line: 'Nurse staffing', tag: 'Healthcare', shape: 'cross', bg: '#ff8fd8', fg: '#141413', mk: '#c4006f' },
-    { kind: 'work', id: 'realoffer', at: [0, 2], name: 'Realoffer.ge', line: 'Real estate listings', tag: 'PropTech', shape: 'house', bg: '#5cc8ff', fg: '#141413', mk: '#0b3d91' },
-    { kind: 'work', id: 'moneymarket', at: [2, 2], name: 'Moneymarket.ge', line: 'Loan marketplace', tag: 'Loans', shape: 'coin', bg: '#ff7a3d', fg: '#141413', mk: '#ffe14d' },
-    { kind: 'me', id: 'teach', at: [3, 2], big: 'UX', name: 'I teach it, too', line: 'Lecturer at Qwerty', bg: '#c9b8ff', fg: '#141413', mk: '#141413' },
-    { kind: 'me', id: 'hello', at: [0, 3], big: 'Hi!', name: 'English and Georgian', line: 'გამარჯობა means hello', bg: '#5b4bff', fg: '#ffffff', mk: '#ffffff' },
-    { kind: 'me', id: 'tools', at: [1, 3], big: '', name: 'Figma, Illustrator, XD', line: 'the tools I think in', bg: '#fff3d6', fg: '#141413', mk: '#141413' },
+    { id: 'certs', at: [0, 0], big: '7', name: 'Google UX certificates', line: 'via Coursera', bg: '#ffffff', fg: '#141413', mk: '#1a73e8' },
+    { id: 'ai', at: [1, 0], big: 'AI', name: 'I design with AI', line: 'and use it like a pro', bg: '#7ef0d2', fg: '#141413', mk: '#141413' },
+    { id: 'teach', at: [2, 0], big: 'UX', name: 'I teach it, too', line: 'Lecturer at Qwerty', bg: '#c9b8ff', fg: '#141413', mk: '#141413' },
+    { id: 'hello', at: [0, 1], big: 'Hi!', name: 'English and Georgian', line: 'გამარჯობა means hello', bg: '#5b4bff', fg: '#ffffff', mk: '#ffffff' },
+    { id: 'tools', at: [1, 1], big: '', name: 'Figma, Illustrator, XD', line: 'the tools I think in', bg: '#fff3d6', fg: '#141413', mk: '#141413' },
+    { id: 'home', at: [2, 1], big: '', name: 'Based in Alicante', line: 'Spain', bg: '#ff6b5a', fg: '#141413', mk: '#ffd23f' },
   ],
+  /** all 32 client products, as names; the counter counts them */
   chips: [
+    'DAZN',
+    'Nota by M&T Bank',
+    'Pronto',
+    'toeic.pal',
+    'Realoffer.ge',
+    'Moneymarket.ge',
     'NFT Marketplace',
     'Startup Mentor AI',
     'Avocados and Coconuts',
@@ -349,10 +347,6 @@ export const TALLY = {
   ],
   industries: 10,
   typed: 'one designer on every one',
-  orbit: ['Research', 'Flows', 'Wireframes', 'Prototype', 'UI', 'Design system'],
-  centre: 'Your product',
-  me: { name: 'Monika Adeishvili', line: 'All of the above', big: '1', unit: '/designer' },
-  flank: ['From a blank Figma file,', 'to a product people use.'],
 } as const
 
 /** 04 Say Hello: the back page of a one-issue newspaper, The Daily Hello.
