@@ -19,10 +19,8 @@ import { bsinks, chapterCh, inspSel, inspState, moodCh, placedVer, regionCh, typ
 export interface LoopCtx {
   stage: HTMLElement
   world: HTMLElement
-  paper: HTMLElement
   boards: HTMLElement[]
   worldBg: HTMLElement[]
-  paperBg: HTMLElement[]
   speed: HTMLElement | null
   eyes: HTMLElement[]
   mascot: HTMLElement | null
@@ -60,9 +58,6 @@ export function startLoop(ctx: LoopCtx) {
   const cam: CamPose = { x: 0, y: 0, s: 1, rx: 0, rz: 0 }
   const pr: Proj = { x: 0, y: 0, f: 1 }
   let lastCam = ''
-  let lastPaper = ''
-  let pw = 0
-  let ph = 0
   let frame = 0
   let wob = 0
   let wobV = 0
@@ -197,16 +192,6 @@ export function startLoop(ctx: LoopCtx) {
     const camKey = `${cam.x.toFixed(1)}|${cam.y.toFixed(1)}|${s.toFixed(4)}|${rx.toFixed(2)}|${rz.toFixed(2)}`
     if (camKey !== lastCam) {
       lastCam = camKey
-      if (!pw) {
-        pw = ctx.paper.offsetWidth
-        ph = ctx.paper.offsetHeight
-      }
-      const snap = (v: number) => Math.round(v / 26) * 26
-      const pk = `${snap(cam.x - pw / 2)}|${snap(cam.y - ph / 2)}`
-      if (pk !== lastPaper) {
-        lastPaper = pk
-        ctx.paper.style.transform = `translate3d(${snap(cam.x - pw / 2)}px, ${snap(cam.y - ph / 2)}px, 0)`
-      }
       ctx.world.style.transform = `translate3d(${cx.toFixed(1)}px, ${cy.toFixed(1)}px, 0) rotateX(${rx.toFixed(2)}deg) rotateZ(${rz.toFixed(2)}deg) scale3d(${s.toFixed(4)}, ${s.toFixed(4)}, ${s.toFixed(4)}) translate3d(${(-cam.x).toFixed(1)}px, ${(-cam.y).toFixed(1)}px, 0)`
     }
     // speed streaks while the camera travels between worlds
@@ -232,15 +217,14 @@ export function startLoop(ctx: LoopCtx) {
     /* -------------------------------------------- WRITE: worlds */
     const trM0 = S.tr >= 0 ? TR_SHAPE[TR_SHAPE_OF(S.tr)].m0 : 0
     for (let k = 0; k < NS; k++) {
-      // a world's background and dot paper only exist while they show: each is
-      // a screen (or more) of GPU memory, and they fade in from nothing, so
-      // switching them on cannot flash
+      // a world's background only exists while it shows: each is a screen of
+      // GPU memory, and it fades in from nothing, so switching it on cannot flash
       const w = S.world[k]
       const ws = w < 0.005 ? '0' : w > 0.995 ? '1' : w.toFixed(3)
       if (ws !== worldOp[k]) {
         worldOp[k] = ws
-        for (const el of [ctx.worldBg[k], ctx.paperBg[k]]) {
-          if (!el) continue
+        const el = ctx.worldBg[k]
+        if (el) {
           el.style.opacity = ws
           el.style.visibility = ws === '0' ? 'hidden' : ''
         }

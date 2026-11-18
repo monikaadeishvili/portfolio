@@ -177,10 +177,8 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
       : startLoop({
           stage: root,
           world,
-          paper: world.querySelector<HTMLElement>('.bpaper')!,
           boards,
           worldBg: Array.from(root.querySelectorAll<HTMLElement>('.wbg')),
-          paperBg: Array.from(world.querySelectorAll<HTMLElement>('.wdot')),
           speed: root.querySelector<HTMLElement>('.bspeed'),
           eyes: Array.from(root.querySelectorAll<HTMLElement>('.bub-eyes')),
           mascot: world.querySelector<HTMLElement>('.b-mascot'),
@@ -423,13 +421,6 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
         )}
         <div className="bviewport">
           <div className="bworld" ref={worldRef}>
-            {!reduced && (
-              <div className="bpaper" aria-hidden="true">
-                {worlds.map((w, i) => (
-                  <i key={w} className={`wdot wdot-${w}`} style={{ opacity: i === 0 ? 1 : 0 }} />
-                ))}
-              </div>
-            )}
             <Sections lay={lay} live={!reduced} onNav={onNav} onJump={onJump} />
             {!reduced && (
               <div className="b-mascot" aria-hidden="true">

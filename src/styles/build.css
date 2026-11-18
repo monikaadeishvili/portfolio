@@ -131,48 +131,6 @@ html.is-coarse .bstage a {
   transform-origin: 0 0;
   will-change: transform;
 }
-/* dot grid, one per world, cross-faded */
-/* the dot paper follows the camera (snapped to the dot pitch), so it only has
-   to be bigger than the widest view. No soft-edge mask: a mask this size
-   inside the zooming 3-D world re-rasters on every frame of a transition and
-   overflows the GPU, which is what made the panels and dots flicker. */
-.bpaper {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 7800px;
-  height: 6400px;
-  pointer-events: none;
-}
-.wdot {
-  position: absolute;
-  inset: 0;
-  background-size: 26px 26px;
-}
-.wdot-hello {
-  background-image: radial-gradient(circle at center, rgb(30 23 18 / 0.12) 1.1px, transparent 1.5px);
-}
-.wdot-origin {
-  background-image: radial-gradient(circle at center, rgb(255 244 220 / 0.3) 1.1px, transparent 1.6px), radial-gradient(circle at center, rgb(255 213 138 / 0.9) 1.8px, transparent 2.4px);
-  background-size: 26px 26px, 182px 156px;
-  background-position: 0 0, 39px 65px;
-}
-.wdot-craft {
-  /* drafting table: a blueprint grid, drawn in lime light */
-  background-image:
-    linear-gradient(rgb(198 241 53 / 0.17) 1.2px, transparent 1.2px),
-    linear-gradient(90deg, rgb(198 241 53 / 0.17) 1.2px, transparent 1.2px),
-    linear-gradient(rgb(198 241 53 / 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(198 241 53 / 0.06) 1px, transparent 1px);
-  background-size: 130px 130px, 130px 130px, 26px 26px, 26px 26px;
-}
-.wdot-proof {
-  background-image: radial-gradient(circle at center, rgb(11 79 122 / 0.22) 1.3px, transparent 1.7px);
-}
-.wdot-contact {
-  background-image: radial-gradient(circle at center, rgb(255 255 255 / 0.5) 1.4px, transparent 1.8px);
-}
-
 /* ---------------------------------------------------------- artboards */
 .bf {
   --i: 0;
@@ -343,8 +301,7 @@ html.is-coarse .bstage a {
   will-change: transform;
 }
 /* the worlds cross-fade on the compositor, not by repainting a screenful */
-.wbg,
-.wdot {
+.wbg {
   will-change: opacity;
 }
 .rv-title {
