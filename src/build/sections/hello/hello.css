@@ -276,6 +276,11 @@
   top: 0;
   z-index: 4;
 }
+/* the bar slides in flat along the board: no contact shadow (under a
+   full-width bar it read as a grey band across the top) */
+.slot.h-nav > .alive-shadow {
+  display: none;
+}
 .h-navbar {
   position: relative;
   display: flex;

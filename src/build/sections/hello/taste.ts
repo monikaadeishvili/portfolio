@@ -214,6 +214,8 @@ export function mountTaste(board: HTMLElement) {
   /** farthest board corner from the switch: the played front covers exactly this */
   let Rvis = 1600
   let cvPad = 2400
+  /** farthest corner of the designed nav from the switch: the nav waits for the front to pass it */
+  let navFar = 0
   let geoKey = ''
   // manual multiplier + label follower + idle
   let mRaw = 1
@@ -303,6 +305,11 @@ export function mountTaste(board: HTMLElement) {
         t.wFar = Math.max(...[[h.x, h.y], [h.x + h.w, h.y], [h.x, h.y + h.h], [h.x + h.w, h.y + h.h]].map(([x, y]) => Math.hypot(x - sx, y - sy))) + 4
       }
     })
+    const navSlot = pieces.get('h-nav')?.slot
+    if (navSlot) {
+      const o = offsetIn(navSlot, board)
+      navFar = Math.max(...[[o.x, o.y], [o.x + o.w, o.y], [o.x, o.y + o.h], [o.x + o.w, o.y + o.h]].map(([x, y]) => Math.hypot(x - sx, y - sy)))
+    }
     if (hdH) {
       const oh = offsetIn(hdH, board)
       hdX = oh.x
@@ -374,6 +381,14 @@ export function mountTaste(board: HTMLElement) {
       const tw = (k: string) => twins.find((t) => t.key === k)
       const dl = Math.min(tw('l1')?.d ?? 0, tw('l2')?.d ?? 0)
       set('h-title', dl - 60, dl + 500)
+      // the nav changes only once the front has crossed all of it: its bland
+      // twin and the real bar never show together on a half-plain board
+      const nav = pieces.get('h-nav')
+      if (nav && navFar) {
+        const D = nav.p1 - nav.p0
+        nav.p0 = Math.max(nav.p0, at(navFar))
+        nav.p1 = nav.p0 + D
+      }
     }
 
     /* ---- taste amount */
@@ -674,8 +689,10 @@ export function mountTaste(board: HTMLElement) {
       const D = c ? c.p1 - c.p0 : 0
       let sm = 1
       if (manual) {
-        // the switch plays it back and forth: the front swaps twin ↔ component
-        sm = clamp01((r - t.dT + 70) / 180)
+        // the switch plays it back and forth: the front swaps twin ↔ component.
+        // The nav spans the board's top, so it waits for the front to cross its
+        // far end (it changes last going on, first going off)
+        sm = t.key === 'nav' && navFar ? clamp01((r - navFar + 160) / 150) : clamp01((r - t.dT + 70) / 180)
         op = 1 - sm
         const ps = lerp(1, 0.94, sm)
         scx *= ps
@@ -686,8 +703,9 @@ export function mountTaste(board: HTMLElement) {
           const kn = range(c.p0 + 0.6 * D, c.p1 + 0.2 * D, p)
           if (kn > 0) op = 1 - smooth(0, 1, kn)
         } else {
-          // replaced by the bubble-born component: a quick pop
-          const kn = range(c.p0 + 0.8 * D, c.p1 + 0.12 * D, p)
+          // replaced by the bubble-born component: a quick pop. The nav slides
+          // in over its own twin, so that twin is gone before the bar lands
+          const kn = t.key === 'nav' ? range(c.p0 - 0.2 * D, c.p0 + 0.05 * D, p) : range(c.p0 + 0.8 * D, c.p1 + 0.12 * D, p)
           if (kn > 0) {
             scx *= 1 - 0.14 * kn
             scy *= 1 - 0.14 * kn
