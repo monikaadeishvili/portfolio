@@ -29,6 +29,8 @@ export function mountFun(root: HTMLElement, narrow: boolean) {
     { sel: '.layers', x: -135, y: 8, r: -13, fade: false },
     { sel: '.inspector', x: 135, y: 10, r: 12, fade: false },
     { sel: '.dock', x: 0, y: 260, r: 6, fade: false },
+    // phones: the file bar lifts off the top and goes, so the trip is full-screen
+    { sel: '.filebar', x: 0, y: -220, r: -3, fade: true },
   ].map((c) => ({ ...c, el: document.querySelector<HTMLElement>(c.sel), key: '' }))
 
   let trip: TripScene | null = null
