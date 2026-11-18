@@ -56,6 +56,7 @@ export function mountPortrait(board: HTMLElement) {
   host.appendChild(canvas)
   let geo: Geo | null = null
   let dirty = true
+  let idleTick = 0
   let disposed = false
   let gl: Renderer = pending()
   const sized: [number, number] = [0, 0]
@@ -330,9 +331,14 @@ export function mountPortrait(board: HTMLElement) {
 
     /* draw only while something changes */
     const ring = T > 0 && T < 1 ? 1 : 0
-    const moving = ring || (arrA > 0 && arrA < 1) || (arrB > 0 && arrB < 1) || (hvRaw > 0 && hvRaw < 1) || inside || tiltLive
+    const busy = ring || (arrA > 0 && arrA < 1) || (arrB > 0 && arrB < 1) || (hvRaw > 0 && hvRaw < 1) || inside
+    const moving = busy || tiltLive
     const k = `${arrA.toFixed(4)}|${arrB.toFixed(4)}|${tasteFx.r.toFixed(1)}|${cbox.map((v) => v.toFixed(1)).join(',')}|${hvRaw.toFixed(3)}`
     if (!dirty && !moving && k === key) return
+    // only the slow shimmer and the pointer tilt are moving: every other frame
+    // is enough (it halves the GPU work of ~85k grains while she just stands)
+    idleTick = busy || dirty || k !== key ? 0 : idleTick + 1
+    if (idleTick % 2 === 1) return
     key = k
     dirty = false
     wasOn = true

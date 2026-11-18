@@ -465,8 +465,8 @@ export function startLoop(ctx: LoopCtx) {
       f.update(env)
     })
 
-    /* ===================================== READ (eyes, batched) */
-    readEyes()
+    /* (READ: the eyes are measured in their own ticker, first in the frame,
+       before anything writes, so the read never forces a style + layout pass) */
 
     /* ===================================== WRITE: bubble + rest */
     if (S.impact !== lastImpact) {
@@ -740,8 +740,10 @@ export function startLoop(ctx: LoopCtx) {
     return best ? best.id : null
   }
 
+  gsap.ticker.add(readEyes, false, true)
   gsap.ticker.add(tick)
   return () => {
+    gsap.ticker.remove(readEyes)
     gsap.ticker.remove(tick)
     live.state = null
   }

@@ -72,12 +72,21 @@ function storyFor(getGeo: () => Geo | null) {
 }
 
 /** resting spots in the free canvas beside the chrome (never over content) */
+/** the chrome's boxes barely move: measured at most every 500ms (measuring
+ *  mid-frame forced a style + layout pass on every frame the cursor talked) */
+const chromeBox = { at: -1e9, lay: undefined as DOMRect | undefined, insp: undefined as DOMRect | undefined, dock: undefined as DOMRect | undefined }
 function freeSpots(v: Rect): Record<BotKey, CurRegion> {
   const vw = window.innerWidth
   const vh = window.innerHeight
-  const lay = document.querySelector('.layers')?.getBoundingClientRect()
-  const insp = document.querySelector('.inspector')?.getBoundingClientRect()
-  const dockTop = document.querySelector('.dock')?.getBoundingClientRect().top ?? vh - 80
+  const now = performance.now()
+  if (now - chromeBox.at > 500) {
+    chromeBox.at = now
+    chromeBox.lay = document.querySelector('.layers')?.getBoundingClientRect()
+    chromeBox.insp = document.querySelector('.inspector')?.getBoundingClientRect()
+    chromeBox.dock = document.querySelector('.dock')?.getBoundingClientRect()
+  }
+  const { lay, insp } = chromeBox
+  const dockTop = chromeBox.dock?.top ?? vh - 80
   const bottom = dockTop - 70
   const top: CurRegion = { x0: v.x + v.w * 0.3, y0: v.y - 34, x1: v.x + v.w * 0.55, y1: v.y - 24 }
   const right: CurRegion | null = insp && bottom - insp.bottom > 90 ? { x0: insp.left + 6, y0: insp.bottom + 22, x1: vw - 170, y1: Math.min(bottom, insp.bottom + 120) } : null

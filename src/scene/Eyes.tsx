@@ -87,8 +87,16 @@ export function Eyes({ x = 50, y = 42, size = 16, gap = 0.5, className = '', sty
 
 /* ---------------------------------------------------- shared per-frame work */
 
-/** batched READ phase: cache every visible rig's screen centre */
+/** batched READ phase: cache every visible rig's screen centre. Measuring
+ *  forces a style + layout pass whenever anything has written since the last
+ *  frame, so the rigs are measured together at most every READ_MS; the pupils
+ *  ease towards their target, so a centre a few frames old never shows */
+const READ_MS = 200
+let readAt = -1e9
 export function readEyes() {
+  const now = performance.now()
+  if (now - readAt < READ_MS) return
+  readAt = now
   const vw = window.innerWidth
   const vh = window.innerHeight
   eyeRigs.forEach((rig) => {
@@ -117,7 +125,7 @@ export function updateEyes(t: number, dt: number, lookX: number, lookY: number) 
     const tpy = (dy / d) * rig.max * reach * 0.85
     rig.px += (tpx - rig.px) * s
     rig.py += (tpy - rig.py) * s
-    const tr = `translate3d(${rig.px.toFixed(2)}px, ${rig.py.toFixed(2)}px, 0)`
+    const tr = `translate(${rig.px.toFixed(2)}px, ${rig.py.toFixed(2)}px)`
     for (const pu of rig.pupils) pu.style.transform = tr
     if (rig.blinkAt < 0 && t > rig.next) rig.blinkAt = t
     if (rig.blinkAt >= 0) {

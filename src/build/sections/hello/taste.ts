@@ -342,6 +342,7 @@ export function mountTaste(board: HTMLElement) {
     if (plainFar && cFar !== '0') {
       cFar = '0'
       plainFar.style.opacity = '0'
+      plainFar.style.visibility = 'hidden'
     }
     if (addTaste && cAdd !== '0') {
       cAdd = '0'
@@ -475,12 +476,18 @@ export function mountTaste(board: HTMLElement) {
     if (cvK !== cCv) {
       cCv = cvK
       cv.style.opacity = cvK
+      // fully faded: off the compositor too (a transparent layer still costs)
+      cv.style.visibility = cvK === '0' ? 'hidden' : ''
     }
     const ringK = T <= 0 || T >= 1 || r < 3 ? 'off' : r.toFixed(1)
     if (ringK !== cRing) {
-      if (cRing === '') ring.style.visibility = 'visible'
-      if (ringK === 'off') ring.style.opacity = '0'
-      else {
+      // off: hidden and shrunk, so the 8000px circle it grows into is not kept as a layer
+      if (ringK === 'off') {
+        ring.style.opacity = '0'
+        ring.style.visibility = 'hidden'
+        ring.style.width = ring.style.height = '0px'
+      } else {
+        ring.style.visibility = 'visible'
         ring.style.opacity = '1'
         const D = r * 2
         ring.style.width = `${D.toFixed(1)}px`
@@ -495,6 +502,7 @@ export function mountTaste(board: HTMLElement) {
       if (fk !== cFar) {
         cFar = fk
         plainFar.style.opacity = fk
+        plainFar.style.visibility = fk === '0' ? 'hidden' : ''
       }
     }
 

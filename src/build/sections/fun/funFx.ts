@@ -114,6 +114,11 @@ export function mountFun(root: HTMLElement, narrow: boolean) {
     const b = (e.target as Element).closest<HTMLElement>('[data-act="top"]')
     if (b) ui.scrollTo?.(0, 3.2)
   }
+  // the scroll position, cached on scroll: reading window.scrollY inside the
+  // frame (after other writes) forced a style + layout pass every frame
+  let sy = window.scrollY
+  const onScroll = () => (sy = window.scrollY)
+  window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('pointermove', onMove, { passive: true })
   canvas.addEventListener('pointerdown', onClick)
   root.addEventListener('click', onAct)
@@ -127,7 +132,7 @@ export function mountFun(root: HTMLElement, narrow: boolean) {
   const tick = (time: number, deltaMs: number) => {
     const dt = Math.min(Math.max(deltaMs, 1) / 1000, 0.05)
     const p = stageScene.p
-    fT = clamp01((window.scrollY - max) / len)
+    fT = clamp01((sy - max) / len)
     if ((p > 0.72 || fT > 0) && !loading) load()
     f += (fT - f) * (1 - Math.exp(-dt * 9))
     if (Math.abs(fT - f) < 1e-5) f = fT
@@ -213,6 +218,7 @@ export function mountFun(root: HTMLElement, narrow: boolean) {
     dead = true
     gsap.ticker.remove(tick)
     window.removeEventListener('pointermove', onMove)
+    window.removeEventListener('scroll', onScroll)
     canvas.removeEventListener('pointerdown', onClick)
     root.removeEventListener('click', onAct)
     window.removeEventListener('resize', onResize)
