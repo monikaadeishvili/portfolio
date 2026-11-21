@@ -25,7 +25,8 @@
   --dr-to: #eceae4;
 }
 .dr-bg[data-k='3'] {
-  --dr-to: #f6e6f6;
+  /* The Daily Hello's newsprint (contact.css --np-paper) */
+  --dr-to: #f3ead3;
 }
 /* the designed colour spreads as a disc (scaled on the GPU, no clip-path) */
 .dr-disc {

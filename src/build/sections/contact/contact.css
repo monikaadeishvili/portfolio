@@ -30,6 +30,20 @@
   box-shadow:
     inset 0 0 90px rgb(176 128 40 / 0.16),
     inset 0 0 18px rgb(176 128 40 / 0.14);
+  /* the crumple below blends with the paper only, never the canvas */
+  isolation: isolate;
+  overflow: hidden;
+}
+/* the page has been crumpled and smoothed out again: a grey light map
+   (public/textures/crumple.webp, generated folds lit from the top left) in
+   soft-light keeps the paper's colour and adds only the folds' light and shade */
+.bf-contact .bf-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/textures/crumple.webp') center / cover no-repeat;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
 }
 .bf-contact .bf-label {
   color: #fff;
@@ -834,3 +848,4 @@
   scale: 1;
   pointer-events: auto;
 }
+
