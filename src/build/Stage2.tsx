@@ -282,7 +282,7 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
     fontsIn.then(() => {
       if (!alive) return
       if (!reduced) build()
-      if (deep > 0) goPage(deep, { push: false, fade: false })
+      if (deep > 0) goPage(deep, { push: false, fly: false })
       readyRaf = requestAnimationFrame(() => {
         readyRaf = requestAnimationFrame(() => {
           if (!alive) return

@@ -1,10 +1,8 @@
 /* Pages: the site's navigation, like the Pages list of a Figma file.
 
    The story stays one scroll (everything is a function of one progress p).
-   A page is a cut into it: the canvas fades out, the scroll jumps straight
-   to that board, and it fades back in. No fly-through: half the story
-   scrubbing past in a second and a half was exactly the "what is the site
-   and what is the work" noise. Scrolling still runs on into the next board.
+   A page click travels there exactly like a click on the dock's timeline:
+   a smooth scroll to the start of that board, the camera flying through.
 
    Each page has a hash (#work, #how-i-think, …): page clicks push history,
    scrolling across a board only replaces it (scrolling never fills the back
@@ -13,7 +11,7 @@ import { CHAPTERS } from '../content/story'
 import './pages.css'
 import { storyMax, ui } from '../scene/store'
 import { chapterCh } from './bstore'
-import { holdOf, LAST, phOf, secP, WORLDS } from './worlds'
+import { holdOf, LAST, phOf, secP, topOf, WORLDS } from './worlds'
 
 export interface PageDef {
   /** board id (worlds.ts) */
@@ -59,7 +57,6 @@ export function pageLand(i: number) {
   return secP(i, phOf(i).flat)
 }
 
-let cutting = false
 const stage = () => document.querySelector<HTMLElement>('.bstage')
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -70,8 +67,11 @@ function setHash(i: number, push: boolean) {
   else history.replaceState(null, '', h)
 }
 
-/** open a page. push: add a history entry (a click); fade: the quick cut */
-export function goPage(i: number, { push = true, fade = true }: { push?: boolean; fade?: boolean } = {}) {
+/** open a page. push: add a history entry (a click). fly: travel there the way
+ *  the dock's timeline does (a smooth scroll to the start of the board, the
+ *  camera flying through); without it (a link opened cold): land at once on
+ *  the board with something finished to look at */
+export function goPage(i: number, { push = true, fly = true }: { push?: boolean; fly?: boolean } = {}) {
   const page = PAGES[i]
   if (!page) return
   if (push) setHash(i, true)
@@ -83,32 +83,9 @@ export function goPage(i: number, { push = true, fade = true }: { push?: boolean
     document.getElementById(`ch-${page.id}`)?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' })
     return
   }
-  const jump = () => ui.scrollTo?.(Math.max(0, Math.min(storyMax(), pageLand(i) * storyMax())), 0)
-  if (!fade || reducedMotion()) {
-    jump()
-    return
-  }
-  if (cutting) return
-  cutting = true
-  // is-cutting turns the fades on (only then: the loop drives these
-  // opacities every frame otherwise); is-cut is the dark of the cut
-  st.classList.add('is-cutting')
-  requestAnimationFrame(() => {
-    st.classList.add('is-cut')
-    window.setTimeout(() => {
-      jump()
-      // let the loop draw the new board under the cover, then lift it
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => {
-          st.classList.remove('is-cut')
-          window.setTimeout(() => {
-            st.classList.remove('is-cutting')
-            cutting = false
-          }, 260)
-        }),
-      )
-    }, 150)
-  })
+  const max = storyMax()
+  if (fly && !reducedMotion()) ui.scrollTo?.(Math.max(0, Math.min(max, topOf(i) * max)), 1.6)
+  else ui.scrollTo?.(Math.max(0, Math.min(max, pageLand(i) * max)), 0)
 }
 
 /** keep the hash on the board in view while scrolling, and follow back/forward.
