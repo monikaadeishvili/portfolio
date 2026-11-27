@@ -9,6 +9,7 @@ import { bsinks, chapterCh, helloName, helloTaste, inspSel, inspState, moodCh, p
 import { LAST, topOf, TRN } from './worlds'
 import { scene } from '../scene/store'
 import { FileHead, ShareHead, Zoom } from '../chrome/TopBar'
+import { PagesNav } from '../chrome/Pages'
 
 function useChannels() {
   const [ch, setCh] = useState(chapterCh.get())
@@ -101,6 +102,7 @@ export function LayersPanel2() {
   return (
     <aside className="layers chrome layers2" aria-label="Layers">
       <FileHead />
+      <PagesNav />
       <div className="panel-head">
         <span className="panel-tab is-active">Layers</span>
       </div>

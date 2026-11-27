@@ -7,7 +7,7 @@
  */
 import { camAt, hostAt, type CamPose, type Geo } from '../camera'
 import { clamp01, inOut, inOutQuad, lerp, outExpo, pieces, range, smooth, springOut } from '../runtime'
-import { hex, LAST, mixRGB, NS, NT, phOf, SEC, secP, SPLIT_PAL, TR_STYLE, TRN, WORLDS, type RGB } from '../worlds'
+import { hex, LAST, mixRGB, NS, NT, phOf, SEC, SEC_ID, secP, SPLIT_PAL, TR_STYLE, TRN, WORLDS, type RGB } from '../worlds'
 
 export type EyeMood = 'normal' | 'wide' | 'squint' | 'dizzy'
 export type Mood = 'curious' | 'spitting' | 'charging' | 'rolling' | 'stretching' | 'splitting' | 'racing' | 'floating' | 'popped' | 'home'
@@ -125,7 +125,7 @@ function helloWait(g: Geo, k: number, out: { x: number; y: number }) {
  *  of the frame, growing again, before the camera moves on to the work strip */
 function proofPerch(g: Geo, p: number, S: BubState) {
   const P = g.perch
-  const w = g.wins[2]?.[1]
+  const w = g.wins[SEC_ID.proof]?.[1]
   if (!P || !w) return
   const q = (p - w[0]) / Math.max(1e-6, w[1] - w[0])
   const kIn = smooth(0.66, 0.8, q)
@@ -187,7 +187,7 @@ export function bubbleAt(g: Geo, p: number, S: BubState) {
     c0.col = PALS[i][0]
     S.mood = 'spitting'
     if (i === 0 && p < SEC[0][0] + 0.012) S.mood = 'curious'
-    if (i === 2) proofPerch(g, p, S)
+    if (i === SEC_ID.proof) proofPerch(g, p, S)
     if (i === 0 && g.hint0) {
       const u = (p - SEC[0][0]) / (SEC[0][1] - SEC[0][0])
       const ph = phOf(0)

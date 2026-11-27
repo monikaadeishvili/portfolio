@@ -16,6 +16,7 @@
  */
 import { WORK } from '../../../content/story'
 import { clamp01, registerFx } from '../../runtime'
+import { SEC_ID } from '../../worlds'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const HOLD = 2.6 // seconds on each page
@@ -150,7 +151,7 @@ export function mountWork(root: HTMLElement, region: number) {
 
   const off = registerFx({
     id: 'proof-work',
-    section: 2,
+    section: SEC_ID.proof,
     measure: () => measure(),
     update: (e) => {
       if (!e.near || e.reduced) {

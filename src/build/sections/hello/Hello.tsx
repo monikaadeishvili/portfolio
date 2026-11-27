@@ -165,15 +165,19 @@ function Contours() {
 function Nav({ onNav }: { onNav: SectionProps['onNav'] }) {
   return (
     <nav className="h-navbar" aria-label="Site">
-      <a className="h-brand" href="#ch-hello" onClick={(e) => (e.preventDefault(), onNav('about'))}>
+      <a className="h-brand" href="#hello" onClick={(e) => (e.preventDefault(), onNav('hello'))}>
         Monika<span className="h-brand-last"> Adeishvili</span>
       </a>
       <span className="h-navlinks">
+        {/* the way to the work, first and strongest */}
+        <a className="h-navcta h-navwork" href="#work" onClick={(e) => (e.preventDefault(), onNav('work'))}>
+          See my work <span className="h-navcta-ar" aria-hidden="true">→</span>
+        </a>
         <a className="h-navcta" href={LINKEDIN} target="_blank" rel="noopener noreferrer">
           LinkedIn <span className="h-navcta-ar" aria-hidden="true">↗</span>
           <span className="sr-only"> (opens in a new tab)</span>
         </a>
-        <a className="h-navcta" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
+        <a className="h-navcta h-nav-ig" href={INSTAGRAM} target="_blank" rel="noopener noreferrer">
           Instagram <span className="h-navcta-ar" aria-hidden="true">↗</span>
           <span className="sr-only"> (opens in a new tab)</span>
         </a>

@@ -18,10 +18,15 @@ export interface World {
   shadow: number
 }
 
+/** where each board sits in the story (and in the Pages list). The work comes
+ *  second, straight after Hello: recruiters reach it first. Use these names,
+ *  never bare numbers, for anything that belongs to one board. */
+export const SEC_ID = { hello: 0, proof: 1, craft: 2, contact: 3 } as const
+
 export const WORLDS: World[] = [
   { id: 'hello', pal: ['#E8590C', '#1E1712', '#EBE2D4'], shadow: 0.16 },
-  { id: 'craft', pal: ['#C6F135', '#1E1712', '#EBE2D4'], shadow: 0.4 },
   { id: 'proof', pal: ['#2DB8FF', '#16131D', '#E6F6FF'], shadow: 0.24 },
+  { id: 'craft', pal: ['#C6F135', '#1E1712', '#EBE2D4'], shadow: 0.4 },
   { id: 'contact', pal: ['#FF7AD1', '#8B5CFF', '#FFD9F0'], shadow: 0.22 },
 ]
 /** number of sections, and of transitions between them */
@@ -43,7 +48,8 @@ export const SPLIT_PAL: [string, string, string] = ['#B6F03A', '#2DB8FF', '#FF7A
  * for the "same tools → taste" beat; everything is normalised so the other
  * sections keep exactly the same absolute scroll length (SCROLL_VH grows).
  */
-const RAW_W = [0.145, 0.34, 0.47, 0.115]
+// hello, proof (work), craft (how I think), contact
+const RAW_W = [0.145, 0.47, 0.34, 0.115]
 const RAW_TR = 0.068
 const RAW_SUM = RAW_W.reduce((a, b) => a + b, 0) + RAW_TR * (RAW_W.length - 1)
 export const TR_LEN = RAW_TR / RAW_SUM
@@ -104,7 +110,7 @@ export const PH3: Phases = {
   // the strip runs on until the bubble starts charging (no long still hold)
   descEnd: 0.955,
 }
-export const phOf = (i: number): Phases => (i === 0 ? PH0 : i === 1 ? PH2 : i === 2 ? PH3 : PH)
+export const phOf = (i: number): Phases => (i === SEC_ID.hello ? PH0 : i === SEC_ID.craft ? PH2 : i === SEC_ID.proof ? PH3 : PH)
 
 export const secU = (i: number, p: number) => (p - SEC[i][0]) / (SEC[i][1] - SEC[i][0])
 export const secP = (i: number, u: number) => SEC[i][0] + u * (SEC[i][1] - SEC[i][0])

@@ -8,8 +8,8 @@ export function Sections(props: SectionProps) {
   return (
     <>
       <Hello {...props} />
-      <Craft {...props} />
       <Proof {...props} />
+      <Craft {...props} />
       <Contact {...props} />
     </>
   )

@@ -10,7 +10,7 @@ export type Lay = 'wide' | 'narrow'
 export interface SectionProps {
   lay: Lay
   live: boolean
-  onNav: (to: 'work' | 'about' | 'contact') => void
+  onNav: (to: 'hello' | 'work' | 'about' | 'contact') => void
   onJump: (chapter: number) => void
 }
 

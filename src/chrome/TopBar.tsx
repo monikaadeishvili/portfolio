@@ -10,6 +10,7 @@ import { useLayoutEffect, useRef } from 'react'
 import { MomoMark } from './Icons'
 import { ui } from '../scene/store'
 import { EMAIL } from '../content/story'
+import { PagePicker } from './Pages'
 
 const PEOPLE = [
   // the visitor first, in the same coral as their own "You" cursor on the canvas
@@ -78,6 +79,7 @@ export function FileCard() {
   return (
     <header className="layers chrome fcard">
       <FileHead />
+      <PagePicker variant="card" />
     </header>
   )
 }
@@ -98,21 +100,10 @@ export function ShareCard() {
  * menu), and the one button that matters. It stays put while you scroll.
  */
 export function FileBar() {
-  const home = () => {
-    if (ui.scrollTo) ui.scrollTo(0, 1.2)
-    else window.scrollTo({ top: 0, behavior: 'auto' })
-  }
   return (
     <header className="chrome filebar">
-      <button type="button" className="fb-home" onClick={home} aria-label="Monika Adeishvili — back to start">
-        <MomoMark />
-        <span className="fb-name" aria-hidden="true">
-          Monika.Adeishvili
-        </span>
-        <span className="fhead-badge fb-badge" aria-hidden="true">
-          Open to work
-        </span>
-      </button>
+      {/* the file name opens the pages, like Figma mobile (Hello is the way back to the start) */}
+      <PagePicker variant="bar" />
       <ul className="avatars fb-ppl" aria-label={`${PEOPLE.length} people in this file: you and Monika`}>
         {PEOPLE.map((p) => (
           <li key={p.i} className="avatar" style={{ background: p.c, color: '#fff' }} aria-hidden="true">

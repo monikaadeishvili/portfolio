@@ -110,8 +110,9 @@ html.is-coarse .bstage a {
   -webkit-mask-image: radial-gradient(closest-side, transparent 30%, #000 85%);
   mask-image: radial-gradient(closest-side, transparent 30%, #000 85%);
 }
+/* the light worlds (data-world is the board's place: worlds.ts SEC_ID) */
 .bstage[data-world='0'] .bspeed,
-.bstage[data-world='2'] .bspeed {
+.bstage[data-world='1'] .bspeed {
   background-image: repeating-linear-gradient(0deg, transparent 0 34px, rgb(22 19 29 / 0.25) 34px 36px, transparent 36px 90px);
 }
 
@@ -776,7 +777,7 @@ html.is-deck-drag .cur-you .cur-hand {
 }
 
 /* the visitor's cursor turns light on the dark canvas */
-.bstage[data-world='1'] .cur-you .cur-arrow path {
+.bstage[data-world='2'] .cur-you .cur-arrow path {
   fill: #fff4dc;
   stroke: var(--ink);
 }

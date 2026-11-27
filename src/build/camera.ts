@@ -5,7 +5,7 @@
 import type { Breakpoint } from '../scene/store'
 import { offsetIn } from '../scene/layout'
 import { fxs, inOut, lerp, outBack, pieces, regions, rnd, smooth, texts, clamp, clamp01, type Piece, type Region } from './runtime'
-import { LAST, NS, NT, phOf, SEC, secP, TR_SHAPE_OF, TRN } from './worlds'
+import { LAST, NS, NT, phOf, SEC, SEC_ID, secP, TR_SHAPE_OF, TRN } from './worlds'
 
 export type Lay = 'wide' | 'narrow'
 export interface Rect {
@@ -442,11 +442,11 @@ function schedule(g: Geo) {
         if (i === 0 && r === 0) {
           c.in0 = -1
           c.in1 = -1
-        } else if (i === 2 && r === 1) {
+        } else if (i === SEC_ID.proof && r === 1) {
           // Proof's running total: its stickers drop onto their waiting spots
           // one by one while the headline is up (once the draft has swept away),
           // so they stand ready before the grid fills
-          const w0 = g.wins[2]?.[0]
+          const w0 = g.wins[SEC_ID.proof]?.[0]
           const base = w0 ? w0[0] + (w0[1] - w0[0]) * 0.6 : A - L * 0.3
           c.in0 = base + j * 0.0022
           c.in1 = c.in0 + 0.012

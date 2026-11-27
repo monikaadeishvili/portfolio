@@ -9,6 +9,7 @@
 import { clamp01, registerFx, smooth } from '../../runtime'
 import type { KitScene } from '../../three/KitScene'
 import { HERO_PILL, START } from '../../three/kitForms'
+import { SEC_ID } from '../../worlds'
 
 const inOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
 /** station coordinate with soft detents: never fully stalls, exactly reversible */
@@ -138,7 +139,7 @@ export function mountKit(root: HTMLElement, narrow: boolean) {
 
   const off = registerFx({
     id: 'craft-kit',
-    section: 1,
+    section: SEC_ID.craft,
     measure: () => measure(),
     update: (e) => {
       // off-section the whole artboard is hidden; the canvas layer itself is never toggled

@@ -6,7 +6,6 @@ import { hover, pointer, scene, storyMax, tool, ui, type Breakpoint } from '../s
 import { Cursors, cursorConfig, type BotKey, type Region as CurRegion, type Story } from '../canvas/Cursors'
 import { PenTrail } from '../canvas/PenTrail'
 import { ColorPicker } from '../canvas/ColorPicker'
-import { jumpTo } from '../chrome/ChapterRuler'
 import { MomoGlyph } from '../ui/components'
 import { Sections } from './sections'
 import { measure, viewFor, type Geo, type Rect } from './camera'
@@ -15,10 +14,11 @@ import { pieces, texts } from './runtime'
 import { live, nudge, startLoop } from './loop'
 import { chapterCh, rulerSubs } from './bstore'
 import { Fun, FUN_VH } from './sections/fun/Fun'
-import { holdOf, LAST, topOf, SCROLL_VH, WORLDS, sectionAt, secP, secU, transitionAt } from './worlds'
+import { holdOf, SCROLL_VH, SEC_ID, WORLDS, sectionAt, secP, secU, transitionAt } from './worlds'
 import { installOverlapCheck } from './dev/overlap'
 import { taste } from './sections/hello/taste'
 import { bootReady } from '../boot'
+import { goPage, pageOfHash, setPageLand, syncPages } from './pages'
 
 /* -------------------------------------------------------- cursor story */
 
@@ -26,13 +26,13 @@ import { bootReady } from '../boot'
  *  right then. `touch` replaces a hint that names a mouse-only gesture or a
  *  dock tool phones don't have. */
 const LINES: { sec: number; key: BotKey; u0: number; u1: number; line: string; touch?: string }[] = [
-  // 02 How I think
-  { sec: 1, key: 'monika', u0: 0.14, u1: 0.23, line: 'try to catch ‘ignores’', touch: 'tap ‘ignores’. watch it hop' },
-  { sec: 1, key: 'monika', u0: 0.42, u1: 0.52, line: 'press and hold the model', touch: 'tap the model. it unpacks' },
-  // 03 Proof
-  { sec: 2, key: 'monika', u0: 0.2, u1: 0.29, line: 'color picker. click. copied', touch: '#5B4BFF. you’re welcome' },
-  // 04 Say Hello
-  { sec: 3, key: 'monika', u0: 0.66, u1: 0.74, line: 'clip the coupon. copies email' },
+  // How I think
+  { sec: SEC_ID.craft, key: 'monika', u0: 0.14, u1: 0.23, line: 'try to catch ‘ignores’', touch: 'tap ‘ignores’. watch it hop' },
+  { sec: SEC_ID.craft, key: 'monika', u0: 0.42, u1: 0.52, line: 'press and hold the model', touch: 'tap the model. it unpacks' },
+  // Work
+  { sec: SEC_ID.proof, key: 'monika', u0: 0.2, u1: 0.29, line: 'color picker. click. copied', touch: '#5B4BFF. you’re welcome' },
+  // Say Hello
+  { sec: SEC_ID.contact, key: 'monika', u0: 0.66, u1: 0.74, line: 'clip the coupon. copies email' },
 ]
 /** no mouse to hover with: hints say press / tap instead */
 const touchOnly = () => typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches
@@ -104,8 +104,9 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
   const lenisRef = useRef<Lenis | null>(null)
   const { view, lay, fw } = viewFor(bp)
 
-  const onJump = useCallback((i: number) => jumpTo(topOf(i), 1.8), [])
-  const onNav = useCallback((to: 'work' | 'about' | 'contact') => jumpTo(to === 'contact' ? holdOf(LAST) : topOf(to === 'work' ? 2 : 1), 1.8), [])
+  // every way in (Pages panel, Hello's links, keyboard) opens a page the same way
+  const onJump = useCallback((i: number) => goPage(i), [])
+  const onNav = useCallback((to: 'hello' | 'work' | 'about' | 'contact') => goPage(to === 'hello' ? SEC_ID.hello : to === 'work' ? SEC_ID.proof : to === 'about' ? SEC_ID.craft : SEC_ID.contact), [])
 
   useEffect(() => {
     const root = rootRef.current!
@@ -195,7 +196,9 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
        page is set up (fonts in, camera measured, a frame drawn), as the cover
        fades, so nothing half-built or jumpy is ever on screen. */
     live.intro = 1
-    const playIntro = !reduced && window.scrollY < 10
+    // a link straight to a page (#work) opens there: no intro on Hello
+    const deep = pageOfHash(location.hash)
+    const playIntro = !reduced && window.scrollY < 10 && deep === 0
     if (playIntro) live.intro = 0
     else scene.introDone = true
     const startIntro = () => {
@@ -247,6 +250,15 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
     }
     root.addEventListener('focusin', onFocus)
 
+    /* ---------- pages: the hash follows the board in view; back/forward switch */
+    const unPages = syncPages()
+    // Work opens on its running total, counted and complete (the end of the
+    // region's build window), not on an empty grid under the headline
+    setPageLand((i) => {
+      const w = i === SEC_ID.proof ? geo?.wins[i]?.[1] : undefined
+      return w ? w[1] : null
+    })
+
     /* ---------- resize */
     let rz = 0
     const onResize = () => {
@@ -270,6 +282,7 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
     fontsIn.then(() => {
       if (!alive) return
       if (!reduced) build()
+      if (deep > 0) goPage(deep, { push: false, fade: false })
       readyRaf = requestAnimationFrame(() => {
         readyRaf = requestAnimationFrame(() => {
           if (!alive) return
@@ -281,6 +294,8 @@ export function Stage2({ bp, reduced }: { bp: Breakpoint; reduced: boolean }) {
 
     return () => {
       alive = false
+      unPages()
+      setPageLand(null)
       cancelAnimationFrame(readyRaf)
       ui.scrollTo = null
       Object.assign(cursorConfig, prevCfg)

@@ -312,6 +312,22 @@
   display: inline-block;
   transition: transform 220ms var(--h-ease);
 }
+/* phones: four links don't fit the board's nav; Instagram steps aside */
+.bstage[data-lay='narrow'] .h-nav-ig {
+  display: none;
+}
+/* "See my work →": the one link that matters, underlined in the hot colour */
+.h-navwork {
+  text-decoration: underline !important;
+  text-decoration-color: var(--h-hot) !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 4px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .h-navwork:hover .h-navcta-ar {
+    transform: translateX(3px);
+  }
+}
 @media (hover: hover) and (pointer: fine) {
   .h-navcta:hover {
     color: var(--h-blue);

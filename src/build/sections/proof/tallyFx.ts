@@ -7,6 +7,7 @@
  */
 import { TALLY } from '../../../content/story'
 import { registerFx } from '../../runtime'
+import { SEC_ID } from '../../worlds'
 
 /** when the first name shows, and the step between names (region progress) */
 const CHIP_AT = 0.48
@@ -43,7 +44,7 @@ export function mountTally(root: HTMLElement, region: number) {
 
   const off = registerFx({
     id: 'proof-tally',
-    section: 2,
+    section: SEC_ID.proof,
     update: (e) => {
       if (!e.near) return
       if (e.reduced) {

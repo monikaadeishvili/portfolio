@@ -18,11 +18,12 @@
     0 1px 2px rgb(16 24 40 / 0.05),
     0 30px 60px -30px rgb(16 24 40 / 0.22);
 }
+/* data-k is the board's place in the story (worlds.ts SEC_ID): 1 Work, 2 How I think, 3 Say hello */
 .dr-bg[data-k='1'] {
-  --dr-to: #1e1712;
+  --dr-to: #eceae4;
 }
 .dr-bg[data-k='2'] {
-  --dr-to: #eceae4;
+  --dr-to: #1e1712;
 }
 .dr-bg[data-k='3'] {
   /* The Daily Hello's newsprint (contact.css --np-paper) */
@@ -252,10 +253,10 @@
   contain: strict;
 }
 .dr-def[data-k='1'] .dr-ring {
-  --c: #c6f135;
+  --c: #0a7fd1;
 }
 .dr-def[data-k='2'] .dr-ring {
-  --c: #0a7fd1;
+  --c: #c6f135;
 }
 .dr-def[data-k='3'] .dr-ring {
   --c: #8b5cff;

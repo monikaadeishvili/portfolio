@@ -16,6 +16,7 @@ import { mountTally } from './tallyFx'
 import { mountWork } from './workFx'
 import './proof.css'
 import './tally.css'
+import { SEC_ID } from '../../worlds'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -76,11 +77,11 @@ export function Proof({ lay, live }: SectionProps) {
   }, [live, lay])
 
   return (
-    <Artboard idx={2} live={live} lay={lay}>
+    <Artboard idx={SEC_ID.proof} live={live} lay={lay}>
       <div ref={rootRef} className="pw-root">
         <Region index={0} label="Intro" className="pw-r0">
           <p className="pw-kick">{TALLY.kicker}</p>
-          <Reveal id="p-title" as="h2" hid="h-proof" segs={CHAPTERS[2].headline} className="rv-title pw-title" />
+          <Reveal id="p-title" as="h2" hid="h-proof" segs={CHAPTERS[SEC_ID.proof].headline} className="rv-title pw-title" />
         </Region>
 
         <Region index={1} label="Running total" className="pt-r" weight={3} pan>

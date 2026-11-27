@@ -17,6 +17,7 @@ import { KIT_COUNT } from '../../three/kitForms'
 import { mountKit } from './kitFx'
 import { mountQuote } from './quoteFx'
 import './craft.css'
+import { SEC_ID } from '../../worlds'
 
 const K = { lime: '#C6F135', sand: '#EBE2D4', orange: '#E8590C', ink: '#1E1712' }
 const STK_TONE = [K.sand, K.sand, K.lime, K.orange, K.lime, K.sand]
@@ -52,7 +53,7 @@ export function Craft({ lay, live }: SectionProps) {
   }, [live, lay])
 
   return (
-    <Artboard idx={1} live={live} lay={lay}>
+    <Artboard idx={SEC_ID.craft} live={live} lay={lay}>
       <div ref={rootRef} className="hk-root">
         {/* 0 · intro */}
         <Region index={0} label="Intro" className="hk-r0">
@@ -62,8 +63,8 @@ export function Craft({ lay, live }: SectionProps) {
               How I think
             </span>
           </Piece>
-          <Reveal id="c-title" as="h2" hid="h-craft" segs={CHAPTERS[1].headline} className="rv-title hk-title" />
-          <Reveal id="c-para" mode="type" segs={[CHAPTERS[1].body]} className="rv-para hk-para" order={1} />
+          <Reveal id="c-title" as="h2" hid="h-craft" segs={CHAPTERS[SEC_ID.craft].headline} className="rv-title hk-title" />
+          <Reveal id="c-para" mode="type" segs={[CHAPTERS[SEC_ID.craft].body]} className="rv-para hk-para" order={1} />
           <Piece id="c-count" name="Chip / Count" kind="bubble" tone={K.sand} order={1}>
             <span className="hk-count">
               <b>{KIT_COUNT}</b> parts. <b>5</b> shapes.
