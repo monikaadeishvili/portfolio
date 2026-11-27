@@ -253,10 +253,12 @@ export function measure(world: HTMLElement, boardsEl: HTMLElement[], bp: Breakpo
   const tilt = narrow ? { rx: 30, rz: -4 } : { rx: 40, rz: -6 }
   const sHold = (h: number) => (narrow ? Math.min((view.w * 0.94) / FW, (view.h * 0.94) / h) : Math.min(1.25, (view.w * 0.8) / FW, (view.h * 0.9) / h))
   // 01 Hello reads at a glance: its flat holds fill the free canvas between the
-  // panels (16px margins), height permitting
+  // panels, height permitting. SIDE: the air kept between a fitted board and
+  // each panel (a board flush against the panels read as cramped)
   const vw0 = document.documentElement.clientWidth
   const vh0 = window.innerHeight
-  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - 32, h: vh0 - (bp === 'mob' ? 72 : 12) - (bp === 'mob' ? 84 : 109) - 24 } // the phone's file bar (the panels sit beside the canvas elsewhere) · dock (two rows on desktop/tablet) · margins
+  const SIDE = bp === 'mob' ? 16 : 56
+  const free = { w: vw0 - (bp === 'desk' ? 252 : 0) - (bp !== 'mob' ? 260 : 0) - SIDE * 2, h: vh0 - (bp === 'mob' ? 72 : 12) - (bp === 'mob' ? 84 : 109) - 24 } // the phone's file bar (the panels sit beside the canvas elsewhere) · dock (two rows on desktop/tablet) · margins
   const fit0 = (h: number) => Math.min(1.25, free.w / FW, free.h / h)
 
   pieces.forEach((c) => {
