@@ -115,8 +115,22 @@
 /* Layers: the same quiet header as Pages (it sits outside a .pg block, so it
    carries that block's 6px inset itself) */
 .pg-head.l2-head {
-  padding: 12px 14px 0;
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid transparent;
   font-family: var(--f-ui);
+  transition: border-color 120ms ease;
+}
+/* Figma: the header gets its line only while the list is scrolled under it */
+.pg-head.l2-head.is-scrolled {
+  border-bottom-color: var(--line);
+}
+/* no visible scrollbar in Layers (it still scrolls with wheel, trackpad and touch) */
+.layers.layers2 .l2-list {
+  margin-top: 0;
+  scrollbar-width: none;
+}
+.layers.layers2 .l2-list::-webkit-scrollbar {
+  display: none;
 }
 /* the Layers list shares the panel with Pages now */
 .layers2 {

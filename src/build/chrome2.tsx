@@ -81,6 +81,9 @@ export function LayersPanel2() {
   const all = [...pieces.values()].filter((c) => c.section === ch)
   const placedAll = all.filter((c) => c.pose.state === 'placed').length
   const listRef = useRef<HTMLDivElement>(null)
+  const headRef = useRef<HTMLDivElement>(null)
+  // like Figma: a line appears under the Layers header once the list scrolls under it
+  const onListScroll = () => headRef.current?.classList.toggle('is-scrolled', (listRef.current?.scrollTop ?? 0) > 1)
   // collapsed rows, like Figma's layer tree (the frame, or a region)
   const [shut, setShut] = useState<Set<string>>(() => new Set())
   const toggle = (k: string) =>
@@ -104,8 +107,10 @@ export function LayersPanel2() {
       <FileHead />
       <PagesNav />
       {/* the same quiet header as Pages */}
-      <div className="pg-head l2-head">Layers</div>
-      <div className="l2-list" role="tree" aria-label={`Frame ${frameName(ch, hello.name)}`} ref={listRef}>
+      <div className="pg-head l2-head" ref={headRef}>
+        Layers
+      </div>
+      <div className="l2-list" role="tree" aria-label={`Frame ${frameName(ch, hello.name)}`} ref={listRef} onScroll={onListScroll}>
         <div className="layer-row d0 l2-row l2-frame" role="treeitem" aria-level={1} aria-expanded={frameOpen} key={`f-${ch}`}>
           <button type="button" className="l2-tog" aria-label={frameOpen ? 'Collapse frame' : 'Expand frame'} onClick={() => toggle(frameKey)}>
             <Chevron open={frameOpen} />
