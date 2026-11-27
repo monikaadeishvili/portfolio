@@ -79,7 +79,6 @@ export function LayersPanel2() {
   const p = scene.p
   const regs = [...regions.values()].filter((r) => r.section === ch).sort((a, b) => a.index - b.index)
   const all = [...pieces.values()].filter((c) => c.section === ch)
-  const placedAll = all.filter((c) => c.pose.state === 'placed').length
   const listRef = useRef<HTMLDivElement>(null)
   const headRef = useRef<HTMLDivElement>(null)
   // like Figma: a line appears under the Layers header once the list scrolls under it
@@ -119,9 +118,6 @@ export function LayersPanel2() {
           <span className={`layer-name${ch === 0 && !hello.taste ? ' is-untitled' : ''}`}>
             {frameName(ch, hello.name)}
           </span>
-          <span className="layer-tag">
-            {placedAll}/{all.length}
-          </span>
         </div>
         {frameOpen && (
         <div className="l2-rows" key={ch}>
@@ -130,7 +126,6 @@ export function LayersPanel2() {
               ...[...texts.values()].filter((t) => t.section === ch && t.region === r.index).map((t) => ({ kind: 'text' as const, t })),
               ...all.filter((c) => c.region === r.index && c.layer !== false).map((c) => ({ kind: 'piece' as const, c })),
             ].sort((a, b) => (a.kind === 'piece' ? a.c.p1 : a.t.p0) - (b.kind === 'piece' ? b.c.p1 : b.t.p0))
-            const done = rows.filter((x) => (x.kind === 'piece' ? x.c.pose.state === 'placed' : p >= x.t.p1)).length
             const rk = `${ch}-${r.index}`
             const open = !shut.has(rk)
             return (
@@ -141,9 +136,6 @@ export function LayersPanel2() {
                   </button>
                   <span className="layer-ico i-auto">{LayerIcon.auto()}</span>
                   <span className="layer-name">{r.label}</span>
-                  <span className="layer-tag">
-                    {done}/{rows.length}
-                  </span>
                 </div>
                 {open && rows.map((x, i) => {
                   if (x.kind === 'text') {
@@ -153,7 +145,6 @@ export function LayersPanel2() {
                         <span className="chev-pad" />
                         <KindIcon kind="text" />
                         <span className="layer-name">{x.t.label}</span>
-                        <State on={on} st={p >= x.t.p0 ? 'leaping' : 'waiting'} />
                       </div>
                     )
                   }
@@ -173,7 +164,6 @@ export function LayersPanel2() {
                       <span className="chev-pad" />
                       <KindIcon kind={c.kind} />
                       <span className="layer-name">{c.name}</span>
-                      <State on={on} st={st === 'leaping' ? 'leaping' : st === 'inside' ? 'inside' : 'waiting'} />
                     </div>
                   )
                 })}
@@ -188,20 +178,10 @@ export function LayersPanel2() {
             <span className="chev-pad" />
             <span className="layer-ico i-organism">{LayerIcon.organism()}</span>
             <span className="layer-name">Bubble</span>
-            <span className="layer-tag">{`${all.filter((c) => c.kind === 'bubble' && c.pose.state === 'inside').length} inside`}</span>
           </div>
         )}
       </div>
     </aside>
-  )
-}
-
-function State({ on, st }: { on: boolean; st: 'leaping' | 'waiting' | 'inside' }) {
-  return (
-    // placed: no tick, the row just settles (the pending marker goes away)
-    <span className={`l2-state s-${on ? 'done' : st}`} aria-label={on ? 'placed' : st}>
-      {!on && <i aria-hidden="true" />}
-    </span>
   )
 }
 

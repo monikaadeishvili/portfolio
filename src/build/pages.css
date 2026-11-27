@@ -130,6 +130,19 @@
 .layers.layers2 .l2-group.is-active {
   background: transparent;
 }
+/* layer rows hover like the page rows: a light grey fill, nothing else (the
+   same when the piece itself is hovered on the canvas) */
+.layers.layers2 .layer-row.is-hover {
+  background: rgb(22 19 29 / 0.05);
+  color: var(--ink);
+  box-shadow: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .layers.layers2 .l2-row:hover {
+    background: rgb(22 19 29 / 0.05);
+    color: var(--ink);
+  }
+}
 /* no visible scrollbar in Layers (it still scrolls with wheel, trackpad and touch) */
 .layers.layers2 .l2-list {
   margin-top: 0;
