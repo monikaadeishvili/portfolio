@@ -198,14 +198,9 @@ export function LayersPanel2() {
 
 function State({ on, st }: { on: boolean; st: 'leaping' | 'waiting' | 'inside' }) {
   return (
-    <span className={`l2-state s-${on ? 'placed' : st}`} aria-label={on ? 'placed' : st}>
-      {on ? (
-        <svg viewBox="0 0 12 12" aria-hidden="true">
-          <path d="M2.5 6.3 5 8.6 9.6 3.6" />
-        </svg>
-      ) : (
-        <i aria-hidden="true" />
-      )}
+    // placed: no tick, the row just settles (the pending marker goes away)
+    <span className={`l2-state s-${on ? 'done' : st}`} aria-label={on ? 'placed' : st}>
+      {!on && <i aria-hidden="true" />}
     </span>
   )
 }

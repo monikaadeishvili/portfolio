@@ -115,7 +115,9 @@
 /* Layers: the same quiet header as Pages (it sits outside a .pg block, so it
    carries that block's 6px inset itself) */
 .pg-head.l2-head {
-  padding: 12px 14px 8px;
+  /* the same space above and below the word, between the two lines
+     (the text box sits 2px low in its line, hence 11 / 9) */
+  padding: 11px 14px 9px;
   border-bottom: 1px solid transparent;
   font-family: var(--f-ui);
   transition: border-color 120ms ease;
@@ -123,6 +125,10 @@
 /* Figma: the header gets its line only while the list is scrolled under it */
 .pg-head.l2-head.is-scrolled {
   border-bottom-color: var(--line);
+}
+/* no highlight block behind the region being built */
+.layers.layers2 .l2-group.is-active {
+  background: transparent;
 }
 /* no visible scrollbar in Layers (it still scrolls with wheel, trackpad and touch) */
 .layers.layers2 .l2-list {
