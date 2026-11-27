@@ -47,13 +47,6 @@
   cursor: pointer;
   transition: background-color 120ms ease, color 120ms ease;
 }
-.pg-sq {
-  flex: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 3.5px;
-  box-shadow: inset 0 0 0 1px rgb(22 19 29 / 0.12);
-}
 .pg-name {
   flex: 1;
   min-width: 0;
@@ -61,36 +54,10 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.pg-n {
-  color: var(--ink-3);
-  font-size: 11.5px;
-  font-variant-numeric: tabular-nums;
-}
-.pg-go,
 .pg-ar {
   width: 12px;
   color: var(--ink-3);
   text-align: center;
-  opacity: 0;
-  transition: opacity 120ms ease;
-}
-.pg-ar {
-  opacity: 1;
-}
-.pg-row:has(.pg-n) .pg-go {
-  /* Work keeps its count until hovered */
-  width: 0;
-  overflow: hidden;
-}
-.pg-check {
-  flex: none;
-  width: 12px;
-  height: 12px;
-  fill: none;
-  stroke: var(--violet);
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 .pg-row.is-on {
   background: var(--violet-soft);
@@ -101,15 +68,6 @@
   .pg-row:not(.is-on):hover {
     background: rgb(22 19 29 / 0.05);
     color: var(--ink);
-  }
-  .pg-row:hover .pg-go {
-    opacity: 1;
-  }
-  .pg-row:has(.pg-n):hover .pg-n {
-    display: none;
-  }
-  .pg-row:has(.pg-n):hover .pg-go {
-    width: 12px;
   }
 }
 .pg-row:focus-visible {
@@ -143,6 +101,12 @@
   }
 }
 
+/* Layers: the same quiet header as Pages (it sits outside a .pg block, so it
+   carries that block's 6px inset itself) */
+.pg-head.l2-head {
+  padding: 12px 14px 0;
+  font-family: var(--f-ui);
+}
 /* the Layers list shares the panel with Pages now */
 .layers2 {
   max-height: calc(100vh - 24px);
@@ -271,10 +235,6 @@
 .pg-menu-bar .pg-row {
   height: 46px;
   font-size: 15px;
-}
-.pg-menu-bar .pg-sq {
-  width: 14px;
-  height: 14px;
 }
 .pg-menu-card {
   left: 0;

@@ -9,7 +9,7 @@ import { useEffect, useId, useRef, useState, type MouseEvent } from 'react'
 import { chapterCh } from '../build/bstore'
 import { goPage, PAGES, pageOfHash } from '../build/pages'
 import { SEC_ID } from '../build/worlds'
-import { LINKS, WORK } from '../content/story'
+import { LINKS } from '../content/story'
 import { MomoMark } from './Icons'
 
 const LINKEDIN = LINKS.find((l) => l.label === 'LinkedIn')!.href
@@ -40,12 +40,6 @@ function open(e: MouseEvent, i: number, then?: () => void) {
   then?.()
 }
 
-const Check = () => (
-  <svg className="pg-check" viewBox="0 0 12 12" aria-hidden="true">
-    <path d="M2.5 6.4 5 8.8l4.6-5.3" />
-  </svg>
-)
-
 function Rows({ cur, hint, onPick }: { cur: number; hint?: boolean; onPick?: () => void }) {
   return (
     <ul className="pg-list">
@@ -55,23 +49,7 @@ function Rows({ cur, hint, onPick }: { cur: number; hint?: boolean; onPick?: () 
         return (
           <li key={p.id}>
             <a className={`pg-row${on ? ' is-on' : ''}${hint && work && !on ? ' is-hint' : ''}`} href={`#${p.hash}`} aria-current={on ? 'page' : undefined} onClick={(e) => open(e, i, onPick)}>
-              <i className="pg-sq" style={{ background: p.color }} aria-hidden="true" />
               <span className="pg-name">{p.label}</span>
-              {on ? (
-                <Check />
-              ) : (
-                <>
-                  {/* the only row with a number: the eye goes to the work */}
-                  {work && (
-                    <span className="pg-n" aria-label={`${WORK.length} projects`}>
-                      {WORK.length}
-                    </span>
-                  )}
-                  <span className="pg-go" aria-hidden="true">
-                    →
-                  </span>
-                </>
-              )}
             </a>
           </li>
         )

@@ -103,9 +103,8 @@ export function LayersPanel2() {
     <aside className="layers chrome layers2" aria-label="Layers">
       <FileHead />
       <PagesNav />
-      <div className="panel-head">
-        <span className="panel-tab is-active">Layers</span>
-      </div>
+      {/* the same quiet header as Pages */}
+      <div className="pg-head l2-head">Layers</div>
       <div className="l2-list" role="tree" aria-label={`Frame ${frameName(ch, hello.name)}`} ref={listRef}>
         <div className="layer-row d0 l2-row l2-frame" role="treeitem" aria-level={1} aria-expanded={frameOpen} key={`f-${ch}`}>
           <button type="button" className="l2-tog" aria-label={frameOpen ? 'Collapse frame' : 'Expand frame'} onClick={() => toggle(frameKey)}>
