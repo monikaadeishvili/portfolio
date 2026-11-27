@@ -187,9 +187,6 @@ export function LayersPanel2() {
           </div>
         )}
       </div>
-      <div className="panel-foot">
-        <span className="dot-live" aria-hidden="true" /> 2 people editing
-      </div>
     </aside>
   )
 }

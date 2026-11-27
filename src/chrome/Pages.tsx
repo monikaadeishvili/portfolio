@@ -9,10 +9,8 @@ import { useEffect, useId, useRef, useState, type MouseEvent } from 'react'
 import { chapterCh } from '../build/bstore'
 import { goPage, PAGES, pageOfHash } from '../build/pages'
 import { SEC_ID } from '../build/worlds'
-import { LINKS } from '../content/story'
 import { MomoMark } from './Icons'
 
-const LINKEDIN = LINKS.find((l) => l.label === 'LinkedIn')!.href
 
 /** the page in view: the board the camera is on (the still page follows clicks and the hash) */
 function usePage() {
@@ -49,26 +47,13 @@ function Rows({ cur, hint, onPick }: { cur: number; hint?: boolean; onPick?: () 
         return (
           <li key={p.id}>
             <a className={`pg-row${on ? ' is-on' : ''}${hint && work && !on ? ' is-hint' : ''}`} href={`#${p.hash}`} aria-current={on ? 'page' : undefined} onClick={(e) => open(e, i, onPick)}>
+              <i className="pg-sq" style={{ background: p.color }} aria-hidden="true" />
               <span className="pg-name">{p.label}</span>
             </a>
           </li>
         )
       })}
     </ul>
-  )
-}
-
-function Links() {
-  return (
-    <div className="pg-links">
-      <a className="pg-row pg-ext" href={LINKEDIN} target="_blank" rel="noopener noreferrer">
-        <span className="pg-name">LinkedIn</span>
-        <span className="pg-ar" aria-hidden="true">
-          ↗
-        </span>
-        <span className="sr-only"> (opens in a new tab)</span>
-      </a>
-    </div>
   )
 }
 
@@ -108,7 +93,6 @@ export function PagesNav() {
     <nav className="pg" aria-label="Pages">
       <div className="pg-head">Pages</div>
       <Rows cur={cur} hint={hint} />
-      <Links />
     </nav>
   )
 }
@@ -169,8 +153,7 @@ export function PagePicker({ variant }: { variant: 'bar' | 'card' }) {
         <nav className="pg" aria-label="Pages">
           <div className="pg-head">Pages</div>
           <Rows cur={cur} onPick={() => setOpen(false)} />
-          <Links />
-        </nav>
+            </nav>
       </div>
     </>
   )
