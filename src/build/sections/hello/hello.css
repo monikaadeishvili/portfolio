@@ -312,22 +312,7 @@
   display: inline-block;
   transition: transform 220ms var(--h-ease);
 }
-/* phones: four links don't fit the board's nav; Instagram steps aside */
-.bstage[data-lay='narrow'] .h-nav-ig {
-  display: none;
-}
-/* "See my work →": the one link that matters, underlined in the hot colour */
-.h-navwork {
-  text-decoration: underline !important;
-  text-decoration-color: var(--h-hot) !important;
-  text-decoration-thickness: 2px !important;
-  text-underline-offset: 4px;
-}
-@media (hover: hover) and (pointer: fine) {
-  .h-navwork:hover .h-navcta-ar {
-    transform: translateX(3px);
-  }
-}
+/* hover: the link changes colour and its arrow nudges out (the bar itself stays put) */
 @media (hover: hover) and (pointer: fine) {
   .h-navcta:hover {
     color: var(--h-blue);
@@ -1089,6 +1074,19 @@
 }
 .h-ww-vis {
   display: inline-flex;
+}
+/* the nav bar stays put: its links only change colour on hover (no lift, no
+   selection outline, no wiggle and eyes on a click) */
+.bf-hello .slot.h-nav.is-hover > .alive > .alive-in,
+.bf-hello .slot.h-nav.is-poke > .alive > .alive-in {
+  transform: none;
+  animation: none;
+}
+.bf-hello .slot.h-nav.is-hover > .alive > .alive-in > .alive-outline {
+  opacity: 0;
+}
+.bf-hello .slot.h-nav.is-poke .alive-eyes {
+  opacity: 0 !important;
 }
 /* the strip is not a selectable layer on hover: no lift, no outline */
 .bf-hello .slot.h-wwslot.is-hover > .alive > .alive-in {
